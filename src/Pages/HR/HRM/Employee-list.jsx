@@ -86,28 +86,19 @@ const handleView = (employee) => {
     indexOfLastItem
   );
   const totalPages = Math.ceil(filteredEmployeeList.length / itemsPerPage);
-  const handlePrevPage = () => {
-    if (currentPage > 1) setCurrentPage((currentPage) => currentPage - 1);
-  };
-  const handleNextPage = () => {
-    if (currentPage < totalPages)
-      setCurrentPage((currentPage) => currentPage + 1);
-  };
-  const handlePageClick = (number) => {
-    setCurrentPage(number);
-  };
+
   return (
     <div className=" md:p-2">
       <Toaster />
       <div className="w-xs md:w-full overflow-hidden overflow-x-auto max-w-7xl mx-auto bg-white/80 backdrop-blur-md shadow-xl rounded-xl p-2 py-10 md:p-6 border border-gray-200">
         <div className="md:flex items-center justify-between mb-6">
-          <h1 className="text-xl font-extrabold text-[#11375B] flex items-center gap-3">
-            <FaUserSecret className="text-[#11375B] text-2xl" />
+          <h1 className="text-xl font-bold text-gray-800 flex items-center gap-3">
+            <FaUserSecret className="text-gray-800 text-2xl" />
             Employee List
           </h1>
           <div className="mt-3 md:mt-0 flex gap-2">
             <Link to="/tramessy/HR/HRM/AddEmployee">
-              <button className="bg-gradient-to-r from-[#11375B] to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white px-4 py-1 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer">
+              <button className="bg-gradient-to-r from-primary to-[#115e15] text-white px-4 py-1 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer">
                 <FaPlus /> Employee
               </button>
             </Link>
@@ -117,7 +108,7 @@ const handleView = (employee) => {
           <div></div>
           {/* search */}
           <div className="mt-3 md:mt-0">
-            <span className="text-primary font-semibold pr-3">Search: </span>
+            {/* <span className="text-primary font-semibold pr-3">Search: </span> */}
             <input
               type="text"
               value={searchTerm}
@@ -142,21 +133,21 @@ const handleView = (employee) => {
     )}
           </div>
         </div>
-        <div className="mt-5 overflow-x-auto rounded-xl">
+        <div className="mt-5 overflow-x-auto rounded-md">
           <table className="min-w-full text-sm text-left">
-            <thead className="bg-primary text-white capitalize text-xs">
+            <thead className="bg-gray-200 text-primary capitalize text-xs">
               <tr>
-                <th className="px-2 py-1">SL.</th>
-                <th className="px-2 py-1">Image</th>
-                <th className="px-2 py-1">FullName</th>
-                <th className="px-2 py-1">Email</th>
-                <th className="px-2 py-1">JoinDate</th>
-                <th className="px-2 py-1">Designation</th>
-                <th className="px-2 py-1">Mobile</th>
-                <th className="px-2 py-1">Status</th>
+                <th className="px-2 py-4">SL.</th>
+                <th className="px-2 py-4">Image</th>
+                <th className="px-2 py-4">FullName</th>
+                <th className="px-2 py-4">Email</th>
+                <th className="px-2 py-4">JoinDate</th>
+                <th className="px-2 py-4">Designation</th>
+                <th className="px-2 py-4">Mobile</th>
+                <th className="px-2 py-4">Status</th>
               </tr>
             </thead>
-            <tbody className="text-primary ">
+            <tbody className="text-gray-700 ">
               {
                 currentEmployee.length === 0 ? (
                   <tr>

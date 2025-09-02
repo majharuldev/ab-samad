@@ -84,13 +84,12 @@ const vehicleSizes = {
 
   return (
     <FormProvider {...methods} className="">
-      <form onSubmit={handleSubmit(onSubmit)} className="mt-10 md:p-2">
-        <Toaster position="top-center" reverseOrder={false} />
-        <h3 className="px-6 py-2 bg-primary text-white font-semibold rounded-t-md">
+      <form onSubmit={handleSubmit(onSubmit)} className="mt-5 md:p-2">
+        <Toaster position="top-center" reverseOrder={false} />  
+        <div className="mx-auto p-6  rounded-md shadow-md border-t-2 border-primary">
+           <h3 className="pt-1 pb-4 text-primary font-semibold rounded-t-md">
           Add Vehicle Information
         </h3>
-
-        <div className="mx-auto p-6  rounded-md shadow">
           {/* Vehicle & Driver Name */}
           <div className="md:flex justify-between gap-3">
             <div className="w-full">
@@ -314,10 +313,10 @@ const vehicleSizes = {
                 }}
                 icon={
                   <span
-                    className="py-[11px] absolute right-0 px-3 top-[22px] transform -translate-y-1/2 bg-primary rounded-r"
+                    className="py-[11px] absolute right-0 px-3 top-[22px] transform -translate-y-1/2 rounded-r"
                     onClick={() => registrationDateRef.current?.showPicker?.()}
                   >
-                    <FiCalendar className="text-white cursor-pointer" />
+                    <FiCalendar className="text-gray-700 cursor-pointer" />
                   </span>
                 }
               />
@@ -336,10 +335,10 @@ const vehicleSizes = {
                 }}
                 icon={
                   <span
-                    className="py-[11px] absolute right-0 px-3 top-[22px] transform -translate-y-1/2 bg-primary rounded-r"
+                    className="py-[11px] absolute right-0 px-3 top-[22px] transform -translate-y-1/2  rounded-r"
                     onClick={() => taxDateRef.current?.showPicker?.()}
                   >
-                    <FiCalendar className="text-white cursor-pointer" />
+                    <FiCalendar className="text-gray-700 cursor-pointer" />
                   </span>
                 }
               />
@@ -356,14 +355,14 @@ const vehicleSizes = {
                 }}
                 icon={
                   <span
-                    className="py-[11px] absolute right-0 px-3 top-[22px] transform -translate-y-1/2 bg-primary rounded-r"
+                    className="py-[11px] absolute right-0 px-3 top-[22px] transform -translate-y-1/2  rounded-r"
                     onClick={() => roadPermitRef.current?.showPicker?.()}
                   >
-                    <FiCalendar className="text-white cursor-pointer" />
+                    <FiCalendar className="text-gray-700 cursor-pointer" />
                   </span>
                 }
               />
-              <label className="text-primary text-sm font-semibold"></label>
+              <label className="text-gray-700 text-sm font-semibold"></label>
             </div>
           </div>
 
@@ -381,10 +380,10 @@ const vehicleSizes = {
                 }}
                 icon={
                   <span
-                    className="py-[11px] absolute right-0 px-3 top-[22px] transform -translate-y-1/2 bg-primary rounded-r"
+                    className="py-[11px] absolute right-0 px-3 top-[22px] transform -translate-y-1/2  rounded-r"
                     onClick={() => fitnessDateRef.current?.showPicker?.()}
                   >
-                    <FiCalendar className="text-white cursor-pointer" />
+                    <FiCalendar className="text-gray-700 cursor-pointer" />
                   </span>
                 }
               />
@@ -401,10 +400,10 @@ const vehicleSizes = {
                 }}
                 icon={
                   <span
-                    className="py-[11px] absolute right-0 px-3 top-[22px] transform -translate-y-1/2 bg-primary rounded-r"
+                    className="py-[11px] absolute right-0 px-3 top-[22px] transform -translate-y-1/2  rounded-r"
                     onClick={() => insuranceDateRef.current?.showPicker?.()}
                   >
-                    <FiCalendar className="text-white cursor-pointer" />
+                    <FiCalendar className="text-gray-700 cursor-pointer" />
                   </span>
                 }
               />

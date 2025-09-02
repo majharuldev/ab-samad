@@ -144,10 +144,10 @@ const UpdateDriverForm = () => {
                   }}
                   icon={
                     <span
-                      className="py-[11px] absolute right-0 px-3 top-[22px] transform -translate-y-1/2 bg-primary rounded-r"
+                      className="py-[11px] absolute right-0 px-3 top-[22px] transform -translate-y-1/2  rounded-r"
                       onClick={() => driverDateRef.current?.showPicker?.()}
                     >
-                      <FiCalendar className="text-white cursor-pointer" />
+                      <FiCalendar className="text-gray-700 cursor-pointer" />
                     </span>
                   }
                 />

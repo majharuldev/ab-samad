@@ -239,13 +239,13 @@ const CarList = () => {
       <div className="w-xs md:w-full overflow-hidden overflow-x-auto max-w-7xl mx-auto bg-white/80 backdrop-blur-md shadow-xl rounded-xl p-2 py-10 md:p-6 border border-gray-200">
         {/* Header */}
         <div className="md:flex items-center justify-between mb-6">
-          <h1 className="text-xl font-extrabold text-[#11375B] flex items-center gap-3">
-            <FaTruck className="text-[#11375B] text-2xl" />
+          <h1 className="text-xl font-bold text-gray-800 flex items-center gap-3">
+            <FaTruck className="text-gray-800 text-2xl" />
             Vehicle List
           </h1>
           <div className="mt-3 md:mt-0 flex gap-2">
             <Link to="/tramessy/AddCarForm">
-              <button className="bg-gradient-to-r from-[#11375B] to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white px-4 py-1 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer">
+              <button className="bg-black text-white px-4 py-1 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer">
                 <FaPlus /> Vehicle
               </button>
             </Link>
@@ -253,29 +253,29 @@ const CarList = () => {
         </div>
         {/* export */}
         <div className="md:flex justify-between items-center">
-          <div className="flex gap-1 md:gap-3 text-primary font-semibold rounded-md">
+          <div className="flex gap-1 md:gap-3 text-gary-700 font-semibold rounded-md">
             <button
               onClick={exportExcel}
-              className="py-2 px-5 hover:bg-primary bg-gray-200 hover:text-white rounded-md transition-all duration-300 cursor-pointer"
+              className="py-1 px-5 hover:bg-primary bg-white hover:text-white rounded shadow-sm transition-all duration-300 cursor-pointer"
             >
               Excel
             </button>
             <button
               onClick={exportPDF}
-              className="py-2 px-5 hover:bg-primary bg-gray-200 hover:text-white rounded-md transition-all duration-300 cursor-pointer"
+              className="py-1 px-5 hover:bg-primary bg-white hover:text-white rounded shadow-sm transition-all duration-300 cursor-pointer"
             >
               PDF
             </button>
             <button
               onClick={printTable}
-              className="py-2 px-5 hover:bg-primary bg-gray-200 hover:text-white rounded-md transition-all duration-300 cursor-pointer"
+              className="py-1 px-5 hover:bg-primary bg-white hover:text-white rounded shadow-sm transition-all duration-300 cursor-pointer"
             >
               Print
             </button>
           </div>
           {/* search */}
           <div className="mt-3 md:mt-0">
-            <span className="text-primary font-semibold pr-3">Search: </span>
+            {/* <span className="text-primary font-semibold pr-3">Search: </span> */}
             <input
               type="text"
               value={searchTerm}
@@ -302,11 +302,11 @@ const CarList = () => {
         </div>
 
         {/* Table */}
-        <div className="mt-5 overflow-x-auto rounded-xl">
+        <div className="mt-5 overflow-x-auto rounded-md">
           <table className="min-w-full text-sm text-left">
-            <thead className="bg-primary text-white capitalize text-xs">
-              <tr>
-                <th className="p-2">#</th>
+            <thead className="bg-gray-200 text-primary capitalize text-xs">
+              <tr className="">
+                <th className="px-2 py-4">#</th>
                 <th className="p-2">Driver Name</th>
                 <th className="p-2">Vehicle Name</th>
                 <th className="p-2">Vehicle Category</th>
@@ -318,7 +318,7 @@ const CarList = () => {
                 <th className="p-2 action_column">Action</th>
               </tr>
             </thead>
-            <tbody className="text-primary ">
+            <tbody className="text-gray-700 ">
               {
                 currentVehicles.length === 0 ? (
                 <tr>
@@ -346,8 +346,8 @@ const CarList = () => {
                   {/* <td className="px-2 py-4">0</td> */}
                   {/* <td className="px-2 py-4">{vehicle.registration_number}</td> */}
                   <td className="p-2">
-                    <span className="text-white bg-green-700 px-3 py-1 rounded-md text-xs font-semibold">
-                      Active
+                    <span className="text-green-400 bg-green-100 px-3 py-1 rounded-md text-xs font-semibold">
+                      {vehicle?.status}
                     </span>
                   </td>
                   <td className="p-2 action_column">

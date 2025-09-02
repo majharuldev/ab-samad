@@ -164,47 +164,7 @@ const CarList = () => {
 
     doc.save("drivers_data.pdf");
   };
-  // const printDriversTable = () => {
-  //   // Hide Action column
-  //   const actionColumns = document.querySelectorAll(".action_column");
-  //   actionColumns.forEach((col) => {
-  //     col.style.display = "none";
-  //   });
-
-  //   const printContent = document.querySelector("table").outerHTML;
-  //   const WinPrint = window.open("", "", "width=900,height=650");
-
-  //   WinPrint.document.write(`
-  //   <html>
-  //   <head>
-  //     <title>Print</title>
-  //     <style>
-  //       table { width: 100%; border-collapse: collapse; font-family: Arial; }
-  //       th, td { border: 1px solid #000; padding: 8px; text-align: left; }
-  //       thead { background-color: #11375B; color: white; }
-  //       tbody tr:nth-child(odd) { background-color: #f3f4f6; }
-  //     </style>
-  //   </head>
-  //   <body>
-  //     <h3>Driver List</h3>
-  //     ${printContent}
-  //   </body>
-  //   </html>
-  // `);
-
-  //   WinPrint.document.close();
-  //   WinPrint.focus();
-  //   WinPrint.print();
-  //   WinPrint.close();
-
-  //   // Restore Action column
-  //   actionColumns.forEach((col) => {
-  //     col.style.display = "";
-  //   });
-  // };
-
-  // search
-  
+ 
   const printDriversTable = () => {
   const printWindow = window.open('', '', 'height=600,width=800');
   
@@ -286,18 +246,18 @@ const CarList = () => {
   const totalPages = Math.ceil(filteredDriver.length / itemsPerPage);
 
   return (
-    <main className=" md:p-2">
+    <main className=" p-2">
       <Toaster />
-      <div className="w-xs md:w-full overflow-hidden overflow-x-auto max-w-7xl mx-auto bg-white/80 backdrop-blur-md shadow-xl rounded-xl p-2 py-10 md:p-6 border border-gray-200">
+      <div className="w-xs md:w-full overflow-hidden overflow-x-auto max-w-7xl mx-auto bg-white/80 backdrop-blur-md shadow-xl rounded-xl p-2 py-10 md:p-4 border border-gray-200">
         {/* Header */}
         <div className="md:flex items-center justify-between mb-6">
-          <h1 className="text-xl font-extrabold text-[#11375B] flex items-center gap-3">
-            <FaTruck className="text-[#11375B] text-2xl" />
+          <h1 className="text-xl font-extrabold text-gray-800 flex items-center gap-3">
+            <FaTruck className="text-gray-800 text-2xl" />
             Driver List
           </h1>
           <div className="mt-3 md:mt-0 flex gap-2">
             <Link to="/tramessy/AddDriverForm">
-              <button className="bg-gradient-to-r from-[#11375B] to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white px-4 py-1 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer">
+              <button className="bg-gradient-to-r from-primary to-[#115e15] text-white px-4 py-1 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer">
                 <FaPlus /> Add Driver
               </button>
             </Link>
@@ -306,30 +266,30 @@ const CarList = () => {
 
         {/* Export */}
         <div className="md:flex justify-between mb-4">
-          <div className="flex gap-1 md:gap-3 flex-wrap">
+          <div className="flex gap-1 text-gray-700 md:gap-3 flex-wrap">
             <button
               onClick={exportDriversToExcel}
-              className="py-2 px-5 bg-gray-200 text-primary font-semibold rounded-md hover:bg-primary hover:text-white transition-all cursor-pointer"
+              className="py-1 px-5 bg-white shadow font-semibold rounded-md hover:bg-primary hover:text-white transition-all cursor-pointer"
             >
               Excel
             </button>
 
             <button
               onClick={exportDriversToPDF}
-              className="py-2 px-5 bg-gray-200 text-primary font-semibold rounded-md hover:bg-primary hover:text-white transition-all cursor-pointer"
+              className="py-1 px-5 bg-white shadow  font-semibold rounded-md hover:bg-primary hover:text-white transition-all cursor-pointer"
             >
               PDF
             </button>
 
             <button
               onClick={printDriversTable}
-              className="py-2 px-5 bg-gray-200 text-primary font-semibold rounded-md hover:bg-primary hover:text-white transition-all cursor-pointer"
+              className="py-1 px-5 bg-white shadow font-semibold rounded-md hover:bg-primary hover:text-white transition-all cursor-pointer"
             >
               Print
             </button>
           </div>
           <div className="mt-3 md:mt-0">
-            <span className="text-primary font-semibold pr-3">Search: </span>
+            {/* <span className="text-primary font-semibold pr-3">Search: </span> */}
             <input
               type="text"
               value={searchTerm}
@@ -358,20 +318,20 @@ const CarList = () => {
         {/* Table */}
         <div className="mt-5 overflow-x-auto rounded-xl">
           <table className="min-w-full text-sm text-left">
-            <thead className="bg-primary text-white capitalize text-xs">
+            <thead className="bg-gray-200 text-primary capitalize text-xs">
               <tr>
-                <th className="p-2">SL.</th>
-                <th className="p-2">Name</th>
-                <th className="p-2">Mobile</th>
-                <th className="p-2 w-40">Address</th>
+                <th className="px-2 py-4">SL.</th>
+                <th className="px-2 py-4">Name</th>
+                <th className="px-2 py-4">Mobile</th>
+                <th className="px-2 py-4 w-40 ">Address</th>
                 {/* <th className="p-2">Emergency</th> */}
-                <th className="p-2">License</th>
-                <th className="p-2">Expired</th>
-                <th className="p-2">Status</th>
-                <th className="p-2 action_column">Action</th>
+                <th className="px-2 py-4">License</th>
+                <th className="px-2 py-4">Expired</th>
+                <th className="px-2 py-4">Status</th>
+                <th className="px-2 py-4 action_column">Action</th>
               </tr>
             </thead>
-            <tbody className="text-primary ">
+            <tbody className="text-gray-700 ">
               { currentDrivers.length === 0 ? (
                 <tr>
                   <td colSpan="8" className="text-center p-4 text-gray-500">
@@ -388,12 +348,12 @@ const CarList = () => {
                   </td>
                   <td className="p-2">{driver.driver_name}</td>
                   <td className="p-2">{driver.driver_mobile}</td>
-                  <td className="p-2">{driver.address}</td>
+                  <td className="p-2 line-clamp-1">{driver.address}</td>
                   {/* <td className="p-2">{driver.emergency_contact}</td> */}
                   <td className="p-2">{driver.license}</td>
                   <td className="p-2">{driver.license_expire_date}</td>
                   <td className="p-2">
-                    <span className="text-white bg-green-700 px-3 py-1 rounded-md text-xs font-semibold">
+                    <span className="text-green-400 bg-green-100 px-3 py-1 rounded-md text-xs font-medium">
                       {driver.status}
                     </span>
                   </td>

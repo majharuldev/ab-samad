@@ -21,7 +21,7 @@ const ResetPass = () => {
           <div className="bg-white shadow-lg p-7 rounded-md border md:border-none border-gray-200">
             <h2 className="text-3xl font-extrabold text-center text-[#11375B] mb-1">
               এডমিন{" "}
-              <span className="font-semibold text-red-500">Nalitabari</span>
+              <span className="font-semibold text-red-500"></span>
             </h2>
             <p className="text-sm text-center text-primary mb-6 pt-3">
               তুমি কি তোমার পাসওয়ার্ড ভুলে গেছো? এখানে তুমি সহজেই তোমার

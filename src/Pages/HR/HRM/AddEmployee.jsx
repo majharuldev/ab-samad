@@ -61,12 +61,13 @@ const AddEmployee = () => {
     }
   };
   return (
-    <div className="mt-10 p-2">
+    <div className="mt-5 p-2">
       <Toaster position="top-center" reverseOrder={false} />
-      <h3 className="px-6 py-2 bg-primary text-white font-semibold rounded-t-md">
+      <div className="mx-auto p-6  rounded-md shadow border-t-2 border-primary">
+        <FormProvider {...methods} >
+              <h3 className=" pb-4 text-primary font-semibold rounded-t-md">
         Add Employee Information
       </h3>
-      <FormProvider {...methods} className="">
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="mx-auto p-6  rounded-md shadow space-y-4"
@@ -136,10 +137,10 @@ const AddEmployee = () => {
                 }}
                 icon={
                   <span
-                    className="py-[11px] absolute right-0 px-3 top-[22px] transform -translate-y-1/2 bg-primary rounded-r"
+                    className="py-[11px] absolute right-0 px-3 top-[22px] transform -translate-y-1/2 rounded-r"
                     onClick={() => dateRef.current?.showPicker?.()}
                   >
-                    <FiCalendar className="text-white cursor-pointer" />
+                    <FiCalendar className="text-gray-700 cursor-pointer" />
                   </span>
                 }
               />
@@ -160,10 +161,10 @@ const AddEmployee = () => {
                 }}
                 icon={
                   <span
-                    className="py-[11px] absolute right-0 px-3 top-[22px] transform -translate-y-1/2 bg-primary rounded-r"
+                    className="py-[11px] absolute right-0 px-3 top-[22px] transform -translate-y-1/2  rounded-r"
                     onClick={() => joinDateRef.current?.showPicker?.()}
                   >
-                    <FiCalendar className="text-white cursor-pointer" />
+                    <FiCalendar className="text-gray-700 cursor-pointer" />
                   </span>
                 }
               />
@@ -196,7 +197,7 @@ const AddEmployee = () => {
               />
             </div>
             <div className="w-full">
-              <label className="text-primary text-sm font-semibold">
+              <label className="text-gray-700 text-sm font-semibold">
                 Image
               </label>
               <div className="relative">
@@ -268,6 +269,7 @@ const AddEmployee = () => {
           <BtnSubmit>Submit</BtnSubmit>
         </form>
       </FormProvider>
+      </div>
     </div>
   );
 };

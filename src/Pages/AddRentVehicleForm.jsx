@@ -61,12 +61,12 @@ const vehicleSizes = {
   };
 
   return (
-    <div className="mt-10 p-2">
+    <div className="mt-5 p-2">
       <Toaster position="top-center" reverseOrder={false} />
-      <h3 className="px-6 py-2 bg-primary text-white font-semibold rounded-t-md">
+      <div className="mx-auto p-6  rounded-md shadow border-t-2 border-primary">
+          <h3 className="pb-4 text-primary font-semibold ">
         Rent Vehicle Information
       </h3>
-      <div className="mx-auto p-6  rounded-md shadow">
         <FormProvider {...methods} className="">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
             {/* Trip & Destination Section */}
