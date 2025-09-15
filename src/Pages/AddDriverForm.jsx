@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import "react-datepicker/dist/react-datepicker.css";
 import { IoMdClose } from "react-icons/io";
@@ -7,14 +7,40 @@ import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import BtnSubmit from "../components/Button/BtnSubmit";
 import { InputField, SelectField } from "../components/Form/FormFields";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import api from "../../utils/axiosConfig";
 
 const AddDriverForm = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
   const methods = useForm();
   const { handleSubmit, register, reset, control } = methods;
   const [previewImage, setPreviewImage] = useState(null);
   const driverDateRef = useRef(null);
+
+  // single driver set field for edit
+  useEffect(() => {
+    if ( id) {
+      const fetchDriver = async () => {
+        try {
+          const res = await api.get(`/driver/${id}`);
+          const driverData = res.data;
+
+          // Pre-fill form
+          reset(driverData);
+
+          if (driverData.lincense_image) {
+            setPreviewImage(driverData.lincense_image);
+          }
+        } catch (error) {
+          console.error(error);
+          toast.error("Failed to load driver data");
+        }
+      };
+      fetchDriver();
+    }
+  }, [ id, reset]);
+
   const onSubmit = async (data) => {
     try {
       const formData = new FormData();
@@ -23,21 +49,21 @@ const AddDriverForm = () => {
           formData.append(key, data[key]);
         }
       }
-      const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/driver/create`,
-        formData
-      );
-      const resData = response.data;
-      console.log("resData", resData);
-      if (resData.status === "Success") {
-        toast.success("Driver saved successfully", {
-          position: "top-right",
-        });
-        reset();
-        navigate("/tramessy/DriverList")
+
+      let response;
+      if (!id) {
+        response = await api.post(`/driver`, formData);
       } else {
-        toast.error("Server issue: " + (resData.message || "Unknown issue"));
+        response = await api.put(`/driver/${id}`, formData);
       }
+
+      toast.success(
+        !id ? "Driver added successfully" : "Driver updated successfully",
+        { position: "top-right" }
+      );
+
+      reset();
+      navigate("/tramessy/DriverList");
     } catch (error) {
       console.error(error);
       const errorMessage =
@@ -45,13 +71,12 @@ const AddDriverForm = () => {
       toast.error("Server issue: " + errorMessage);
     }
   };
-
   return (
     <div className="mt-5 md:p-2">
       <Toaster />
       <div className="mx-auto p-6 rounded-md shadow border-t-2 border-primary">
          <h3 className=" pb-4 text-primary font-semibold ">
-        Create Driver
+         {!id ? "Create Driver" : "Update Driver"}
       </h3>
         <FormProvider {...methods} className="">
           <form onSubmit={handleSubmit(onSubmit)} className="">
@@ -65,7 +90,7 @@ const AddDriverForm = () => {
                   name="driver_mobile"
                   label="Driver Mobile"
                   type="number"
-                  required
+                  required={!id}
                 />
               </div>
             </div>
@@ -73,7 +98,7 @@ const AddDriverForm = () => {
             {/* NID & Emergency Contact */}
             <div className="md:flex justify-between gap-3">
               <div className="w-full">
-                <InputField name="address" label="Address" required />
+                <InputField name="address" label="Address" required={!id} />
               </div>
               <div className="mt-2 md:mt-0 w-full">
                 <InputField
@@ -91,11 +116,11 @@ const AddDriverForm = () => {
                   name="nid"
                   label="NID Number"
                   type="number"
-                  required
+                  required={!id}
                 />
               </div>
               <div className="mt-2 md:mt-0 w-full">
-                <InputField name="license" label="License No" required />
+                <InputField name="lincense" label="License No" required={!id} />
               </div>
             </div>
 
@@ -103,12 +128,12 @@ const AddDriverForm = () => {
             <div className="md:flex justify-between gap-3">
               <div className="w-full">
                 <InputField
-                  name="license_expire_date"
+                  name="expire_date"
                   label="License Expiry Date"
                   type="date"
-                  required
+                  required={!id}
                   inputRef={(e) => {
-                    register("license_expire_date").ref(e);
+                    register("expire_date").ref(e);
                     driverDateRef.current = e;
                   }}
                   icon={
@@ -135,7 +160,7 @@ const AddDriverForm = () => {
                 <SelectField
                   name="status"
                   label="Status"
-                  required
+                  required={!id}
                   options={[
                     { value: "Active", label: "Active" },
                     { value: "Inactive", label: "Inactive" },
@@ -145,11 +170,11 @@ const AddDriverForm = () => {
 
               <div className="mt-3 md:mt-0 w-full">
                 <label className="text-gray-700 text-sm font-semibold">
-                  Upload License Image <span className="text-red-500">*</span>
+                  Upload License Image {!id?<span className="text-red-500">*</span>: ""}
                 </label>
                 <div className="relative">
                   <Controller
-                    name="license_image"
+                    name="lincense_image"
                     control={control}
                     rules={{ required: "This field is required" }}
                     render={({
@@ -158,13 +183,13 @@ const AddDriverForm = () => {
                     }) => (
                       <div className="relative">
                         <label
-                          htmlFor="license_image"
+                          htmlFor="lincense_image"
                           className="border p-2 rounded w-full block bg-white text-gray-500 text-sm cursor-pointer"
                         >
                           {previewImage ? "Image selected" : "Choose image"}
                         </label>
                         <input
-                          id="license_image"
+                          id="lincense_image"
                           type="file"
                           accept="image/*"
                           ref={ref}
@@ -200,7 +225,7 @@ const AddDriverForm = () => {
                   type="button"
                   onClick={() => {
                     setPreviewImage(null);
-                    document.getElementById("license_image").value = "";
+                    document.getElementById("lincense_image").value = "";
                   }}
                   className="absolute top-2 right-2 text-red-600 bg-white shadow rounded-sm hover:text-white hover:bg-secondary transition-all duration-300 cursor-pointer font-bold text-xl p-[2px]"
                   title="Remove image"

@@ -12,7 +12,7 @@ const MonthlyCustomerPieChart = () => {
   const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BASE_URL}/api/trip/list`)
+    fetch(`${import.meta.env.VITE_BASE_URL}/trip/list`)
       .then((res) => res.json())
       .then((response) => {
         const trips = response.data;
@@ -46,7 +46,7 @@ const MonthlyCustomerPieChart = () => {
   }, []);
 
   return (
-    <div className="bg-white rounded-xl shadow-md px-5 mr-5 border border-gray-200 cursor-pointer w-full">
+    <div className="bg-white rounded-xl shadow-md px-5 mr-5 border border-gray-200 cursor-pointer mt-5 w-[50%]">
       <h3 className="text-lg font-bold text-gray-700 text-center border-b border-gray-200 md:p-3 pb-2">
         Monthly Trip Chart By Customer
       </h3>

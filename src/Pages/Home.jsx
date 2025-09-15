@@ -2,6 +2,7 @@ import OverViewCard from "../components/OverViewCard";
 import StatisticsCard from "../components/StatisticsCard";
 import PieChart from "../components/Charts/PieChart";
 import SalesChart from "../components/Charts/SalesChart";
+import ProfitLossChartCard from "../components/Charts/MonthlyProfitCart";
 
 const Home = () => {
   return (
@@ -12,10 +13,12 @@ const Home = () => {
           <StatisticsCard />
         </div>
         <div className="">
-          <PieChart />
+         
+          <ProfitLossChartCard/>
         </div>
       </div>
       <SalesChart />
+       <PieChart />
     </div>
   );
 };

@@ -26,7 +26,7 @@ const PurchaseList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_BASE_URL}/api/purchase/list`)
+      .get(`${import.meta.env.VITE_BASE_URL}/purchase/list`)
       .then((response) => {
         if (response.data.status === "Success") {
           setPurchase(response.data.data);
@@ -85,7 +85,7 @@ const uniqueVehicles = [...new Set(purchase.map((p) => p.vehicle_no))];
   const handleViewCar = async (id) => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/purchase/show/${id}`
+        `${import.meta.env.VITE_BASE_URL}/purchase/show/${id}`
       );
       if (response.data.status === "Success") {
         setselectedPurchase(response.data.data);

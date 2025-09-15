@@ -18,7 +18,7 @@ const SupplierLedger = () => {
   // Fetch supplies list
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_BASE_URL}/api/supply/list`)
+      .get(`${import.meta.env.VITE_BASE_URL}/supply/list`)
       .then((response) => {
         if (response.data.status === "Success") {
           setSupplies(response.data.data);
@@ -33,7 +33,7 @@ const SupplierLedger = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`${import.meta.env.VITE_BASE_URL}/api/supplierLedger/list`)
+      .get(`${import.meta.env.VITE_BASE_URL}/supplierLedger/list`)
       .then((response) => {
         if (response.data.status === "Success") {
           setSupplierLedger(response.data.data);
@@ -63,7 +63,7 @@ const SupplierLedger = () => {
 
       // Filter ledger data by selected supplier
       axios
-        .get(`${import.meta.env.VITE_BASE_URL}/api/supplierLedger/list`)
+        .get(`${import.meta.env.VITE_BASE_URL}/supplierLedger/list`)
         .then((response) => {
           if (response.data.status === "Success") {
             const filtered = response.data.data.filter(
@@ -80,7 +80,7 @@ const SupplierLedger = () => {
       setOpeningBalance(0);
       setCurrentBalance(0);
       axios
-        .get(`${import.meta.env.VITE_BASE_URL}/api/supplierLedger/list`)
+        .get(`${import.meta.env.VITE_BASE_URL}/supplierLedger/list`)
         .then((response) => {
           if (response.data.status === "Success") {
             setSupplierLedger(response.data.data);

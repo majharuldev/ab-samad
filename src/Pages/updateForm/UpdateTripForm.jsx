@@ -80,7 +80,7 @@ const updateTripForm = () => {
   // select customer from api
   const [customers, setCustomers] = useState([]);
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BASE_URL}/api/customer/list`)
+    fetch(`${import.meta.env.VITE_BASE_URL}/customer/list`)
       .then((response) => response.json())
       .then((data) => setCustomers(data.data))
       .catch((error) => console.error("Error fetching customer data:", error));
@@ -94,7 +94,7 @@ const updateTripForm = () => {
   // select customer from api
   const [branch, setBranch] = useState([]);
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BASE_URL}/api/office/list`)
+    fetch(`${import.meta.env.VITE_BASE_URL}/office/list`)
       .then((response) => response.json())
       .then((data) =>{ setBranch(data.data)})
       .catch((error) => console.error("Error fetching customer data:", error));
@@ -109,7 +109,7 @@ const updateTripForm = () => {
   const [vehicle, setVehicle] = useState([]);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BASE_URL}/api/vehicle/list`)
+    fetch(`${import.meta.env.VITE_BASE_URL}/vehicle/list`)
       .then((response) => response.json())
       .then((data) => {
         const options = data.data.map((dt) => ({
@@ -129,7 +129,7 @@ const updateTripForm = () => {
   // select driver from api
   const [drivers, setDrivers] = useState([]);
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BASE_URL}/api/driver/list`)
+    fetch(`${import.meta.env.VITE_BASE_URL}/driver/list`)
       .then((response) => response.json())
       .then((data) => setDrivers(data.data))
       .catch((error) => console.error("Error fetching driver data:", error));
@@ -231,7 +231,7 @@ useEffect(() => {
       // Additional fields
       tripFormData.append("ref_id", refId);
       await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/trip/update/${id}`,
+        `${import.meta.env.VITE_BASE_URL}/trip/update/${id}`,
         tripFormData,
         {
           headers: {

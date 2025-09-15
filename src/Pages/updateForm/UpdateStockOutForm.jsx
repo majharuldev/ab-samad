@@ -24,7 +24,7 @@ const UpdateStockOutForm = () => {
 
   // Fetch vehicle data
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BASE_URL}/api/vehicle/list`)
+    fetch(`${import.meta.env.VITE_BASE_URL}/vehicle/list`)
       .then((response) => response.json())
       .then((data) => setVehicle(data.data))
       .catch((error) => console.error("Error fetching vehicle data:", error));
@@ -37,7 +37,7 @@ const UpdateStockOutForm = () => {
 
   // Fetch driver data
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BASE_URL}/api/driver/list`)
+    fetch(`${import.meta.env.VITE_BASE_URL}/driver/list`)
       .then((response) => response.json())
       .then((data) => setDriver(data.data))
       .catch((error) => console.error("Error fetching driver data:", error));
@@ -53,7 +53,7 @@ const UpdateStockOutForm = () => {
     setIsLoading(true);
     
     // Fetch the specific stock record to update
-    axios.get(`${import.meta.env.VITE_BASE_URL}/api/stockOutProduct/show/${id}`)
+    axios.get(`${import.meta.env.VITE_BASE_URL}/stockOutProduct/show/${id}`)
       .then(response => {
         if (response.data.status === "Success") {
           const record = response.data.data;
@@ -77,7 +77,7 @@ const UpdateStockOutForm = () => {
       });
 
     // Fetch current stock levels
-    axios.get(`${import.meta.env.VITE_BASE_URL}/api/stockOutProduct/list`)
+    axios.get(`${import.meta.env.VITE_BASE_URL}/stockOutProduct/list`)
       .then(response => {
         if (response.data.status === "Success" && response.data.data.length > 0) {
           const lastStockItem = response.data.data[response.data.data.length - 1];
@@ -128,7 +128,7 @@ const UpdateStockOutForm = () => {
       formData.append("total_stock", (availableStock - quantityDifference).toString());
 
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/stockOutProduct/update/${id}`,
+        `${import.meta.env.VITE_BASE_URL}/stockOutProduct/update/${id}`,
         formData
       );
 

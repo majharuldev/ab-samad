@@ -11,6 +11,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { GrFormNext, GrFormPrevious } from "react-icons/gr";
 import Pagination from "../components/Shared/Pagination";
+import api from "../../utils/axiosConfig";
 const CarList = () => {
   const [vehicles, setVehicle] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -26,12 +27,12 @@ const CarList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const toggleModal = () => setIsOpen(!isOpen);
   useEffect(() => {
-    axios
-      .get(`${import.meta.env.VITE_BASE_URL}/api/vehicle/list`)
+    api
+      .get(`/vehicle`)
       .then((response) => {
-        if (response.data.status === "Success") {
-          setVehicle(response.data.data);
-        }
+      
+          setVehicle(response.data);
+       
         setLoading(false);
       })
       .catch((error) => {
@@ -43,7 +44,7 @@ const CarList = () => {
   const handleDelete = async (id) => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/vehicle/delete/${id}`,
+        `${import.meta.env.VITE_BASE_URL}/vehicle/delete/${id}`,
         {
           method: "DELETE",
         }
@@ -192,15 +193,11 @@ const CarList = () => {
   
   const handleViewCar = async (id) => {
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/vehicle/show/${id}`
+      const response = await api.get(
+        `/vehicle/${id}`
       );
-      if (response.data.status === "Success") {
-        setselectedCar(response.data.data);
+        setselectedCar(response.data);
         setViewModalOpen(true);
-      } else {
-        toast.error("Vehicle information could not be loaded.");
-      }
     } catch (error) {
       console.error("View error:", error);
       toast.error("Vehicle information could not be loaded.");
@@ -340,8 +337,8 @@ const CarList = () => {
                   <td className="p-2">{vehicle.vehicle_category}</td>
                   <td className="p-2">{vehicle.vehicle_size}</td>
                   <td className="p-2">
-                    {vehicle.registration_zone} - {vehicle.registration_serial}{" "}
-                    {vehicle.registration_number}
+                    {vehicle.reg_zone} - {vehicle.reg_serial}{" "}
+                    {vehicle.reg_no}
                   </td>
                   {/* <td className="px-2 py-4">0</td> */}
                   {/* <td className="px-2 py-4">{vehicle.registration_number}</td> */}
@@ -454,31 +451,31 @@ const CarList = () => {
               <ul className="flex border-b border-r border-l border-gray-300">
                 <li className="w-[428px] flex text-gray-700 font-semibold text-sm px-3 py-2 border-r border-gray-300">
                   <p className="w-48">Registration Number</p>{" "}
-                  <p>{selectedCar.registration_number}</p>
+                  <p>{selectedCar.reg_no}</p>
                 </li>
                 <li className="w-[428px] flex text-gray-700 font-semibold text-sm px-3 py-2">
                   <p className="w-48">Registration Serial</p>{" "}
-                  <p>{selectedCar.registration_serial}</p>
+                  <p>{selectedCar.reg_serial}</p>
                 </li>
               </ul>
               <ul className="flex border-b border-r border-l border-gray-300">
                 <li className="w-[428px] flex text-gray-700 font-semibold text-sm px-3 py-2 border-r border-gray-300">
                   <p className="w-48">Registration Area</p>{" "}
-                  <p>{selectedCar.registration_zone}</p>
+                  <p>{selectedCar.reg_zone}</p>
                 </li>
                 <li className="w-[428px] flex text-gray-700 font-semibold text-sm px-3 py-2">
                   <p className="w-48">Registration Date</p>{" "}
-                  <p>{selectedCar.registration_date}</p>
+                  <p>{selectedCar.reg_date}</p>
                 </li>
               </ul>
               <ul className="flex border-b border-r border-l border-gray-300">
                 <li className="w-[428px] flex text-gray-700 font-semibold text-sm px-3 py-2 border-r border-gray-300">
                   <p className="w-48">Tax Expiry Date</p>{" "}
-                  <p>{selectedCar.text_date || "N/A"}</p>
+                  <p>{selectedCar.tax_date || "N/A"}</p>
                 </li>
                 <li className="w-[428px] flex text-gray-700 font-semibold text-sm px-3 py-2">
                   <p className="w-48">Road Permit Date</p>{" "}
-                  <p>{selectedCar.road_permit_date}</p>
+                  <p>{selectedCar.route_per_date}</p>
                 </li>
               </ul>
               <ul className="flex border-b border-r border-l border-gray-300">
@@ -489,6 +486,16 @@ const CarList = () => {
                 <li className="w-[428px] flex text-gray-700 font-semibold text-sm px-3 py-2 border-r border-gray-300">
                   <p className="w-48">Insurance Expiry Date</p>{" "}
                   <p>{selectedCar.insurance_date}</p>
+                </li>
+              </ul>
+              <ul className="flex border-b border-r border-l border-gray-300">
+                <li className="w-[428px] flex text-gray-700 font-semibold text-sm px-3 py-2 border-r border-gray-300">
+                  <p className="w-48">Fuel Capacity</p>{" "}
+                  <p>{selectedCar.fuel_capcity}</p>
+                </li>
+                <li className="w-[428px] flex text-gray-700 font-semibold text-sm px-3 py-2 border-r border-gray-300">
+                  <p className="w-48"></p>{" "}
+                  <p></p>
                 </li>
               </ul>
               <div className="flex justify-end mt-10">

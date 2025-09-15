@@ -29,7 +29,7 @@ const DailyIncome = () => {
   useEffect(() => {
     const fetchTrips = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/trip/list`)
+        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/trip/list`)
         const sorted = res.data.data.sort(
           (a, b) => new Date(b.date) - new Date(a.date), // Changed trip_date to date
         )
@@ -48,7 +48,7 @@ const DailyIncome = () => {
     useEffect(() => {
       // Fetch customers data
       axios
-        .get(`${import.meta.env.VITE_BASE_URL}/api/customer/list`)
+        .get(`${import.meta.env.VITE_BASE_URL}/customer/list`)
         .then((response) => {
           if (response.data.status === "Success") {
             setCustomers(response.data.data);

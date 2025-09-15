@@ -27,7 +27,7 @@ const Office = () => {
   // Fetch office data
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_BASE_URL}/api/office/list`)
+      .get(`${import.meta.env.VITE_BASE_URL}/office/list`)
       .then((response) => {
         if (response.data.status === "Success") {
           const data = response.data.data;
@@ -44,7 +44,7 @@ const Office = () => {
   const handleDelete = async (id) => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/office/delete/${id}`,
+        `${import.meta.env.VITE_BASE_URL}/office/delete/${id}`,
         {
           method: "DELETE",
         }

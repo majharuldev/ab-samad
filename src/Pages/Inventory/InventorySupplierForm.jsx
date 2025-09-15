@@ -21,7 +21,7 @@ const InventorySupplierForm = () => {
       }
       formData.append("ref_id", generateRefId());
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/supply/create`,
+        `${import.meta.env.VITE_BASE_URL}/supply/create`,
         formData
       );
       const resData = response.data;

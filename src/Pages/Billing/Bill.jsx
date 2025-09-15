@@ -29,7 +29,7 @@ const Bill = () => {
 
   // fetch all trip data from server
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BASE_URL}/api/trip/list`)
+    fetch(`${import.meta.env.VITE_BASE_URL}/trip/list`)
       .then((response) => response.json())
       .then((data) => {
         if (data.status === "Success") {
@@ -45,7 +45,7 @@ const Bill = () => {
 
   // Fetch customer list for the search dropdown
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BASE_URL}/api/customer/list`)
+    fetch(`${import.meta.env.VITE_BASE_URL}/customer/list`)
       .then((response) => response.json())
       .then((data) => {
         if (data.status === "Success") {
@@ -414,7 +414,7 @@ const Bill = () => {
 
       // Create array of promises for all updates
       const updatePromises = selectedData.map((dt) =>
-        fetch(`${import.meta.env.VITE_BASE_URL}/api/customerLedger/create`, {
+        fetch(`${import.meta.env.VITE_BASE_URL}/customerLedger/create`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -431,7 +431,7 @@ const Bill = () => {
             bill_amount: dt.total_rent,
           }),
         }).then(() =>
-          fetch(`${import.meta.env.VITE_BASE_URL}/api/trip/update/${dt.id}`, {
+          fetch(`${import.meta.env.VITE_BASE_URL}/trip/update/${dt.id}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

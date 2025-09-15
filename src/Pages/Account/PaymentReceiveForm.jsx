@@ -30,7 +30,7 @@ const PaymentReceiveForm = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/paymentRecived/show/${id}`
+        `${import.meta.env.VITE_BASE_URL}/paymentRecived/show/${id}`
       );
       const data = response.data.data;
       
@@ -58,7 +58,7 @@ const PaymentReceiveForm = () => {
   // select customer from api
   const [customer, setCustomer] = useState([]);
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BASE_URL}/api/customer/list`)
+    fetch(`${import.meta.env.VITE_BASE_URL}/customer/list`)
       .then((response) => response.json())
       .then((data) => setCustomer(data.data))
       .catch((error) => console.error("Error fetching customer data:", error));
@@ -72,7 +72,7 @@ const PaymentReceiveForm = () => {
   // select branch office from api
   const [branch, setBranch] = useState([]);
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BASE_URL}/api/office/list`)
+    fetch(`${import.meta.env.VITE_BASE_URL}/office/list`)
       .then((response) => response.json())
       .then((data) => setBranch(data.data))
       .catch((error) => console.error("Error fetching branch data:", error));
@@ -102,8 +102,8 @@ const PaymentReceiveForm = () => {
 
       // Use appropriate endpoint and method based on mode
       const endpoint = isEditing 
-        ? `${import.meta.env.VITE_BASE_URL}/api/paymentRecived/update/${id}`
-        : `${import.meta.env.VITE_BASE_URL}/api/paymentRecived/create`;
+        ? `${import.meta.env.VITE_BASE_URL}/paymentRecived/update/${id}`
+        : `${import.meta.env.VITE_BASE_URL}/paymentRecived/create`;
       
       const method = isEditing ? "post" : "post";
 

@@ -20,7 +20,7 @@ const SelectCustomerLadger = ({ customer, selectedCustomerName }) => {
 
   // Fetch customer list with dues
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_BASE_URL}/api/customer/list`)
+    axios.get(`${import.meta.env.VITE_BASE_URL}/customer/list`)
       .then(res => {
         if (res.data.status === "Success") {
           setCustomerList(res.data.data);

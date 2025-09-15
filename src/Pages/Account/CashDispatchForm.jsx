@@ -28,7 +28,7 @@ const CashDispatchForm = () => {
   const fetchData = async () => {
     try {
       setLoading(true)
-      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/account/show/${id}`)
+      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/account/show/${id}`)
       const data = response.data.data
 
       // Set form values
@@ -52,7 +52,7 @@ const CashDispatchForm = () => {
 
   // select branch from api
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BASE_URL}/api/office/list`)
+    fetch(`${import.meta.env.VITE_BASE_URL}/office/list`)
       .then((response) => response.json())
       .then((data) => setBranch(data.data))
       .catch((error) => console.error("Error fetching branch name:", error))
@@ -65,7 +65,7 @@ const CashDispatchForm = () => {
 
   // select branch from api
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BASE_URL}/api/employee/list`)
+    fetch(`${import.meta.env.VITE_BASE_URL}/employee/list`)
       .then((response) => response.json())
       .then((data) => setEmployee(data.data))
       .catch((error) => console.error("Error fetching employee name:", error))
@@ -104,8 +104,8 @@ const CashDispatchForm = () => {
 
       // Use update or create endpoint based on mode
       const endpoint = isEditing
-        ? `${import.meta.env.VITE_BASE_URL}/api/account/update/${id}`
-        : `${import.meta.env.VITE_BASE_URL}/api/account/create`
+        ? `${import.meta.env.VITE_BASE_URL}/account/update/${id}`
+        : `${import.meta.env.VITE_BASE_URL}/account/create`
 
       const method = isEditing ? "post" : "post"
 
@@ -118,17 +118,17 @@ const CashDispatchForm = () => {
         })
 
         // For new entries, also create branch record
-        if (!isEditing) {
-          const branchFormData = new FormData()
-          branchFormData.append("date", data.date)
-          branchFormData.append("cash_in", data.amount)
-          branchFormData.append("branch_name", data.branch_name)
-          branchFormData.append("remarks", data.ref)
-          branchFormData.append("mode", data.type)
-          branchFormData.append("ref_id", refId)
+        // if (!isEditing) {
+        //   const branchFormData = new FormData()
+        //   branchFormData.append("date", data.date)
+        //   branchFormData.append("cash_in", data.amount)
+        //   branchFormData.append("branch_name", data.branch_name)
+        //   branchFormData.append("remarks", data.ref)
+        //   branchFormData.append("mode", data.type)
+        //   branchFormData.append("ref_id", refId)
 
-          await axios.post(`${import.meta.env.VITE_BASE_URL}/api/branch/create`, branchFormData)
-        }
+        //   await axios.post(`${import.meta.env.VITE_BASE_URL}/branch/create`, branchFormData)
+        // }
 
         // Reset form if create, navigate back if edit
         if (isEditing) {

@@ -6,9 +6,11 @@ import toast, { Toaster } from "react-hot-toast";
 import BtnSubmit from "../components/Button/BtnSubmit";
 import { InputField, SelectField } from "../components/Form/FormFields";
 import useRefId from "../hooks/useRef";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import api from "../../utils/axiosConfig";
 
 const AddCarForm = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
   const methods = useForm();
   const { handleSubmit, register, reset, control, watch } = methods;
@@ -17,19 +19,25 @@ const AddCarForm = () => {
   const roadPermitRef = useRef(null);
   const fitnessDateRef = useRef(null);
   const insuranceDateRef = useRef(null);
+   const dateRef = useRef(null);
   // select driver from api
   const [drivers, setDrivers] = useState([]);
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BASE_URL}/api/driver/list`)
-      .then((response) => response.json())
-      .then((data) => setDrivers(data.data))
-      .catch((error) => console.error("Error fetching driver data:", error));
-  }, []);
+  const fetchDrivers = async () => {
+    try {
+      const response = await api.get("/driver"); 
+      setDrivers(response.data);
+    } catch (error) {
+      console.error("Error fetching driver data:", error);
+    }
+  };
 
-  const driverOptions = drivers.map((driver) => ({
-    value: driver.driver_name,
-    label: driver.driver_name,
-  }));
+  fetchDrivers();
+}, []);
+const driverOptions = drivers.map((driver) => ({
+  value: driver.driver_name,
+  label: driver.driver_name,
+}));
 
    const selectedCategory = watch("vehicle_category");
 const vehicleSizes = {
@@ -51,29 +59,42 @@ const vehicleSizes = {
         }))
       : [];
 
-  // post vehicle
+      // যদি Update হয় → API থেকে পুরোনো ডেটা এনে reset করা
+  useEffect(() => {
+    if (id) {
+      const fetchVehicle = async () => {
+        try {
+          const response = await api.get(`/vehicle/${id}`);
+          reset(response.data); 
+        } catch (error) {
+          console.error("Error fetching vehicle data:", error);
+        }
+      };
+      fetchVehicle();
+    }
+  }, [ id, reset]);
+
+  // add & update vehicle
   const generateRefId = useRefId();
-  const onSubmit = async (data) => {
-    console.log("add car data", data);
+   const onSubmit = async (data) => {
     try {
-      const formData = new FormData();
-      for (const key in data) {
-        formData.append(key, data[key]);
+      let response;
+      if (!id) {
+        const formData = new FormData();
+        for (const key in data) {
+          formData.append(key, data[key]);
+        }
+        formData.append("ref_id", generateRefId());
+
+        response = await api.post(`/vehicle`, formData);
+        toast.success("Vehicle added successfully!");
+      } else if (id) {
+        response = await api.put(`/vehicle/${id}`, data);
+        toast.success("Vehicle updated successfully!");
       }
-      formData.append("ref_id", generateRefId());
-      const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/vehicle/create`,
-        formData
-      );
-      const resData = response.data;
-      console.log("resData", resData);
-      if (resData.status === "Success") {
-        toast.success("Vehicle saved successfully!", { position: "top-right" });
-        reset();
-        navigate("/tramessy/CarList")
-      } else {
-        toast.error("Server error: " + (resData.message || "Unknown issue"));
-      }
+
+      reset();
+      navigate("/tramessy/CarList");
     } catch (error) {
       console.error(error);
       const errorMessage =
@@ -88,18 +109,38 @@ const vehicleSizes = {
         <Toaster position="top-center" reverseOrder={false} />  
         <div className="mx-auto p-6  rounded-md shadow-md border-t-2 border-primary">
            <h3 className="pt-1 pb-4 text-primary font-semibold rounded-t-md">
-          Add Vehicle Information
+          {id ? "Add Vehicle Information" : "Update Vehicle Information"}
         </h3>
           {/* Vehicle & Driver Name */}
           <div className="md:flex justify-between gap-3">
             <div className="w-full">
-              <InputField name="vehicle_name" label="Vehicle Name" required />
+                <InputField
+                  name="date"
+                  label="Date"
+                  type="date"
+                  required={id? false:true}
+                  inputRef={(e) => {
+                    register("date").ref(e)
+                    dateRef.current = e
+                  }}
+                  icon={
+                    <span
+                      className="py-[11px] absolute right-0 px-3 top-[22px] transform -translate-y-1/2 rounded-r"
+                      onClick={() => dateRef.current?.showPicker?.()}
+                    >
+                      <FiCalendar className="text-gray-700 cursor-pointer" />
+                    </span>
+                  }
+                />
+              </div>
+            <div className="w-full">
+              <InputField name="vehicle_name" label="Vehicle Name" required={id? false:true} />
             </div>
             <div className="relative mt-2 md:mt-0 w-full">
               <SelectField
                 name="driver_name"
                 label="Driver Name"
-                required={true}
+                required={id? false:true}
                 options={driverOptions}
                 control={control}
               />
@@ -112,7 +153,7 @@ const vehicleSizes = {
               <SelectField
                 name="vehicle_category"
                 label="Vehicle Category"
-                required
+                required={id? false:true}
                 options={[
                   // { value: "", label: "Select Vehicle category..." },
                   { value: "pickup", label: "Pickup" },
@@ -127,45 +168,11 @@ const vehicleSizes = {
            
               />
             </div>
-
-            {/* <div className="relative mt-2 md:mt-0 w-full">
-              <SelectField
-                name="vehicle_size"
-                label="Vehicle Size/Capacity"
-                required
-                options={[
-                  { value: "", label: "Select Vehicle size..." },
-                  { value: "1 Ton", label: "1 Ton" },
-                  { value: "2 Ton", label: "2 Ton" },
-                  { value: "3 Ton", label: "3 Ton" },
-                  { value: "4 Ton", label: "4 Ton" },
-                  { value: "5 Ton", label: "5 Ton" },
-                  { value: "6 Ton", label: "6 Ton" },
-                  { value: "7 Ton", label: "7 Ton" },
-                  { value: "8 Ton", label: "8 Ton" },
-                  { value: "9 Ton", label: "9 Ton" },
-                  { value: "10 Ton", label: "10 Ton" },
-                  { value: "12 Ton", label: "12 Ton" },
-                  { value: "15 Ton", label: "15 Ton" },
-                  { value: "30 Ton", label: "30 Ton" },
-                  { value: "7 Feet", label: "7 Feet" },
-                  { value: "9 Feet", label: "9 Feet" },
-                  { value: "12 Feet", label: "12 Feet" },
-                  { value: "14 Feet", label: "14 Feet" },
-                  { value: "16 Feet", label: "16 Feet" },
-                  { value: "18 Feet", label: "18 Feet" },
-                  { value: "20 Feet", label: "20 Feet" },
-                  { value: "23 Feet", label: "23 Feet" },
-                  { value: "40 Feet", label: "40 Feet" },
-                  { value: "3xl", label: "3xl" },
-                ]}
-              />
-            </div> */}
             <div className="relative w-full">
         <SelectField
           name="vehicle_size"
           label="Vehicle Size/Capacity"
-          required
+          required={id? false:true}
           options={[
             { value: "", label: "Select Vehicle size..." },
             ...sizeOptions,
@@ -173,7 +180,7 @@ const vehicleSizes = {
         />
       </div>
             <div className="w-full">
-              <InputField name="fuel_capacity" label="Fuel Capacity" required />
+              <InputField name="fuel_capcity" label="Fuel Capacity" required={id? false:true} />
             </div>
           </div>
 
@@ -181,16 +188,16 @@ const vehicleSizes = {
           <div className="md:flex justify-between gap-3">
             <div className="w-full">
               <InputField
-                name="registration_number"
+                name="reg_no"
                 label="Registration Number"
-                required
+                required={id? false:true}
               />
             </div>
             <div className="mt-2 md:mt-0 w-full">
               <SelectField
-                name="registration_serial"
+                name="reg_serial"
                 label="Registration Serial"
-                required
+                required={id? false:true}
                 options={[
                   { value: "KA", label: "KA" },
                   { value: "KHA", label: "KHA" },
@@ -217,9 +224,9 @@ const vehicleSizes = {
             </div>
             <div className="relative w-full">
               <SelectField
-                name="registration_zone"
+                name="reg_zone"
                 label="Registration Zone"
-                required
+                required={id? false:true}
                 options={[
                   { value: "", label: "Select zone..." },
                   { value: "Dhaka Metro", label: "Dhaka Metro" },
@@ -303,12 +310,12 @@ const vehicleSizes = {
             {/* Registration Date */}
             <div className="relative w-full">
               <InputField
-                name="registration_date"
+                name="reg_date"
                 label="Registration Date Exp."
                 type="date"
-                required
+                required={id? false:true}
                 inputRef={(e) => {
-                  register("registration_date").ref(e);
+                  register("reg_date").ref(e);
                   registrationDateRef.current = e;
                 }}
                 icon={
@@ -328,7 +335,7 @@ const vehicleSizes = {
                 name="tax_date"
                 label="Tax Expiry Date"
                 type="date"
-                required
+                required={id? false:true}
                 inputRef={(e) => {
                   register("tax_date").ref(e);
                   taxDateRef.current = e;
@@ -345,12 +352,12 @@ const vehicleSizes = {
             </div>
             <div className="w-full">
               <InputField
-                name="road_permit_date"
+                name="route_per_date"
                 label="Road Permit Date Exp."
                 type="date"
-                required
+                required={id? false:true}
                 inputRef={(e) => {
-                  register("road_permit_date").ref(e);
+                  register("route_per_date").ref(e);
                   roadPermitRef.current = e;
                 }}
                 icon={
@@ -373,7 +380,7 @@ const vehicleSizes = {
                 name="fitness_date"
                 label="Fitness Expiry Date"
                 type="date"
-                required
+                required={id? false:true}
                 inputRef={(e) => {
                   register("fitness_date").ref(e);
                   fitnessDateRef.current = e;
@@ -393,7 +400,7 @@ const vehicleSizes = {
                 name="insurance_date"
                 label="Insurance Expiry Date"
                 type="date"
-                required
+                required={id? false:true}
                 inputRef={(e) => {
                   register("insurance_date").ref(e);
                   insuranceDateRef.current = e;
@@ -413,7 +420,7 @@ const vehicleSizes = {
               <SelectField
                 name="status"
                 label="Status"
-                required
+                required={id? false:true}
                 options={[
                   { value: "Active", label: "Active" },
                   { value: "Inactive", label: "Inactive" },

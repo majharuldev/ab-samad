@@ -49,7 +49,7 @@ const OfficialExpense = () => {
   useEffect(() => {
     const fetchBranches = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/office/list`);
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/office/list`);
         if (response?.data?.status === "Success") {
           setBranches(response?.data?.data);
         }
@@ -66,7 +66,7 @@ const OfficialExpense = () => {
   const showModal = async (record = null) => {
     if (record) {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/expense/${record.id}`)
+        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/expense/${record.id}`)
         const data = res.data?.data
         setFormData({
           date: data?.date || "",
@@ -116,7 +116,7 @@ const OfficialExpense = () => {
   //   expense
   const fetchExpenses = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/expense/list`)
+      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/expense/list`)
       const allExpenses = response.data?.data || [];
       const utilityExpenses = allExpenses.filter(expense =>
         expense.payment_category === 'Utility'
@@ -154,10 +154,10 @@ const OfficialExpense = () => {
       }
 
       if (editingId) {
-        await axios.post(`${import.meta.env.VITE_BASE_URL}/api/expense/update/${editingId}`, payload)
+        await axios.post(`${import.meta.env.VITE_BASE_URL}/expense/update/${editingId}`, payload)
         toast.success("Expense Data Update successful")
       } else {
-        await axios.post(`${import.meta.env.VITE_BASE_URL}/api/expense/save`, payload)
+        await axios.post(`${import.meta.env.VITE_BASE_URL}/expense/save`, payload)
         toast.success("Epense Added successful")
       }
 

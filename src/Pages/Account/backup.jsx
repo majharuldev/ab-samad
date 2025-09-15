@@ -16,7 +16,7 @@ const DriverLedger = () => {
   // Fetch driver ledger data
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_BASE_URL}/api/driverLedger/list`)
+      .get(`${import.meta.env.VITE_BASE_URL}/driverLedger/list`)
       .then((response) => {
         if (response.data.status === "Success") {
           setDriver(response.data.data);

@@ -18,7 +18,7 @@ const PaymentReceive = () => {
   // Fetch payment data
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_BASE_URL}/api/paymentRecived/list`)
+      .get(`${import.meta.env.VITE_BASE_URL}/paymentRecived/list`)
       .then((response) => {
         if (response.data.status === "Success") {
           setPayment(response.data.data);

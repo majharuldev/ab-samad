@@ -7,6 +7,7 @@ import { GrFormNext, GrFormPrevious } from "react-icons/gr";
 import { IoMdClose } from "react-icons/io";
 import { Link } from "react-router-dom";
 import Pagination from "../../components/Shared/Pagination";
+import api from "../../../utils/axiosConfig";
 
 const Customer = () => {
   const [customer, setCustomer] = useState([]);
@@ -19,12 +20,10 @@ const Customer = () => {
   const [currentPage, setCurrentPage] = useState(1);
   // Fetch customer data
   useEffect(() => {
-    axios
-      .get(`${import.meta.env.VITE_BASE_URL}/api/customer/list`)
+    api
+      .get(`/customer`)
       .then((response) => {
-        if (response.data.status === "Success") {
-          setCustomer(response.data.data);
-        }
+          setCustomer(response.data);
         setLoading(false);
       })
       .catch((error) => {
@@ -50,7 +49,7 @@ const Customer = () => {
   const handleDelete = async (id) => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/customer/delete/${id}`,
+        `${import.meta.env.VITE_BASE_URL}/customer/${id}`,
         {
           method: "DELETE",
         }
@@ -179,7 +178,7 @@ const Customer = () => {
                       {/* <button className="text-primary hover:bg-primary hover:text-white px-2 py-1 rounded shadow-md transition-all cursor-pointer">
                         <FaEye className="text-[12px]" />
                       </button> */}
-                      <button
+                      {/* <button
                         onClick={() => {
                           setSelectedCustomerId(dt.id);
                           setIsOpen(true);
@@ -187,7 +186,7 @@ const Customer = () => {
                         className="text-red-900 hover:text-white hover:bg-red-900 px-2 py-1 rounded shadow-md transition-all cursor-pointer"
                       >
                         <FaTrashAlt className="text-[12px]" />
-                      </button>
+                      </button> */}
                     </div>
                   </td>
                 </tr>

@@ -50,7 +50,7 @@ const UpdatePurchaseForm = () => {
 
   // select driver from api
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BASE_URL}/api/driver/list`)
+    fetch(`${import.meta.env.VITE_BASE_URL}/driver/list`)
       .then((response) => response.json())
       .then((data) => setDrivers(data.data))
       .catch((error) => console.error("Error fetching driver data:", error));
@@ -61,7 +61,7 @@ const UpdatePurchaseForm = () => {
   }));
   // select Vehicle No. from api
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BASE_URL}/api/vehicle/list`)
+    fetch(`${import.meta.env.VITE_BASE_URL}/vehicle/list`)
       .then((response) => response.json())
       .then((data) => setVehicle(data.data))
       .catch((error) => console.error("Error fetching vehicle data:", error));
@@ -73,7 +73,7 @@ const UpdatePurchaseForm = () => {
   }));
   // select branch from api
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BASE_URL}/api/office/list`)
+    fetch(`${import.meta.env.VITE_BASE_URL}/office/list`)
       .then((response) => response.json())
       .then((data) => setBranch(data.data))
       .catch((error) => console.error("Error fetching branch data:", error));
@@ -84,7 +84,7 @@ const UpdatePurchaseForm = () => {
   }));
   // select supplier from api
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BASE_URL}/api/supply/list`)
+    fetch(`${import.meta.env.VITE_BASE_URL}/supply/list`)
       .then((response) => response.json())
       .then((data) => setSupplier(data.data))
       .catch((error) => console.error("Error fetching supply data:", error));
@@ -113,7 +113,7 @@ const UpdatePurchaseForm = () => {
         purchaseFormData.append(key, data[key]);
       }
       await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/purchase/update/${id}`,
+        `${import.meta.env.VITE_BASE_URL}/purchase/update/${id}`,
         purchaseFormData,
         {
           headers: {

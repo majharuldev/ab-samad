@@ -22,7 +22,7 @@ const AddUserForm = () => {
       const fetchUserData = async () => {
         try {
           const response = await axios.get(
-            `${import.meta.env.VITE_BASE_URL}/api/users/${id}`
+            `${import.meta.env.VITE_BASE_URL}/users/${id}`
           );
           const userData = response.data.data;
           
@@ -47,8 +47,8 @@ const AddUserForm = () => {
       const { confirmPassword, ...submitData } = data;
 
       const url = isEditMode 
-        ? `${import.meta.env.VITE_BASE_URL}/api/users/${id}`
-        : `${import.meta.env.VITE_BASE_URL}/api/users`;
+        ? `${import.meta.env.VITE_BASE_URL}/users/${id}`
+        : `${import.meta.env.VITE_BASE_URL}/users`;
 
       const method = isEditMode ? 'put' : 'post';
 

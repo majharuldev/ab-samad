@@ -8,6 +8,7 @@ import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 import useRefId from "../../../hooks/useRef";
 import { useNavigate } from "react-router-dom";
+import api from "../../../../utils/axiosConfig";
 
 const AddEmployee = () => {
   const navigate = useNavigate()
@@ -18,10 +19,17 @@ const AddEmployee = () => {
   const [branch, setBranch] = useState([]);
   // select branch name from api
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BASE_URL}/api/office/list`)
-      .then((response) => response.json())
-      .then((data) => setBranch(data.data))
-      .catch((error) => console.error("Error fetching branch data:", error));
+   const fetchBranch = async () => {
+        try {
+          const res = await api.get(`/office`);
+          const officeData = res.data;
+          setBranch(officeData);
+        } catch (error) {
+          console.error(error);
+          toast.error("Failed to load office data");
+        }
+      };
+      fetchBranch();
   }, []);
   const branchOptions = branch.map((dt) => ({
     value: dt.branch_name,
@@ -38,13 +46,13 @@ const AddEmployee = () => {
         formData.append(key, data[key]);
       }
       // formData.append("ref_id", generateRefId());
-      const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/employee/create`,
+      const response = await api.post(
+        `/employee`,
         formData
       );
       const resData = response.data;
       console.log("resData", resData);
-      if (resData.status === "Success") {
+      if (resData.success) {
         toast.success("Employee saved successfully!", {
           position: "top-right",
         });

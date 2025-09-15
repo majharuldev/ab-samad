@@ -22,7 +22,6 @@ import PrivateRoute from "./PrivateRoute";
 import UpdateFuelForm from "../Pages/updateForm/UpdateFuelForm";
 import UpdatePartsForm from "../Pages/updateForm/UpdatePartsForm";
 import UpdateMaintenanceForm from "../Pages/updateForm/UpdateMaintenanceForm";
-import UpdateDriverForm from "../Pages/updateForm/UpdateDriverForm";
 import UpdateDailyIncomeForm from "../Pages/updateForm/UpdateDailyIncomeForm";
 import UpdateExpenseForm from "../Pages/updateForm/UpdateExpenseForm";
 import AdminRoute from "./AdminRoute";
@@ -69,8 +68,6 @@ import PaymentList from "../Pages/Account/PaymentList";
 import PaymentReceiveForm from "../Pages/Account/PaymentReceiveForm";
 import PaymentReceive from "../Pages/Account/PaymentReceive";
 import DriverLedger from "../Pages/Account/DriverLedger";
-import UpdateCarForm from "../Pages/UpdateCarForm";
-import UpdateCustomerForm from "../Pages/Customer/UpdateCustomerForm";
 import UpdateEmployeeForm from "../Pages/HR/HRM/UpdateEmployeeForm";
 import UpdateSupplyForm from "../Pages/Purchase/UpdateSupplyForm";
 import UpdateRentVehicleForm from "../Pages/UpdateRentVehicleForm";
@@ -124,13 +121,9 @@ export const router = createBrowserRouter([
         path: "/tramessy/UpdateCarForm/:id",
         element: (
           <PrivateRoute>
-            <UpdateCarForm />
+            <AddCarForm />
           </PrivateRoute>
         ),
-        loader: ({ params }) =>
-          fetch(
-            `${import.meta.env.VITE_BASE_URL}/api/vehicle/show/${params.id}`
-          ),
       },
       {
         path: "/tramessy/DriverList",
@@ -176,13 +169,9 @@ export const router = createBrowserRouter([
         path: "/tramessy/UpdateDriverForm/:id",
         element: (
           <PrivateRoute>
-            <UpdateDriverForm />
+            <AddDriverForm />
           </PrivateRoute>
         ),
-        loader: ({ params }) =>
-          fetch(
-            `${import.meta.env.VITE_BASE_URL}/api/driver/show/${params.id}`
-          ),
       },
       {
         path: "/tramessy/TripList",
@@ -210,7 +199,7 @@ export const router = createBrowserRouter([
         ),
         // loader: ({ params }) =>
         //   fetch(
-        //     `${import.meta.env.VITE_BASE_URL}/api/trip/show/${params.id}`
+        //     `${import.meta.env.VITE_BASE_URL}/trip/show/${params.id}`
         //   ),
       },
       {
@@ -237,7 +226,7 @@ export const router = createBrowserRouter([
           </PrivateRoute>
         ),
         loader: ({ params }) =>
-          fetch(`https://api.tramessy.com/api/fuel/${params.id}`),
+          fetch(`https:/.tramessy.com/fuel/${params.id}`),
       },
       {
         path: "/tramessy/Parts",
@@ -255,7 +244,7 @@ export const router = createBrowserRouter([
           </PrivateRoute>
         ),
         loader: ({ params }) =>
-          fetch(`https://api.tramessy.com/api/parts/${params.id}`),
+          fetch(`https:/.tramessy.com/parts/${params.id}`),
       },
       {
         path: "/tramessy/Maintenance",
@@ -281,7 +270,7 @@ export const router = createBrowserRouter([
           </PrivateRoute>
         ),
         loader: ({ params }) =>
-          fetch(`https://api.tramessy.com/api/maintenance/${params.id}`),
+          fetch(`https:/.tramessy.com/maintenance/${params.id}`),
       },
       {
         path: "/tramessy/VendorList",
@@ -308,7 +297,7 @@ export const router = createBrowserRouter([
         ),
         loader: ({ params }) =>
           fetch(
-            `${import.meta.env.VITE_BASE_URL}/api/vendor/show/${params.id}`
+            `${import.meta.env.VITE_BASE_URL}/vendor/show/${params.id}`
           ),
       },
       {
@@ -336,7 +325,7 @@ export const router = createBrowserRouter([
         ),
         loader: ({ params }) =>
           fetch(
-            `${import.meta.env.VITE_BASE_URL}/api/rent/show/${params.id}`
+            `${import.meta.env.VITE_BASE_URL}/rent/show/${params.id}`
           ),
       },
       {
@@ -403,7 +392,7 @@ export const router = createBrowserRouter([
           </AdminRoute>
         ),
         loader: ({ params }) =>
-          fetch(`https://api.tramessy.com/api/trip/${params.id}`),
+          fetch(`https:/.tramessy.com/trip/${params.id}`),
       },
       {
         path: "/tramessy/UpdateExpenseForm/:id",
@@ -413,7 +402,7 @@ export const router = createBrowserRouter([
           </PrivateRoute>
         ),
         loader: ({ params }) =>
-          fetch(`https://api.tramessy.com/api/trip/${params.id}`),
+          fetch(`https:/.tramessy.com/trip/${params.id}`),
       },
 
       // HR
@@ -446,7 +435,7 @@ export const router = createBrowserRouter([
         ),
         loader: ({ params }) =>
           fetch(
-            `${import.meta.env.VITE_BASE_URL}/api/office/show/${params.id}`
+            `${import.meta.env.VITE_BASE_URL}/office/show/${params.id}`
           ),
       },
       {
@@ -462,7 +451,7 @@ export const router = createBrowserRouter([
         ),
         loader: ({ params }) =>
           fetch(
-            `${import.meta.env.VITE_BASE_URL}/api/employee/show/${params.id}`
+            `${import.meta.env.VITE_BASE_URL}/employee/show/${params.id}`
           ),
       },
       {
@@ -508,7 +497,7 @@ export const router = createBrowserRouter([
         ),
         loader: ({ params }) =>
           fetch(
-            `${import.meta.env.VITE_BASE_URL}/api/leave/show/${params.id}`
+            `${import.meta.env.VITE_BASE_URL}/leave/show/${params.id}`
           ),
       },
       {
@@ -552,7 +541,7 @@ export const router = createBrowserRouter([
         ),
         loader: ({ params }) =>
           fetch(
-            `${import.meta.env.VITE_BASE_URL}/api/supply/show/${params.id}`
+            `${import.meta.env.VITE_BASE_URL}/supply/show/${params.id}`
           ),
       },
       // Inventory
@@ -599,11 +588,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/tramessy/UpdateCustomerForm/:id",
-        element: <UpdateCustomerForm />,
-        loader: ({ params }) =>
-          fetch(
-            `${import.meta.env.VITE_BASE_URL}/api/customer/show/${params.id}`
-          ),
+        element: <AddCustomer/>,
       },
       // Reports
       {

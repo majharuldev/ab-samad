@@ -34,7 +34,7 @@ const UpdateVendorForm = () => {
         formData.append(key, data[key]);
       }
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/vendor/update/${id}`,
+        `${import.meta.env.VITE_BASE_URL}/vendor/update/${id}`,
         formData
       );
       const resData = response.data;

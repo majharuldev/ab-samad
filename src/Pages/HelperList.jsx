@@ -27,7 +27,7 @@ const HelperList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_BASE_URL}/api/helper/list`)
+      .get(`${import.meta.env.VITE_BASE_URL}/helper/list`)
       .then((response) => {
         if (response.data.status === "Success") {
           setHelper(response.data.data);
@@ -46,7 +46,7 @@ const HelperList = () => {
   const handleDelete = async (id) => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/helper/delete/${id}`,
+        `${import.meta.env.VITE_BASE_URL}/helper/delete/${id}`,
         {
           method: "DELETE",
         }
@@ -76,7 +76,7 @@ const HelperList = () => {
   const handleView = async (id) => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/helper/show/${id}`
+        `${import.meta.env.VITE_BASE_URL}/helper/show/${id}`
       );
       if (response.data.status === "Success") {
         setSelectedHelper(response.data.data);

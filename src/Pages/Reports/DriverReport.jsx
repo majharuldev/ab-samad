@@ -38,10 +38,10 @@ const DriverReport = () => {
   useEffect(() => {
     setLoading(true);
     const fetchDrivers = axios.get(
-      `${import.meta.env.VITE_BASE_URL}/api/driver/list`
+      `${import.meta.env.VITE_BASE_URL}/driver/list`
     );
     const fetchTrips = axios.get(
-      `${import.meta.env.VITE_BASE_URL}/api/trip/list`
+      `${import.meta.env.VITE_BASE_URL}/trip/list`
     );
 
     Promise.all([fetchDrivers, fetchTrips])

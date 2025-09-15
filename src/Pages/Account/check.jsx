@@ -16,7 +16,7 @@ const PaymentList = () => {
   const [selectedPayment, setSelectedPayment] = useState(null);
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_BASE_URL}/api/payment/list`)
+      .get(`${import.meta.env.VITE_BASE_URL}/payment/list`)
       .then((response) => {
         if (response.data.status === "Success") {
           setPayment(response.data.data);
@@ -36,7 +36,7 @@ const PaymentList = () => {
   //       formData.append(key, data[key]);
   //     }
   //     const response = await axios.post(
-  //       "${import.meta.env.VITE_BASE_URL}/api/payment/update/{id}",
+  //       "${import.meta.env.VITE_BASE_URL}/payment/update/{id}",
   //       formData
   //     );
   //     const resData = response.data;
@@ -147,7 +147,7 @@ const PaymentList = () => {
                   // formData.append("note", data.note);
                   axios
                     .post(
-                      `${import.meta.env.VITE_BASE_URL}/api/payment/update/${selectedPayment.id}`,
+                      `${import.meta.env.VITE_BASE_URL}/payment/update/${selectedPayment.id}`,
                       formData
                     )
                     .then((res) => {
@@ -158,7 +158,7 @@ const PaymentList = () => {
                         setLoading(true);
                         axios
                           .get(
-                            `${import.meta.env.VITE_BASE_URL}/api/payment/list`
+                            `${import.meta.env.VITE_BASE_URL}/payment/list`
                           )
                           .then((response) => {
                             if (response.data.status === "Success") {

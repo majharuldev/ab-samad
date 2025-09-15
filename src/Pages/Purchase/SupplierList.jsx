@@ -25,7 +25,7 @@ const SupplierList = () => {
   const toggleModal = () => setIsOpen(!isOpen);
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_BASE_URL}/api/supply/list`)
+      .get(`${import.meta.env.VITE_BASE_URL}/supply/list`)
       .then((response) => {
         if (response.data.status === "Success") {
           setSupply(response.data.data);
@@ -53,7 +53,7 @@ const SupplierList = () => {
   const handleDelete = async (id) => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/supply/delete/${id}`,
+        `${import.meta.env.VITE_BASE_URL}/supply/delete/${id}`,
         {
           method: "DELETE",
         }
@@ -83,7 +83,7 @@ const SupplierList = () => {
   const handleView = async (id) => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/supply/show/${id}`
+        `${import.meta.env.VITE_BASE_URL}/supply/show/${id}`
       );
       if (response.data.status === "Success") {
         setSelectedSupply(response.data.data);

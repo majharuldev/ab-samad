@@ -13,7 +13,7 @@ const CustomerLedger = () => {
 
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_BASE_URL}/api/customerLedger/list`)
+      .get(`${import.meta.env.VITE_BASE_URL}/customerLedger/list`)
       .then((res) => {
         if (res.data.status === "Success") {
           setCustomers(res.data.data);

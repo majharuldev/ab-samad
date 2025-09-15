@@ -6,26 +6,22 @@ import toast, { Toaster } from "react-hot-toast";
 import BtnSubmit from "../components/Button/BtnSubmit";
 import { InputField, SelectField } from "../components/Form/FormFields";
 import { useLoaderData, useNavigate } from "react-router-dom";
+import api from "../../utils/axiosConfig";
 const UpdateCarForm = () => {
-  //   update loader data
-  const updateCarLoaderData = useLoaderData();
-  const {
-    id,
-    vehicle_name,
-    driver_name,
-    vehicle_category,
-    vehicle_size,
-    registration_number,
-    registration_serial,
-    registration_zone,
-    registration_date,
-    tax_date,
-    road_permit_date,
-    fitness_date,
-    status,
-    fuel_capacity,
-    insurance_date,
-  } = updateCarLoaderData.data;
+
+  // vehicle
+   useEffect(() => {
+  const fetchDrivers = async () => {
+    try {
+      const response = await api.get("/vehicle/"); 
+      setDrivers(response.data);
+    } catch (error) {
+      console.error("Error fetching driver data:", error);
+    }
+  };
+
+  fetchDrivers();
+}, []);
 
   const methods = useForm({
     defaultValues: {
@@ -46,17 +42,23 @@ const UpdateCarForm = () => {
   const navigate = useNavigate();
   // select driver from api
   const [drivers, setDrivers] = useState([]);
-  useEffect(() => {
-    fetch(`${import.meta.env.VITE_BASE_URL}/api/driver/list`)
-      .then((response) => response.json())
-      .then((data) => setDrivers(data.data))
-      .catch((error) => console.error("Error fetching driver data:", error));
-  }, []);
+ 
+ useEffect(() => {
+  const fetchDrivers = async () => {
+    try {
+      const response = await api.get("/driver"); 
+      setDrivers(response.data);
+    } catch (error) {
+      console.error("Error fetching driver data:", error);
+    }
+  };
 
-  const driverOptions = drivers.map((driver) => ({
-    value: driver.driver_name,
-    label: driver.driver_name,
-  }));
+  fetchDrivers();
+}, []);
+const driverOptions = drivers.map((driver) => ({
+  value: driver.driver_name,
+  label: driver.driver_name,
+}));
 
    const selectedCategory = watch("vehicle_category");
 const vehicleSizes = {
@@ -81,8 +83,8 @@ const vehicleSizes = {
   // update vehicle
   const onSubmit = async (data) => {
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/vehicle/edit/${id}`,
+      const response = await api.put(
+        `${import.meta.env.VITE_BASE_URL}/vehicle/${id}`,
         data,
         {
           headers: {
@@ -91,14 +93,10 @@ const vehicleSizes = {
         }
       );
       const resData = response.data;
-      if (resData.status === "Success") {
         toast.success("Vehicle updated successfully!", {
           position: "top-right",
         });
         navigate("/tramessy/CarList")
-      } else {
-        toast.error("Server issue " + (resData.message || "Unknown problem"));
-      }
     } catch (error) {
       console.error(error);
       const errorMessage =

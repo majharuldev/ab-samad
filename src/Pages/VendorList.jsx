@@ -12,6 +12,8 @@ import toast, { Toaster } from "react-hot-toast";
 import { IoIosRemoveCircle, IoMdClose } from "react-icons/io";
 import { GrFormNext, GrFormPrevious } from "react-icons/gr";
 import Pagination from "../components/Shared/Pagination";
+import { formatDate } from "../hooks/formatDate";
+import api from "../../utils/axiosConfig";
 
 const VendorList = () => {
   const [vendor, setVendor] = useState([]);
@@ -30,8 +32,8 @@ const VendorList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   // Fetch vendor data
   useEffect(() => {
-    axios
-      .get(`${import.meta.env.VITE_BASE_URL}/api/vendor/list`)
+    api
+      .get(`/vendor`)
       .then((response) => {
         if (response.data.status === "Success") {
           setVendor(response.data.data);
@@ -174,7 +176,7 @@ const VendorList = () => {
   const handleDelete = async (id) => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/vendor/delete/${id}`,
+        `${import.meta.env.VITE_BASE_URL}/vendor/delete/${id}`,
         {
           method: "DELETE",
         }
@@ -366,7 +368,7 @@ const VendorList = () => {
                   <td className="p-2 font-bold">
                     {indexOfFirstItem + index + 1}
                   </td>
-                  <td className="p-2">{dt.date}</td>
+                  <td className="p-2">{formatDate(dt.date)}</td>
                   <td className="p-2">{dt.vendor_name}</td>
                   <td className="p-2">{dt.mobile}</td>
                   <td className="p-2">{dt.rent_category}</td>

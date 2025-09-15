@@ -23,7 +23,7 @@ const OfficeLedger = () => {
   // Fetch branch data
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_BASE_URL}/api/branch/list`)
+      .get(`${import.meta.env.VITE_BASE_URL}/branch/list`)
       .then((response) => {
         if (response.data.status === "Success") {
           setBranch(response.data.data);
@@ -39,7 +39,7 @@ const OfficeLedger = () => {
   // Fetch office list with opening balances
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_BASE_URL}/api/office/list`)
+      .get(`${import.meta.env.VITE_BASE_URL}/office/list`)
       .then((response) => {
         if (response.data.status === "Success") {
           const data = response.data.data;

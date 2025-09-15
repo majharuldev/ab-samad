@@ -33,7 +33,7 @@ export default function FuelReport() {
   const fetchTripData = async () => {
     setLoading(true);
     try {
-      const tripRes = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/trip/list`);
+      const tripRes = await axios.get(`${import.meta.env.VITE_BASE_URL}/trip/list`);
       setTripData(tripRes.data.data || []);
       generateFuelReport(tripRes.data.data);
     } catch (error) {

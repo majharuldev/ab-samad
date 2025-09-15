@@ -10,7 +10,7 @@ const StockOut = () => {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_BASE_URL}/api/stockOutProduct/list`)
+      .get(`${import.meta.env.VITE_BASE_URL}/stockOutProduct/list`)
       .then((response) => {
         if (response.data.status === "Success") {
           setStock(response.data.data);

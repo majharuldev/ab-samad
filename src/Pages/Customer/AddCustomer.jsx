@@ -2,45 +2,96 @@ import BtnSubmit from "../../components/Button/BtnSubmit";
 import { FiCalendar } from "react-icons/fi";
 import { FormProvider, useForm } from "react-hook-form";
 import { InputField, SelectField } from "../../components/Form/FormFields";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 import useRefId from "../../hooks/useRef";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import api from "../../../utils/axiosConfig";
 
 const AddCustomer = () => {
   const navigate = useNavigate()
+  const {id} = useParams();
   const dateRef = useRef(null);
   const methods = useForm();
   const { handleSubmit, reset, register } = methods;
   const generateRefId = useRefId();
-  const onSubmit = async (data) => {
+
+  // single customer set value for update customer
+  useEffect(() => {
+    if ( id) {
+      const fetchCustomer = async () => {
+        try {
+          const res = await api.get(`/customer/${id}`);
+          const customerData = res.data;
+          reset(customerData)
+        } catch (error) {
+          console.error(error);
+          toast.error("Failed to load customer data");
+        }
+      };
+      fetchCustomer();
+    }
+  }, [ id, reset]);
+
+  //Add & update customer handler
+  // const onSubmit = async (data) => {
+  //   try {
+  //     const formData = new FormData();
+  //     for (const key in data) {
+  //       formData.append(key, data[key]);
+  //     }
+  //     formData.append("ref_id", generateRefId());
+  //     const response = await api.post(
+  //       `${import.meta.env.VITE_BASE_URL}/customer`,
+  //       formData
+  //     );
+  //     const resData = response.data;
+  //     // if (resData.status === "Success") {
+  //       toast.success("Customer data saved successfully!", {
+  //         position: "top-right",
+  //       });
+  //       reset();
+  //       navigate("/tramessy/Customer")
+  //   } catch (error) {
+  //     console.error(error);
+  //     const errorMessage =
+  //       error.response?.data?.message || error.message || "Unknown error";
+  //     toast.error("Server Error: " + errorMessage);
+  //   }
+  // };
+
+   const onSubmit = async (data) => {
     try {
       const formData = new FormData();
       for (const key in data) {
-        formData.append(key, data[key]);
+        if (data[key] !== undefined && data[key] !== null) {
+          formData.append(key, data[key]);
+        }
       }
-      formData.append("ref_id", generateRefId());
-      const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/customer/create`,
-        formData
-      );
-      const resData = response.data;
-      console.log("resData", resData);
-      if (resData.status === "Success") {
-        toast.success("Customer data saved successfully!", {
-          position: "top-right",
-        });
-        reset();
-        navigate("/tramessy/Customer")
+
+      let response;
+      if (id) {
+        // Update
+        response = await api.put(`/customer/${id}`, formData);
       } else {
-        toast.error("Server Error: " + (resData.message || "Unknown issue"));
+        // Create
+        formData.append("ref_id", generateRefId());
+        response = await api.post(`/customer`, formData);
       }
+
+      toast.success(
+        !id ? "Customer added successfully" : "Customer updated successfully",
+        { position: "top-right" }
+      );
+
+      reset();
+      navigate("/tramessy/Customer");
     } catch (error) {
       console.error(error);
       const errorMessage =
         error.response?.data?.message || error.message || "Unknown error";
-      toast.error("Server Error: " + errorMessage);
+      toast.error("Server issue: " + errorMessage);
     }
   };
 
@@ -50,7 +101,7 @@ const AddCustomer = () => {
       
       <div className="mx-auto p-6 border-t-2 border-primary rounded-md shadow">
         <h3 className="pb-4 text-primary font-semibold rounded-t-md">
-        Add Customer information
+        {!id ? "Create Customer" : "Update Customer"}
       </h3>
         <FormProvider {...methods} className="">
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -60,7 +111,7 @@ const AddCustomer = () => {
                   name="date"
                   label="Date"
                   type="date"
-                  required
+                  required={!id}
                   inputRef={(e) => {
                     register("date").ref(e);
                     dateRef.current = e;
@@ -79,7 +130,7 @@ const AddCustomer = () => {
                 <InputField
                   name="customer_name"
                   label="Customer Name"
-                  required
+                  required={!id}
                 />
               </div>
               <div className="mt-3 md:mt-0 w-full relative">
@@ -87,7 +138,7 @@ const AddCustomer = () => {
                   name="mobile"
                   label="Mobile"
                   type="number"
-                  required
+                  required={!id}
                 />
               </div>
             </div>
@@ -98,7 +149,7 @@ const AddCustomer = () => {
                 <InputField name="email" label="Email" />
               </div>
               <div className="w-full relative">
-                <InputField name="address" label="Address" required />
+                <InputField name="address" label="Address" required={!id} />
               </div>
             </div>
             {/*  */}
@@ -107,7 +158,7 @@ const AddCustomer = () => {
                 <SelectField
                   name="rate"
                   label="Rate status"
-                  required
+                  required={!id}
                   options={[
                     { value: "Fixed", label: "Fixed" },
                     { value: "Unfixed", label: "Unfixed" },
@@ -116,17 +167,17 @@ const AddCustomer = () => {
               </div>
               <div className="w-full relative">
                 <InputField
-                  name="due"
+                  name="opening_balance"
                   label="Opening Balance"
                   type="number"
-                  required
+                  required={!id}
                 />
               </div>
               <div className="w-full">
                 <SelectField
                   name="status"
                   label="Status"
-                  required
+                  required={!id}
                   options={[
                     { value: "Active", label: "Active" },
                     { value: "Inactive", label: "Inactive" },

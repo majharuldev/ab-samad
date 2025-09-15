@@ -12,7 +12,7 @@ const CustomerLedger = () => {
   // Fetch customer ledger data
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_BASE_URL}/api/customerLedger/list`)
+      .get(`${import.meta.env.VITE_BASE_URL}/customerLedger/list`)
       .then((response) => {
         if (response.data.status === "Success") {
           const data = response.data.data;

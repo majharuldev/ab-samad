@@ -32,7 +32,7 @@ const PaymentList = () => {
 
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_BASE_URL}/api/payment/list`)
+      .get(`${import.meta.env.VITE_BASE_URL}/payment/list`)
       .then((response) => {
         if (response.data.status === "Success") {
           setPayment(response.data.data);
@@ -271,7 +271,7 @@ const PaymentList = () => {
 
     // 1. Update Payment
     const response = await axios.post(
-      `${import.meta.env.VITE_BASE_URL}/api/payment/update/${selectedPayment.id}`,
+      `${import.meta.env.VITE_BASE_URL}/payment/update/${selectedPayment.id}`,
       paymentPayload
     );
 
@@ -298,7 +298,7 @@ const PaymentList = () => {
 
       // Refresh payment list
       const refreshResponse = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/payment/list`
+        `${import.meta.env.VITE_BASE_URL}/payment/list`
       );
       if (refreshResponse.data.status === "Success") {
         setPayment(refreshResponse.data.data);

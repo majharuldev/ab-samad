@@ -24,7 +24,7 @@ const VendorPaymentForm = () => {
       const fetchPaymentData = async () => {
         try {
           // Assuming an API endpoint to fetch a single payment record by ID
-          const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/vendorBill/${id}`)
+          const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/vendorBill/${id}`)
           const data = response.data.data // Adjust based on your API response structure
           if (data) {
             // Pre-populate the form with fetched data
@@ -57,7 +57,7 @@ const VendorPaymentForm = () => {
   // select customer from api
   const [customer, setCustomer] = useState([])
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BASE_URL}/api/customer/list`)
+    fetch(`${import.meta.env.VITE_BASE_URL}/customer/list`)
       .then((response) => response.json())
       .then((data) => setCustomer(data.data))
       .catch((error) => console.error("Error fetching customer data:", error))
@@ -69,7 +69,7 @@ const VendorPaymentForm = () => {
    // select vendor from api
   const [vendor, setVendor] = useState([])
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BASE_URL}/api/vendor/list`)
+    fetch(`${import.meta.env.VITE_BASE_URL}/vendor/list`)
       .then((response) => response.json())
       .then((data) => setVendor(data.data))
       .catch((error) => console.error("Error fetching vendor data:", error))
@@ -82,7 +82,7 @@ const VendorPaymentForm = () => {
   // select branch office from api
   const [branch, setBranch] = useState([])
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BASE_URL}/api/office/list`)
+    fetch(`${import.meta.env.VITE_BASE_URL}/office/list`)
       .then((response) => response.json())
       .then((data) => setBranch(data.data))
       .catch((error) => console.error("Error fetching branch data:", error))
@@ -106,7 +106,7 @@ const VendorPaymentForm = () => {
 
     if (id) {
       // Update existing vendor payment
-      paymentResponse = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/vendorBill/update/${id}`, formData)
+      paymentResponse = await axios.post(`${import.meta.env.VITE_BASE_URL}/vendorBill/update/${id}`, formData)
       paymentData = paymentResponse.data
 
       if (paymentData.success) {
@@ -117,7 +117,7 @@ const VendorPaymentForm = () => {
       }
     } else {
       // Create new vendor payment
-      paymentResponse = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/vendorBill/create`, formData)
+      paymentResponse = await axios.post(`${import.meta.env.VITE_BASE_URL}/vendorBill/create`, formData)
       paymentData = paymentResponse.data
 
       if (paymentData.success) {

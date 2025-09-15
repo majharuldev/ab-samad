@@ -22,7 +22,7 @@ const HelperForm = () => {
       const fetchHelperData = async () => {
         try {
           const response = await axios.get(
-            `${import.meta.env.VITE_BASE_URL}/api/helper/${id}`
+            `${import.meta.env.VITE_BASE_URL}/helper/${id}`
           );
           const helperData = response.data.data;
           
@@ -49,8 +49,8 @@ const HelperForm = () => {
       }
 
       const url = isEditMode 
-        ? `${import.meta.env.VITE_BASE_URL}/api/helper/update/${id}`
-        : `${import.meta.env.VITE_BASE_URL}/api/helper/create`;
+        ? `${import.meta.env.VITE_BASE_URL}/helper/update/${id}`
+        : `${import.meta.env.VITE_BASE_URL}/helper/create`;
 
       const method = isEditMode ? 'post' : 'post';
 

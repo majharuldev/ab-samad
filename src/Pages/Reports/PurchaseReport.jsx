@@ -20,7 +20,7 @@ const PurchaseReport = () => {
 
   // Load purchase data
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_BASE_URL}/api/purchase/list`) 
+    axios.get(`${import.meta.env.VITE_BASE_URL}/purchase/list`) 
       .then(res => {
         if (res.data.status === "Success") {
           setPurchases(res.data.data);

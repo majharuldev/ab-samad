@@ -11,6 +11,7 @@ import autoTable from "jspdf-autotable";
 import { saveAs } from "file-saver";
 import { GrFormNext, GrFormPrevious } from "react-icons/gr";
 import Pagination from "../components/Shared/Pagination";
+import api from "../../utils/axiosConfig";
 const CarList = () => {
   const [drivers, setDrivers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -26,12 +27,10 @@ const CarList = () => {
   // pagination
   const [currentPage, setCurrentPage] = useState(1);
   useEffect(() => {
-    axios
-      .get(`${import.meta.env.VITE_BASE_URL}/api/driver/list`)
+    api
+      .get(`/driver`)
       .then((response) => {
-        if (response.data.status === "Success") {
-          setDrivers(response.data.data);
-        }
+          setDrivers(response.data);
         setLoading(false);
       })
       .catch((error) => {
@@ -42,12 +41,11 @@ const CarList = () => {
 
   if (loading) return <p className="text-center mt-16">Loading drivers...</p>;
 
-  console.log("drivers", drivers);
   // delete by id
   const handleDelete = async (id) => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/driver/delete/${id}`,
+        `/driver/${id}`,
         {
           method: "DELETE",
         }
@@ -76,15 +74,12 @@ const CarList = () => {
   // view driver by id
   const handleView = async (id) => {
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/driver/show/${id}`
+      const response = await api.get(
+        `/driver/${id}`
       );
-      if (response.data.status === "Success") {
-        setSelectedDriver(response.data.data);
+     
+        setSelectedDriver(response.data);
         setViewModalOpen(true);
-      } else {
-        toast.error("Driver information could not be loaded.");
-      }
     } catch (error) {
       console.error("View error:", error);
       toast.error("There was a problem retrieving driver information.");
@@ -98,8 +93,8 @@ const CarList = () => {
       Mobile: driver.driver_mobile,
       Address: driver.address,
       Emergency: driver.emergency_contact,
-      License: driver.license,
-      Expired: driver.license_expire_date,
+      License: driver.lincense,
+      Expired: driver.expire_date,
       Status: driver.status,
     }));
 
@@ -135,8 +130,8 @@ const CarList = () => {
       driver.driver_mobile,
       driver.address,
       driver.emergency_contact,
-      driver.license,
-      driver.license_expire_date,
+      driver.lincense,
+      driver.expire_date,
       driver.status,
     ]);
 
@@ -207,8 +202,8 @@ const CarList = () => {
                   <td>${d.driver_mobile || ""}</td>
                   <td>${d.address || ""}</td>
                   <td>${d.emergency_contact || ""}</td>
-                  <td>${d.license || ""}</td>
-                  <td>${d.license_expire_date || ""}</td>
+                  <td>${d.lincense || ""}</td>
+                  <td>${d.expire_date || ""}</td>
               </tr>
             `).join('')}
           </tbody>
@@ -231,7 +226,7 @@ const CarList = () => {
       driver.nid?.toLowerCase().includes(term) ||
       driver.emergency_contact?.toLowerCase().includes(term) ||
       driver.address?.toLowerCase().includes(term) ||
-      driver.license?.toLowerCase().includes(term) ||
+      driver.lincense?.toLowerCase().includes(term) ||
       driver.status?.toLowerCase().includes(term)
     );
   });
@@ -324,7 +319,7 @@ const CarList = () => {
                 <th className="px-2 py-4">Name</th>
                 <th className="px-2 py-4">Mobile</th>
                 <th className="px-2 py-4 w-40 ">Address</th>
-                {/* <th className="p-2">Emergency</th> */}
+                {/* <th className="p-2">OpeningBalance</th> */}
                 <th className="px-2 py-4">License</th>
                 <th className="px-2 py-4">Expired</th>
                 <th className="px-2 py-4">Status</th>
@@ -349,11 +344,11 @@ const CarList = () => {
                   <td className="p-2">{driver.driver_name}</td>
                   <td className="p-2">{driver.driver_mobile}</td>
                   <td className="p-2 line-clamp-1">{driver.address}</td>
-                  {/* <td className="p-2">{driver.emergency_contact}</td> */}
-                  <td className="p-2">{driver.license}</td>
-                  <td className="p-2">{driver.license_expire_date}</td>
+                  {/* <td className="p-2">{driver.opening_balance}</td> */}
+                  <td className="p-2">{driver.lincense}</td>
+                  <td className="p-2">{driver.expire_date}</td>
                   <td className="p-2">
-                    <span className="text-green-400 bg-green-100 px-3 py-1 rounded-md text-xs font-medium">
+                    <span className="text-green-700 bg-green-50 px-3 py-1 rounded-md text-xs font-medium">
                       {driver.status}
                     </span>
                   </td>
@@ -444,53 +439,56 @@ const CarList = () => {
             </h3>
             <div className="mt-5">
               <ul className="flex border border-gray-300">
-                <li className="w-[428px] flex text-primary font-semibold text-sm px-3 py-2 border-r border-gray-300">
+                <li className="w-[428px] flex text-gray-700 font-semibold text-sm px-3 py-2 border-r border-gray-300">
                   <p className="w-48">Name:</p>{" "}
                   <p>{selectedDriver.driver_name}</p>
                 </li>
-                <li className="w-[428px] flex text-primary font-semibold text-sm px-3 py-2">
+                <li className="w-[428px] flex text-gray-700 font-semibold text-sm px-3 py-2">
                   <p className="w-48">Mobile:</p>{" "}
                   <p>{selectedDriver.driver_mobile}</p>
                 </li>
               </ul>
               <ul className="flex border-b border-r border-l border-gray-300">
-                <li className="w-[428px] flex text-primary font-semibold text-sm px-3 py-2 border-r border-gray-300">
+                <li className="w-[428px] flex text-gray-700 font-semibold text-sm px-3 py-2 border-r border-gray-300">
                   <p className="w-48">Emergency Contact:</p>{" "}
                   <p>{selectedDriver.emergency_contact}</p>
                 </li>
-                <li className="w-[428px] flex text-primary font-semibold text-sm px-3 py-2">
+                <li className="w-[428px] flex text-gray-700 font-semibold text-sm px-3 py-2">
                   <p className="w-48">Address:</p>{" "}
                   <p>{selectedDriver.address}</p>
                 </li>
               </ul>
               <ul className="flex border-b border-r border-l border-gray-300">
-                <li className="w-[428px] flex text-primary font-semibold text-sm px-3 py-2 border-r border-gray-300">
+                <li className="w-[428px] flex text-gray-700 font-semibold text-sm px-3 py-2 border-r border-gray-300">
                   <p className="w-48">NID:</p> <p>{selectedDriver.nid}</p>
                 </li>
-                <li className="w-[428px] flex text-primary font-semibold text-sm px-3 py-2">
+                <li className="w-[428px] flex text-gray-700 font-semibold text-sm px-3 py-2">
                   <p className="w-48">License:</p>{" "}
-                  <p>{selectedDriver.license}</p>
+                  <p>{selectedDriver.lincense}</p>
                 </li>
               </ul>
               <ul className="flex border-b border-r border-l border-gray-300">
-                <li className="w-[428px] flex text-primary font-semibold text-sm px-3 py-2 border-r border-gray-300">
+                <li className="w-[428px] flex text-gray-700 font-semibold text-sm px-3 py-2 border-r border-gray-300">
                   <p className="w-48">License Expiry:</p>{" "}
-                  <p>{selectedDriver.license_expire_date}</p>
+                  <p>{selectedDriver.expire_date}</p>
                 </li>
-                <li className="w-[428px] flex text-primary font-semibold text-sm px-3 py-2">
+                <li className="w-[428px] flex text-gray-700 font-semibold text-sm px-3 py-2">
                   <p className="w-48">Note:</p>{" "}
                   <p>{selectedDriver.note || "N/A"}</p>
                 </li>
               </ul>
               <ul className="flex border-b border-r border-l border-gray-300">
-                <li className="w-[428px] flex text-primary font-semibold text-sm px-3 py-2 border-r border-gray-300">
+                <li className="w-[428px] flex text-gray-700 font-semibold text-sm px-3 py-2 border-r border-gray-300">
+                  <p className="w-48">Opening Balance:</p> <p>{selectedDriver.opening_balance}</p>
+                </li>
+                <li className="w-[428px] flex text-gray-700 font-semibold text-sm px-3 py-2 border-r border-gray-300">
                   <p className="w-48">Status:</p> <p>{selectedDriver.status}</p>
                 </li>
               </ul>
               <div className="flex justify-end mt-10">
                 <button
                   onClick={() => setViewModalOpen(false)}
-                  className="text-white bg-primary py-1 px-2 rounded-md cursor-pointer hover:bg-secondary"
+                  className="text-white bg-gray-700 py-1 px-2 rounded-md cursor-pointer hover:bg-secondary"
                 >
                   Close
                 </button>

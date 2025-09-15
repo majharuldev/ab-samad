@@ -67,25 +67,25 @@ const PurchaseForm = () => {
   // Fetch data for dropdowns
   useEffect(() => {
     // Fetch drivers
-    fetch(`${import.meta.env.VITE_BASE_URL}/api/driver/list`)
+    fetch(`${import.meta.env.VITE_BASE_URL}/driver/list`)
       .then((response) => response.json())
       .then((data) => setDrivers(data.data))
       .catch((error) => console.error("Error fetching driver data:", error));
     
     // Fetch vehicles
-    fetch(`${import.meta.env.VITE_BASE_URL}/api/vehicle/list`)
+    fetch(`${import.meta.env.VITE_BASE_URL}/vehicle/list`)
       .then((response) => response.json())
       .then((data) => setVehicle(data.data))
       .catch((error) => console.error("Error fetching vehicle data:", error));
     
     // Fetch branches
-    fetch(`${import.meta.env.VITE_BASE_URL}/api/office/list`)
+    fetch(`${import.meta.env.VITE_BASE_URL}/office/list`)
       .then((response) => response.json())
       .then((data) => setBranch(data.data))
       .catch((error) => console.error("Error fetching branch data:", error));
     
     // Fetch suppliers
-    fetch(`${import.meta.env.VITE_BASE_URL}/api/supply/list`)
+    fetch(`${import.meta.env.VITE_BASE_URL}/supply/list`)
       .then((response) => response.json())
       .then((data) => setSupplier(data.data))
       .catch((error) => console.error("Error fetching supply data:", error));
@@ -97,7 +97,7 @@ const PurchaseForm = () => {
       const fetchPurchaseData = async () => {
         try {
           const response = await axios.get(
-            `${import.meta.env.VITE_BASE_URL}/api/purchase/show/${id}`
+            `${import.meta.env.VITE_BASE_URL}/purchase/show/${id}`
           );
           const purchaseData = response.data.data;
           console.log("Fetched purchase data:", purchaseData);
@@ -182,7 +182,7 @@ const PurchaseForm = () => {
       if (isEditMode) {
         // Update existing purchase
         response = await axios.post(
-          `${import.meta.env.VITE_BASE_URL}/api/purchase/update/${id}`,
+          `${import.meta.env.VITE_BASE_URL}/purchase/update/${id}`,
           purchaseFormData,
           {
             headers: {
@@ -196,7 +196,7 @@ const PurchaseForm = () => {
       } else {
         // Create new purchase
         response = await axios.post(
-          `${import.meta.env.VITE_BASE_URL}/api/purchase/create`,
+          `${import.meta.env.VITE_BASE_URL}/purchase/create`,
           purchaseFormData,
           {
             headers: {

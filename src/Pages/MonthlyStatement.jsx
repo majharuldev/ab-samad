@@ -23,9 +23,9 @@ const MonthlyStatement = () => {
       setLoading(true);
       
       const [tripsRes, purchasesRes, expensesRes] = await Promise.all([
-        axios.get(`${import.meta.env.VITE_BASE_URL}/api/trip/list`),
-        axios.get(`${import.meta.env.VITE_BASE_URL}/api/purchase/list`),
-        axios.get(`${import.meta.env.VITE_BASE_URL}/api/expense/list`)
+        axios.get(`${import.meta.env.VITE_BASE_URL}/trip/list`),
+        axios.get(`${import.meta.env.VITE_BASE_URL}/purchase/list`),
+        axios.get(`${import.meta.env.VITE_BASE_URL}/expense/list`)
       ]);
 
       const trips = tripsRes.data?.data || [];

@@ -20,7 +20,7 @@ const CashDispatch = () => {
   // Fetch office data
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_BASE_URL}/api/account/list`)
+      .get(`${import.meta.env.VITE_BASE_URL}/account/list`)
       .then((response) => {
         if (response.data.status === "Success") {
           const data = response.data.data;

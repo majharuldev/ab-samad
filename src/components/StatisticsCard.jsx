@@ -10,7 +10,7 @@ const StatisticsCard = () => {
     const fetchVehicles = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/vehicle/list`
+          `${import.meta.env.VITE_BASE_URL}/vehicle/list`
         );
         const vehicles = response.data?.data || [];
         const today = dayjs();

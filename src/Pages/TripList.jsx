@@ -22,6 +22,9 @@ import useAdmin from "../hooks/useAdmin";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import ChallanInvoicePrint from "../components/modal/ChallanInvoicePrint";
 import { useReactToPrint } from "react-to-print";
+import api from "../../utils/axiosConfig";
+import { formatDate } from "../hooks/formatDate";
+import DatePicker from "react-datepicker";
 const TripList = () => {
   const [trip, setTrip] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -102,7 +105,7 @@ const TripList = () => {
       toast.success("Trip approved successfully");
 
       // You would typically make an API call here to update the trip status
-      // axios.patch(`${import.meta.env.VITE_BASE_URL}/api/trip/approve/${tripToApprove.id}`)
+      // axios.patch(`${import.meta.env.VITE_BASE_URL}/trip/approve/${tripToApprove.id}`)
     }
     setShowApproveConfirm(false);
     setTripToApprove(null);
@@ -113,10 +116,11 @@ const TripList = () => {
     setShowApproveConfirm(false);
     setTripToApprove(null);
   };
+
   useEffect(() => {
     // Fetch customers data
-    axios
-      .get(`${import.meta.env.VITE_BASE_URL}/api/customer/list`)
+    api
+      .get(`${import.meta.env.VITE_BASE_URL}/customer`)
       .then((response) => {
         if (response.data.status === "Success") {
           setCustomers(response.data.data);
@@ -169,12 +173,12 @@ const TripList = () => {
 
   // Fetch trips data
   useEffect(() => {
-    axios
-      .get(`${import.meta.env.VITE_BASE_URL}/api/trip/list`)
+    api
+      .get(`${import.meta.env.VITE_BASE_URL}/trip`)
       .then((response) => {
-        if (response.data.status === "Success") {
-          setTrip(response.data.data);
-        }
+        // if (response.data.status === "Success") {
+          setTrip(response.data);
+        // }
         setLoading(false);
       })
       .catch((error) => {
@@ -338,7 +342,7 @@ const TripList = () => {
   const handleDelete = async (id) => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/trip/delete/${id}`,
+        `${import.meta.env.VITE_BASE_URL}/trip/delete/${id}`,
         {
           method: "DELETE",
         }
@@ -367,8 +371,8 @@ const TripList = () => {
   // view trip by id
   const handleView = async (id) => {
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/trip/show/${id}`
+      const response = await api.get(
+        `${import.meta.env.VITE_BASE_URL}/trip/show/${id}`
       );
       if (response.data.status === "Success") {
         setselectedTrip(response.data.data);
@@ -504,23 +508,33 @@ const TripList = () => {
         {/* Conditional Filter Section */}
         {showFilter && (
           <div className="md:flex items-center gap-5 border border-gray-300 rounded-md p-5 my-5 transition-all duration-300 pb-5">
-            <div className="relative w-full">
-              <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                placeholder="Start date"
-                className="mt-1 w-full text-sm border border-gray-300 px-3 py-2 rounded bg-white outline-none"
+            <div className="flex-1 min-w-0">
+              <DatePicker
+                selected={startDate}
+                onChange={(date) => setStartDate(date)}
+                selectsStart
+                startDate={startDate}
+                endDate={endDate}
+                dateFormat="dd/MM/yyyy"
+                placeholderText="DD/MM/YYYY"
+                locale="en-GB"
+                className="!w-full p-2 border border-gray-300 rounded text-sm appearance-none outline-none"
+                isClearable
               />
             </div>
-
-            <div className="relative w-full">
-              <input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                placeholder="End date"
-                className="mt-1 w-full text-sm border border-gray-300 px-3 py-2 rounded bg-white outline-none"
+            <div className="flex-1 min-w-0">
+              <DatePicker
+                selected={endDate}
+                onChange={(date) => setEndDate(date)}
+                selectsEnd
+                startDate={startDate}
+                endDate={endDate}
+                minDate={startDate}
+                dateFormat="dd/MM/yyyy"
+                placeholderText="DD/MM/YYYY"
+                locale="en-GB"
+                className="!w-full p-2 border border-gray-300 rounded text-sm appearance-none outline-none"
+                isClearable
               />
             </div>
             <select
@@ -529,7 +543,7 @@ const TripList = () => {
                 setSelectedCustomer(e.target.value)
                 setCurrentPage(1);
               }}
-              className="mt-1 w-full text-gray-500 text-sm border border-gray-300 bg-white p-2 rounded appearance-none outline-none"
+              className="flex-1 min-w-0 text-gray-500 text-sm border border-gray-300 bg-white p-2 rounded appearance-none outline-none"
             >
               <option value="">Select Customer</option>
               {customers.map((c) => (
@@ -539,7 +553,7 @@ const TripList = () => {
               ))}
             </select>
 
-            <div className="w-xs">
+            <div className="">
               <button
                 onClick={() => {
                   setStartDate("");
@@ -579,7 +593,7 @@ const TripList = () => {
               {
                 currentTrip.length === 0 ? (
                   <tr>
-                    <td colSpan="8" className="text-center p-4 text-gray-500">
+                    <td colSpan="10" className="text-center p-4 text-gray-500 ">
                       No trip found
                     </td>
                   </tr>)
@@ -594,8 +608,8 @@ const TripList = () => {
                         <td className="p-2 font-bold">
                           {indexOfFirstItem + index + 1}
                         </td>
-                        <td className="p-2">{dt?.start_date}</td>
-                        <td className="p-2">{dt?.end_date}</td>
+                        <td className="p-2">{formatDate(dt?.start_date)}</td>
+                        <td className="p-2">{formatDate(dt?.end_date)}</td>
                         <td className="p-2">{dt?.id}</td>
                         <td className="p-2">
                           <p><span className="">name:</span> {dt.customer}</p>
@@ -693,7 +707,7 @@ const TripList = () => {
                                 className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                               >
                                 <BiPrinter className="mr-2 h-4 w-4" />
-                                Print
+                                Challan
                               </button>
                               {isAdmin && (
                                 <button

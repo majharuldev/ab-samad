@@ -19,7 +19,7 @@ const VendorLedger = () => {
   // Fetch vendor list (for opening balance)
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_BASE_URL}/api/vendor/list`)
+      .get(`${import.meta.env.VITE_BASE_URL}/vendor/list`)
       .then((res) => {
         if (res.data.status === "Success") {
           setVendorList(res.data.data);
@@ -31,7 +31,7 @@ const VendorLedger = () => {
   // Fetch vendor ledger data
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_BASE_URL}/api/vendorLedger/list`)
+      .get(`${import.meta.env.VITE_BASE_URL}/vendorLedger/list`)
       .then((res) => {
         if (res.data.status === "Success") {
           // Filter out entries without a vendor name early if needed, or handle nulls in calculations

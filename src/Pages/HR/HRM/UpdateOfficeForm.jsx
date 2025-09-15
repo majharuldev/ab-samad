@@ -24,7 +24,7 @@ const UpdateOfficeForm = () => {
         formData.append(key, data[key]);
       }
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/office/update/${id}`,
+        `${import.meta.env.VITE_BASE_URL}/office/update/${id}`,
         formData
       );
       const resData = response.data;

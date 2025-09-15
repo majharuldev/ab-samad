@@ -27,7 +27,7 @@ const DailyTripExpense = () => {
   // Fetch data
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_BASE_URL}/api/trip/list`)
+      .get(`${import.meta.env.VITE_BASE_URL}/trip/list`)
       .then((response) => {
         if (response.data.status === "Success") {
           // Sort by date, assuming 'date' is the correct property

@@ -12,7 +12,7 @@ const VendorPayment = () => {
   // Fetch payment data
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_BASE_URL}/api/vendorBill/list`)
+      .get(`${import.meta.env.VITE_BASE_URL}/vendorBill/list`)
       .then((response) => {
         if (response.data.status === "Success") {
           setPayment(response.data.data);

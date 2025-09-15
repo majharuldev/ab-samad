@@ -16,7 +16,7 @@ const OverViewCard = () => {
   // daily trip
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_BASE_URL}/api/trip/list`)
+      .get(`${import.meta.env.VITE_BASE_URL}/trip/list`)
       .then((res) => {
         const allTrips = res.data.data;
         // Get today's date in YYYY-MM-DD format
@@ -30,7 +30,7 @@ const OverViewCard = () => {
   // daily sales
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_BASE_URL}/api/trip/list`)
+      .get(`${import.meta.env.VITE_BASE_URL}/trip/list`)
       .then((response) => {
         const data = response.data.data;
         const today = new Date().toISOString().split("T")[0];
@@ -50,7 +50,7 @@ const OverViewCard = () => {
       try {
         // Fetch Purchase
         const purchaseRes = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/purchase/list`
+          `${import.meta.env.VITE_BASE_URL}/purchase/list`
         );
         const purchases = purchaseRes.data?.data || [];
         const todayPurchases = purchases.filter((item) => item.date === today);
@@ -62,7 +62,7 @@ const OverViewCard = () => {
 
         // Fetch Trips
         const tripRes = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/trip/list`
+          `${import.meta.env.VITE_BASE_URL}/trip/list`
         );
         const trips = tripRes.data?.data || [];
         const todayTrips = trips.filter((item) => item.date === today);
@@ -124,7 +124,7 @@ const OverViewCard = () => {
     const fetchDispatch = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/account/list`
+          `${import.meta.env.VITE_BASE_URL}/account/list`
         );
         const data = response.data?.data || [];
         const total = data
@@ -142,7 +142,7 @@ const OverViewCard = () => {
     const fetchAmount = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/paymentRecived/list`
+          `${import.meta.env.VITE_BASE_URL}/paymentRecived/list`
         );
         const data = response.data?.data || [];
         const total = data

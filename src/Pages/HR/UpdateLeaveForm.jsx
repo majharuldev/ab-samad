@@ -30,7 +30,7 @@ const UpdateLeaveForm = () => {
   // select employee from api
   const [employee, setEmployee] = useState([]);
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BASE_URL}/api/employee/list`)
+    fetch(`${import.meta.env.VITE_BASE_URL}/employee/list`)
       .then((response) => response.json())
       .then((data) => setEmployee(data.data))
       .catch((error) => console.error("Error fetching employee data:", error));
@@ -50,7 +50,7 @@ const UpdateLeaveForm = () => {
       }
       formData.append("ref_id", generateRefId());
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/leave/update/${id}`,
+        `${import.meta.env.VITE_BASE_URL}/leave/update/${id}`,
         formData
       );
       const resData = response.data;

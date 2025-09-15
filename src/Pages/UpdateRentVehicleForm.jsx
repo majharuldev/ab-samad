@@ -56,7 +56,7 @@ const vehicleSizes = {
         formData.append(key, data[key]);
       }
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/rent/update/${id}`,
+        `${import.meta.env.VITE_BASE_URL}/rent/update/${id}`,
         formData
       );
       const resData = response.data;

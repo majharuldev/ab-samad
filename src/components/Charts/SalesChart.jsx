@@ -25,7 +25,7 @@ const SalesChart = () => {
     const fetchData = async () => {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/trip/list`
+          `${import.meta.env.VITE_BASE_URL}/trip/list`
         );
         const trips = res.data.data;
 

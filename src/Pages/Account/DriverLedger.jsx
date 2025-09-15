@@ -27,7 +27,7 @@ const DriverLedger = () => {
   useEffect(() => {
     // Fetch helpers data
     axios
-      .get(`${import.meta.env.VITE_BASE_URL}/api/helper/list`)
+      .get(`${import.meta.env.VITE_BASE_URL}/helper/list`)
       .then((response) => {
         if (response.data.status === "Success") {
           // Store helpers data directly, assuming salary is part of each helper object
@@ -42,7 +42,7 @@ const DriverLedger = () => {
   // driver data fetch
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_BASE_URL}/api/driver/list`)
+      .get(`${import.meta.env.VITE_BASE_URL}/driver/list`)
       .then((res) => {
         if (res.data.status === "Success") {
           const drivers = res.data.data;
@@ -66,7 +66,7 @@ const DriverLedger = () => {
   // Fetch driver ledger data
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_BASE_URL}/api/driverLedger/list`)
+      .get(`${import.meta.env.VITE_BASE_URL}/driverLedger/list`)
       .then((response) => {
         if (response.data.status === "Success") {
           setDriver(response.data.data);

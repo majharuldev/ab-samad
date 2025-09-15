@@ -22,7 +22,7 @@ const AddStock = () => {
       }
       formData.append("ref_id", refId);
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/stockProduct/create`,
+        `${import.meta.env.VITE_BASE_URL}/stockProduct/create`,
         formData
       );
       const resData = response.data;
@@ -40,7 +40,7 @@ const AddStock = () => {
 
         paymentList.append("ref_id", refId);
         await axios.post(
-          `${import.meta.env.VITE_BASE_URL}/api/payment/create`,
+          `${import.meta.env.VITE_BASE_URL}/payment/create`,
           paymentList
         );
         reset();

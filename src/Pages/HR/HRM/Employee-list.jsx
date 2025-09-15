@@ -6,6 +6,7 @@ import { GrFormNext, GrFormPrevious } from "react-icons/gr";
 import { IoMdClose } from "react-icons/io";
 import { Link } from "react-router-dom";
 import Pagination from "../../../components/Shared/Pagination";
+import api from "../../../../utils/axiosConfig";
 
 const EmployeeList = () => {
   const [employee, setEmployee] = useState([]);
@@ -29,12 +30,10 @@ const handleView = (employee) => {
   // const [searchTerm, setSearchTerm] = useState("");
   // Fetch trips data
   useEffect(() => {
-    axios
-      .get(`${import.meta.env.VITE_BASE_URL}/api/employee/list`)
+    api
+      .get(`/employee`)
       .then((response) => {
-        if (response.data.status === "Success") {
           setEmployee(response.data.data);
-        }
         setLoading(false);
       })
       .catch((error) => {
@@ -45,8 +44,8 @@ const handleView = (employee) => {
   // delete by id
   const handleDelete = async (id) => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/employee/delete/${id}`,
+      const response = await api.delete(
+        `/employee/${id}`,
         {
           method: "DELETE",
         }

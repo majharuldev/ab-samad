@@ -17,7 +17,7 @@
 //   const generateRefId = useRefId();
 //   // select vehicle from api
 //   useEffect(() => {
-//     fetch("${import.meta.env.VITE_BASE_URL}/api/vehicle/list")
+//     fetch("${import.meta.env.VITE_BASE_URL}/vehicle/list")
 //       .then((response) => response.json())
 //       .then((data) => setVehicle(data.data))
 //       .catch((error) => console.error("Error fetching vehicle data:", error));
@@ -28,7 +28,7 @@
 //   }));
 //   // select driver from api
 //   useEffect(() => {
-//     fetch("${import.meta.env.VITE_BASE_URL}/api/driver/list")
+//     fetch("${import.meta.env.VITE_BASE_URL}/driver/list")
 //       .then((response) => response.json())
 //       .then((data) => setDriver(data.data))
 //       .catch((error) => console.error("Error fetching driver data:", error));
@@ -39,7 +39,7 @@
 //   }));
 //   // get total stock
 //   useEffect(() => {
-//     fetch("${import.meta.env.VITE_BASE_URL}/api/stockOutProduct/list")
+//     fetch("${import.meta.env.VITE_BASE_URL}/stockOutProduct/list")
 //       .then((response) => response.json())
 //       .then((data) => {
 //         const stockData = data.data;
@@ -67,7 +67,7 @@
 //       }
 //       formData.append("ref_id", generateRefId());
 //       const response = await axios.post(
-//         "${import.meta.env.VITE_BASE_URL}/api/stockOutProduct/create",
+//         "${import.meta.env.VITE_BASE_URL}/stockOutProduct/create",
 //         formData
 //       );
 //       const resData = response.data;
@@ -196,7 +196,7 @@ const StockOutForm = () => {
 
   // Fetch vehicle data
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BASE_URL}/api/vehicle/list`)
+    fetch(`${import.meta.env.VITE_BASE_URL}/vehicle/list`)
       .then((response) => response.json())
       .then((data) => setVehicle(data.data))
       .catch((error) => console.error("Error fetching vehicle data:", error));
@@ -209,7 +209,7 @@ const StockOutForm = () => {
 
   // Fetch driver data
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BASE_URL}/api/driver/list`)
+    fetch(`${import.meta.env.VITE_BASE_URL}/driver/list`)
       .then((response) => response.json())
       .then((data) => setDriver(data.data))
       .catch((error) => console.error("Error fetching driver data:", error));
@@ -223,7 +223,7 @@ const StockOutForm = () => {
   // Fetch current stock data
   useEffect(() => {
     setIsLoading(true);
-    fetch(`${import.meta.env.VITE_BASE_URL}/api/stockOutProduct/list`)
+    fetch(`${import.meta.env.VITE_BASE_URL}/stockOutProduct/list`)
       .then((response) => response.json())
       .then((data) => {
         if (data.status === "Success" && data.data.length > 0) {
@@ -276,7 +276,7 @@ const StockOutForm = () => {
       formData.append("total_stock", (availableStock - quantityToStockOut).toString());
 
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/stockOutProduct/create`,
+        `${import.meta.env.VITE_BASE_URL}/stockOutProduct/create`,
         formData
       );
 
@@ -288,7 +288,7 @@ const StockOutForm = () => {
         navigate("/tramessy/Inventory/StockOut")
         // Refresh available stock after successful submission
         const stockResponse = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/stockOutProduct/list`
+          `${import.meta.env.VITE_BASE_URL}/stockOutProduct/list`
         );
         if (stockResponse.data.status === "Success" && stockResponse.data.data.length > 0) {
           const lastItem = stockResponse.data.data[stockResponse.data.data.length - 1];

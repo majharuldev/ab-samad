@@ -24,13 +24,13 @@ export default function VehicleProfitReport() {
   const fetchData = async () => {
     setLoading(true)
     try {
-      const tripResponse = await fetch(`${import.meta.env.VITE_BASE_URL}/api/trip/list`)
+      const tripResponse = await fetch(`${import.meta.env.VITE_BASE_URL}/trip/list`)
       const tripResult = await tripResponse.json()
 
-      const purchaseResponse = await fetch(`${import.meta.env.VITE_BASE_URL}/api/purchase/list`)
+      const purchaseResponse = await fetch(`${import.meta.env.VITE_BASE_URL}/purchase/list`)
       const purchaseResult = await purchaseResponse.json()
 
-      const stockOutResponse = await fetch(`${import.meta.env.VITE_BASE_URL}/api/stockOutProduct/list`)
+      const stockOutResponse = await fetch(`${import.meta.env.VITE_BASE_URL}/stockOutProduct/list`)
       const stockOutResult = await stockOutResponse.json()
 
       if (tripResult.status === "Success") {

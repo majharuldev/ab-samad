@@ -13,12 +13,12 @@ const AttendanceList = () => {
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BASE_URL}/api/employee/list`)
+    fetch(`${import.meta.env.VITE_BASE_URL}/employee/list`)
       .then((response) => response.json())
       .then((data) => setEmployee(data.data))
       .catch((error) => console.error("Error fetching employee data:", error));
 
-    fetch(`${import.meta.env.VITE_BASE_URL}/api/attendance/list`)
+    fetch(`${import.meta.env.VITE_BASE_URL}/attendance/list`)
       .then((response) => response.json())
       .then((data) => setAttendanceList(data.data))
       .catch((error) =>

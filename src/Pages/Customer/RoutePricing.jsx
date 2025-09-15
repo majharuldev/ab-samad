@@ -37,7 +37,7 @@ const RoutePricing = () => {
 
   // Fetch customers
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_BASE_URL}/api/customer/list`)
+    axios.get(`${import.meta.env.VITE_BASE_URL}/customer/list`)
       .then(res => {
         if (res.data.status === "Success") setCustomers(res.data.data);
       })
@@ -59,7 +59,7 @@ const RoutePricing = () => {
   }, []);
 
   const fetchRoutePricingData = () => {
-    axios.get(`${import.meta.env.VITE_BASE_URL}/api/rate/list`)
+    axios.get(`${import.meta.env.VITE_BASE_URL}/rate/list`)
       .then(res => {
         if (res.data.status === "Success") setRoutePricing(res.data.data);
         setLoading(false);
@@ -92,8 +92,8 @@ const RoutePricing = () => {
     }
 
     const apiCall = editId
-      ? axios.post(`${import.meta.env.VITE_BASE_URL}/api/rate/update/${editId}`, formData)
-      : axios.post(`${import.meta.env.VITE_BASE_URL}/api/rate/create`, formData);
+      ? axios.post(`${import.meta.env.VITE_BASE_URL}/rate/update/${editId}`, formData)
+      : axios.post(`${import.meta.env.VITE_BASE_URL}/rate/create`, formData);
 
     apiCall
       .then(res => {

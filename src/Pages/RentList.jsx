@@ -33,7 +33,7 @@ const RentList = () => {
   // Fetch rent vehicle data
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_BASE_URL}/api/rent/list`)
+      .get(`${import.meta.env.VITE_BASE_URL}/rent/list`)
       .then((response) => {
         if (response.data.status === "Success") {
           setFuel(response.data.data);
@@ -159,7 +159,7 @@ const RentList = () => {
   const handleDelete = async (id) => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/rent/delete/${id}`,
+        `${import.meta.env.VITE_BASE_URL}/rent/delete/${id}`,
         {
           method: "DELETE",
         }

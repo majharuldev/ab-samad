@@ -14,7 +14,7 @@ const Stockin = () => {
   // fetch data from server
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_BASE_URL}/api/stockProduct/list`)
+      .get(`${import.meta.env.VITE_BASE_URL}/stockProduct/list`)
       .then((response) => {
         if (response.data.status === "Success") {
           setStockIn(response.data.data);

@@ -9,12 +9,14 @@ import BtnSubmit from "../components/Button/BtnSubmit";
 import { FiCalendar } from "react-icons/fi";
 import { add } from "date-fns";
 import useAdmin from "../hooks/useAdmin";
+import api from "../../utils/axiosConfig";
 
 export default function AddTripForm() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams();
-  const dateRef = useRef(null);
+  const startDateRef = useRef(null);
+const endDateRef = useRef(null);
   const isAdmin = useAdmin();
 
   // State for dropdown options
@@ -193,7 +195,7 @@ export default function AddTripForm() {
     const fetchAllData = async () => {
       try {
         // Fetch rates data first
-        const ratesRes = await fetch(`${import.meta.env.VITE_BASE_URL}/api/rate/list`);
+        const ratesRes = await api.get(`/rate`);
         const ratesData = await ratesRes.json();
         setRates(ratesData.data);
 
@@ -227,13 +229,13 @@ export default function AddTripForm() {
           vendorRes,
           branchRes,
         ] = await Promise.all([
-          fetch(`${import.meta.env.VITE_BASE_URL}/api/vehicle/list`),
-          fetch(`${import.meta.env.VITE_BASE_URL}/api/driver/list`),
-          fetch(`${import.meta.env.VITE_BASE_URL}/api/rent/list`),
-          fetch(`${import.meta.env.VITE_BASE_URL}/api/rent/list`),
-          fetch(`${import.meta.env.VITE_BASE_URL}/api/customer/list`),
-          fetch(`${import.meta.env.VITE_BASE_URL}/api/vendor/list`),
-          fetch(`${import.meta.env.VITE_BASE_URL}/api/office/list`),
+          api.get(`${import.meta.env.VITE_BASE_URL}/vehicle`),
+          api.get(`${import.meta.env.VITE_BASE_URL}/driver`),
+          api.get(`${import.meta.env.VITE_BASE_URL}/rent`),
+          api.get(`${import.meta.env.VITE_BASE_URL}/rent`),
+          api.get(`/customer`),
+          api.get(`${import.meta.env.VITE_BASE_URL}/vendor`),
+          fetch(`${import.meta.env.VITE_BASE_URL}/office`),
         ]);
 
         const [
@@ -253,18 +255,18 @@ export default function AddTripForm() {
           vendorRes.json(),
           branchRes.json(),
         ]);
-
+console.log(customerData, 'cust')
         setVehicle(vehicleData.data);
         setDriver(driverData.data);
         setVendorVehicle(vendorVehicleData.data);
         setVendorDrivers(vendorDriversData.data);
-        setCustomer(customerData.data);
+        setCustomer(customerData);
         setVendors(vendorData.data);
         setBranch(branchData.data);
 
         if (id) {
-          const tripRes = await fetch(
-            `${import.meta.env.VITE_BASE_URL}/api/trip/show/${id}`
+          const tripRes = await api.get(
+            `${import.meta.env.VITE_BASE_URL}/trip/${id}`
           );
           if (tripRes.ok) {
             const { data: tripData } = await tripRes.json();
@@ -305,7 +307,7 @@ export default function AddTripForm() {
         }
       } catch (error) {
         console.error("Error fetching data:", error);
-        toast.error("Failed to load form data");
+        // toast.error("Failed to load form data");
       }
     };
 
@@ -432,8 +434,8 @@ export default function AddTripForm() {
     try {
       setLoading(true);
       const url = id
-        ? `${import.meta.env.VITE_BASE_URL}/api/trip/update/${id}`
-        : `${import.meta.env.VITE_BASE_URL}/api/trip/create`;
+        ? `${import.meta.env.VITE_BASE_URL}/trip/${id}`
+        : `${import.meta.env.VITE_BASE_URL}/trip`;
 
       if (!id) {
         data.ref_id = refId;
@@ -483,12 +485,12 @@ export default function AddTripForm() {
                     type="date"
                     required={!id}
                     inputRef={(e) => {
-                      dateRef.current = e
+                      startDateRef.current = e
                     }}
                     icon={
                       <span
                         className="py-[11px] absolute right-0 px-3 top-[22px] transform -translate-y-1/2  rounded-r"
-                        onClick={() => dateRef.current?.showPicker?.()}
+                        onClick={() => startDateRef.current?.showPicker?.()}
                       >
                         <FiCalendar className="text-gray-700 cursor-pointer" />
                       </span>
@@ -502,12 +504,12 @@ export default function AddTripForm() {
                     type="date"
                     required={!id}
                     inputRef={(e) => {
-                      dateRef.current = e
+                      endDateRef.current = e
                     }}
                     icon={
                       <span
                         className="py-[11px] absolute right-0 px-3 top-[22px] transform -translate-y-1/2  rounded-r"
-                        onClick={() => dateRef.current?.showPicker?.()}
+                        onClick={() => endDateRef.current?.showPicker?.()}
                       >
                         <FiCalendar className="text-gray-700 cursor-pointer" />
                       </span>

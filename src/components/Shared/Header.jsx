@@ -87,18 +87,18 @@ const Header = ({ setMobileSidebarOpen }) => {
             className="w-8 rounded-2xl drop-shadow"
           />
           <h3 className="font-semibold text-gray-700">
-            {user?.data?.user?.role}
+            {user?.name}
           </h3>
         </div>
         {isAdminOpen && (
           <div className="absolute right-0 top-14 w-52 bg-white drop-shadow p-5 rounded-md shadow-lg z-50">
             <p className="font-semibold text-gray-700">
-              {user?.data?.user?.role}
+              {user?.role}
             </p>
             <span className="text-sm text-gray-600">
-              {user?.data?.user?.email}
+              {user?.email}
             </span>
-            <p className="text-sm text-gray-600">{user?.data?.user?.phone}</p>
+            <p className="text-sm text-gray-600">{user?.phone}</p>
             <p className="mt-4">
               <button
                 onClick={handleSignout}

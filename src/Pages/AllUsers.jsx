@@ -25,7 +25,7 @@ const AllUsers = () => {
   const [searchTerm, setSearchTerm] = useState("");
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_BASE_URL}/api/users`)
+      .get(`${import.meta.env.VITE_BASE_URL}/users`)
       .then((response) => {
         if (response.data.status === "success") {
           setUsers(response.data.data);
@@ -43,7 +43,7 @@ const AllUsers = () => {
   const handleDelete = async (id) => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/users/delete/${id}`,
+        `${import.meta.env.VITE_BASE_URL}/users/delete/${id}`,
         {
           method: "DELETE",
         }
