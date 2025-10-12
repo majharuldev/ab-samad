@@ -344,6 +344,7 @@ const PurchaseForm = () => {
                   options={[
                     { value: "engine_oil", label: "Engine Oil" },
                     { value: "parts", label: "Parts" },
+                    { value: "documents", label: "Documents" },
                   ]}
                 />
               </div>
@@ -390,7 +391,7 @@ const PurchaseForm = () => {
               </div>
             </div>
 
-            <div className="flex flex-col lg:flex-row justify-between gap-x-3">
+            {selectedCategory !=="documents" &&(<div className="flex flex-col lg:flex-row justify-between gap-x-3">
 
               <div className="w-full">
                 <InputField
@@ -435,7 +436,36 @@ const PurchaseForm = () => {
                 />
               </div>
 
-            </div>
+            </div>)}
+            {selectedCategory ==="documents" &&(<div className="flex flex-col lg:flex-row justify-between gap-x-3">
+
+              <div className="w-full">
+                <InputField
+                  name="last_service_date"
+                  label="Document Renew Date"
+                  type="date"
+                  required={!isEditMode}
+                  inputRef={(e) => {
+                    register("date").ref(e);
+                    purChaseDateRef.current = e;
+                  }}
+
+                />
+              </div>
+              <div className="w-full">
+                <InputField
+                  name="next_service_date"
+                  label="Document Next Expire Date"
+                  type="date"
+                  required={!isEditMode}
+                  inputRef={(e) => {
+                    register("date").ref(e);
+                    purChaseDateRef.current = e;
+                  }}
+
+                />
+              </div>
+            </div>)}
 
             <div className="flex flex-col lg:flex-row justify-between gap-3">
               <div className="w-full">

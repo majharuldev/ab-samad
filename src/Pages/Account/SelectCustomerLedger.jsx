@@ -286,7 +286,7 @@ const SelectCustomerLadger = ({ customer, selectedCustomerName }) => {
                     return (
                       <tr key={idx}>
                         <td className="border px-2 py-1">{idx + 1}</td>
-                        <td className="border px-2 py-1">{tableFormatDate(item.bill_date)}</td>
+                        <td className="border px-2 py-1">{tableFormatDate(item.working_date)}</td>
                         <td className="border px-2 py-1">{item.customer_name}</td>
                         <td className="border px-2 py-1">
                           {item.load_point || <span className="flex justify-center items-center">--</span>}

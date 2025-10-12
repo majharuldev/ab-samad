@@ -379,8 +379,8 @@ const AttendanceList = () => {
 
 // helper to get employee name
   const getEmployeeName = (empId) => {
-    const emp = employee.find((e) => e.employee_id === empId);
-    return emp ? emp.name || emp.full_name || emp.email : empId;
+    const emp = employee.find((e) => e.id === empId);
+    return emp ? emp.employee_name || emp.full_name || emp.email : empId;
   };
 
   // print table

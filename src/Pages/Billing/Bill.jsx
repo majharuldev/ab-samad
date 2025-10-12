@@ -696,7 +696,7 @@ const Bill = () => {
                         onChange={() => handleCheckBox(dt.id)}
                         disabled={false}
                       />
-                      {dt.status === "Pending" && (
+                      {/* {dt.status === "Pending" && (
                         <span className=" inline-block px-2  text-xs text-yellow-600 rounded">
                           Not Submitted
                         </span>
@@ -705,7 +705,7 @@ const Bill = () => {
                         <span className=" inline-block px-2  text-xs text-green-700 rounded">
                           Submitted
                         </span>
-                      )}
+                      )} */}
                     </div>
                   </td>
                 </tr>
@@ -739,14 +739,14 @@ const Bill = () => {
             />
           )}
 
-          <div className="flex justify-end mt-5">
+          {/* <div className="flex justify-end mt-5">
             <button
               className="bg-primary text-white px-4 py-1 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 cursor-pointer"
               onClick={handleSubmit}
             >
               Save Change
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

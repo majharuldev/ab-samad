@@ -116,7 +116,7 @@ const AdvanceSalaryForm = () => {
                 label="Select Employee"
                 required
                 options={employees.map((emp) => ({
-                  label: emp.name || emp.full_name || emp.email,
+                  label: emp.employee_name || emp.email,
                   value: emp.id,
                 }))}
                 control={control}

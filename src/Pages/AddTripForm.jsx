@@ -2,7 +2,7 @@
 import { useForm, FormProvider, useWatch } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import TextAreaField, { InputField, SelectField } from "../components/Form/FormFields";
 import useRefId from "../hooks/useRef";
 import BtnSubmit from "../components/Button/BtnSubmit";
@@ -11,6 +11,7 @@ import { add, format } from "date-fns";
 import useAdmin from "../hooks/useAdmin";
 import api from "../../utils/axiosConfig";
 import FormSkeleton from "../components/Form/FormSkeleton";
+import { AuthContext } from "../providers/AuthProvider";
 
 export default function AddTripForm() {
   const [loading, setLoading] = useState(false);
@@ -19,6 +20,8 @@ export default function AddTripForm() {
   const startDateRef = useRef(null);
   const endDateRef = useRef(null);
   const isAdmin = useAdmin();
+  const { user } = useContext(AuthContext);
+  console.log(user.name)
 
   // State for dropdown options
   const [vehicle, setVehicle] = useState([]);
@@ -300,8 +303,8 @@ export default function AddTripForm() {
         console.error("Error fetching data:", error);
         // toast.error("Failed to load form data");
       } finally {
-      setLoading(false); // ✅ সবশেষে loading বন্ধ
-    }
+        setLoading(false); // ✅ সবশেষে loading বন্ধ
+      }
     };
 
     fetchAllData();
@@ -450,6 +453,36 @@ export default function AddTripForm() {
 
       if (res.data.success) {
         toast.success(id ? "Trip updated successfully!" : "Trip created successfully!");
+        //  Only send SMS if it's a new trip and sms_sent = "yes"
+        if (!id && data.sms_sent === "yes") {
+          const trip = res.data.data; // Assuming your backend returns created trip data
+          const tripId = trip?.id || "";
+          const customerName = trip?.customer || "";
+          const userName= user.name || "";
+          const loadPoint = trip?.load_point || "";
+          const unloadPoint = trip?.unload_point || "";
+          const driverName = trip?.driver_name || "";
+          const vehicleNo = trip?.vehicle_no || "";
+
+          // Build message content
+          const messageContent = `Dear Sir, ${userName} has created a new trip.\nTrip ID: ${tripId}\nLoad: ${loadPoint}\nUnload: ${unloadPoint}\nDriver: ${driverName}\nVehicle: ${vehicleNo}\ncustomer: ${customerName}`;
+
+          // SMS Config
+        const adminNumber = "01773288109"; // or multiple separated by commas
+        const API_KEY = "3b82495582b99be5";
+        const SECRET_KEY = "ae771458";
+        const CALLER_ID = "1234";
+
+        // Correct URL (same structure as your given example)
+        const smsUrl = `http://smpp.revesms.com:7788/sendtext?apikey=${API_KEY}&secretkey=${SECRET_KEY}&callerID=${CALLER_ID}&toUser=${adminNumber}&messageContent=${encodeURIComponent(messageContent)}`;
+          try {
+            await fetch(smsUrl);
+            toast.success("SMS sent to admin!");
+          } catch (smsError) {
+            // console.error("SMS sending failed:", smsError);
+            // toast.error("Trip saved, but SMS failed to send.");
+          }
+        }
         if (id) {
           navigate("/tramessy/tripList");
         }
@@ -469,10 +502,10 @@ export default function AddTripForm() {
     <FormProvider {...methods}>
       <Toaster />
       {loading ? (
-      <div className="p-4 bg-white rounded-md shadow border-t-2 border-primary">
-        <FormSkeleton />
-      </div>
-    ) :(<form onSubmit={handleSubmit(onSubmit)} className="min-h-screen mt-5 p-2">
+        <div className="p-4 bg-white rounded-md shadow border-t-2 border-primary">
+          <FormSkeleton />
+        </div>
+      ) : (<form onSubmit={handleSubmit(onSubmit)} className="min-h-screen mt-5 p-2">
 
         <div className="rounded-md shadow border-t-2 border-primary">
           {/* Form Header */}
