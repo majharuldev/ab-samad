@@ -185,17 +185,18 @@ const OfficialProductForm = () => {
         toast.success(isEditMode ? "Official Products Purchase updated!" : "Official Products Purchase submitted!");
         //  Only send SMS if it's a new trip and sms_sent = "yes"
         if (!id && !isAdmin && data.sms_sent === "yes") {
-          const purchase = response.data.data; // Assuming your backend returns created trip data
+          const purchase = response.data.data; 
+          const purchaseId = purchase.id;
           const purchaseDate = purchase.date || "";
           const supplierName = purchase.supplier_name || "";
           const userName = user.name || "";
           const purchaseItem = purchase?.item_name || "";
 
           // Build message content
-          const messageContent = `Dear Sir, A new Official Product created by ${userName}.\nPurchase Date: ${purchaseDate}\nSupplier: ${supplierName}\nPurchase Name: ${purchaseItem}`;
+          const messageContent = `Dear Sir, A new Official Product created by ${userName}.\nPurchase Id: ${purchaseId}\nPurchase Date: ${purchaseDate}\nSupplier: ${supplierName}\nPurchase Name: ${purchaseItem}`;
 
           // SMS Config
-          const adminNumber = "01773288109"; // or multiple separated by commas
+          const adminNumber = "01872121862"; // or multiple separated by commas
           const API_KEY = "3b82495582b99be5";
           const SECRET_KEY = "ae771458";
           const CALLER_ID = "1234";

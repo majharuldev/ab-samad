@@ -472,7 +472,7 @@ export default function AddTripForm() {
           const messageContent = `Dear Sir, A new trip created by ${userName}.\nTrip Date: ${tripDate}\nTrip ID: ${tripId}\nLoad: ${loadPoint}\nUnload: ${unloadPoint}\nDriver: ${driverName}\nVehicle: ${vehicleNo}\ncustomer: ${customerName}`;
 
           // SMS Config
-        const adminNumber = "01773288109"; // or multiple separated by commas
+        const adminNumber = "01872121862"; // or multiple separated by commas
         const API_KEY = "3b82495582b99be5";
         const SECRET_KEY = "ae771458";
         const CALLER_ID = "1234";

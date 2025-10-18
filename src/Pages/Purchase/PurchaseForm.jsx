@@ -254,6 +254,7 @@ const {user} = useContext(AuthContext)
         //  Only send SMS if it's a new trip and sms_sent = "yes"
         if (!id && !isAdmin && data.sms_sent === "yes") {
           const purchase = response.data.data; // Assuming your backend returns created trip data
+          const purchaseId = purchase.id;
           const purchaseDate= purchase.date || "";
           const supplierName = purchase.supplier_name || "";
           const userName= user.name || "";
@@ -261,10 +262,10 @@ const {user} = useContext(AuthContext)
           const vehicleNo = purchase?.vehicle_no || "";
 
           // Build message content
-          const messageContent = `Dear Sir, A new Maintenance created by ${userName}.\nPurchase Date: ${purchaseDate}\nSupplier: ${supplierName}\nVehicle: ${vehicleNo}\nPurchase Name: ${purchaseCategory}`;
+          const messageContent = `Dear Sir, A new Maintenance created by ${userName}.\nPurchase Id: ${purchaseId}\nPurchase Date: ${purchaseDate}\nSupplier: ${supplierName}\nVehicle: ${vehicleNo}\nPurchase Name: ${purchaseCategory}`;
 
           // SMS Config
-        const adminNumber = "01773288109"; // or multiple separated by commas
+        const adminNumber = "01872121862"; // or multiple separated by commas
         const API_KEY = "3b82495582b99be5";
         const SECRET_KEY = "ae771458";
         const CALLER_ID = "1234";

@@ -75,7 +75,7 @@ const SalesChart = () => {
   }, [currentMonth, previousMonth]);
 
   if (loading) return <p>Loading chart...</p>;
-  if (chartData.length === 0) return <p>No data for current month.</p>;
+  if (chartData.length === 0) return <p></p>;
   console.log("chartData", chartData);
   return (
     <div className="bg-white rounded-xl mt-5 pt-5 border border-gray-200 shadow-md">

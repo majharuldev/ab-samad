@@ -74,14 +74,21 @@ const PurchaseList = () => {
       return false;
     }
     const term = searchTerm.toLowerCase();
+     // যদি সার্চ term সংখ্যা হয় (যেমন "3")
+  const isNumeric = !isNaN(term);
+
+  if (isNumeric) {
+    // exact match for ID (3 দিলে শুধু ID=3 রিটার্ন করবে)
+    return dt.id === Number(term);
+  }
     return (
-      dt.id?.toString().toLowerCase().includes(term) ||
+      // dt.id?.toString().toLowerCase().includes(term) ||
       dt.supplier_name?.toLowerCase().includes(term) ||
       dt.vehicle_no?.toLowerCase().includes(term) ||
       dt.driver_name?.toLowerCase().includes(term)
     );
   });
-
+ console.log(filteredPurchase)
   // Vehicle No dropdown unique values
   const uniqueVehicles = [...new Set(purchase.map((p) => p.vehicle_no))];
   // view car by id
@@ -506,7 +513,7 @@ const PurchaseList = () => {
         )}
       </div>
       {viewModalOpen && selectedPurchase && (
-        <div className="fixed inset-0 flex items-center justify-center bg-[#000000ad] z-50 p-4 overflow-auto">
+        <div className="fixed inset-0 flex items-center justify-center bg-[#000000ad] z-50 p-4 overflow-auto scroll-hidden">
           <div className="w-full max-w-3xl bg-white rounded-2xl shadow-lg p-5 relative">
             <h2 className="text-xl font-bold text-primary border-b pb-4 mb-6">
               Purchase Information
