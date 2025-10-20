@@ -116,15 +116,99 @@ const CashDispatch = () => {
   });
 }, [account, startDate, endDate, searchTerm]);
 
+// handle print
 const handlePrint = () => {
-  const originalContent = document.body.innerHTML;
-  const printContent = printRef.current.innerHTML;
+  // Use the filteredAccounts (all filtered data, not currentCash page)
+  const rowsHtml = filteredAccounts.map((dt, idx) => {
+    // safe date formatting
+    let dateStr = "";
+    try {
+      const d = new Date(dt.date);
+      if (!isNaN(d)) {
+        // using date-fns format if available in scope; otherwise fallback
+        // you have `format` imported already at top of file
+        dateStr = format(d, "dd/MM/yyyy");
+      }
+    } catch (e) {
+      dateStr = "";
+    }
 
-  document.body.innerHTML = printContent;
-  window.print();
-  document.body.innerHTML = originalContent;
-  window.location.reload(); // Force re-render after printing
-}
+    return `
+      <tr style="border:1px solid #e5e7eb;">
+        <td style="padding:8px; font-weight:600;">${idx + 1}</td>
+        <td style="padding:8px;">${dateStr}</td>
+        <td style="padding:8px;">${dt.branch_name ?? ""}</td>
+        <td style="padding:8px;">${dt.person_name ?? ""}</td>
+        <td style="padding:8px;">${dt.type ?? ""}</td>
+        <td style="padding:8px; text-align:right;">${dt.amount ?? ""}</td>
+        <td style="padding:8px;">${dt.bank_name ?? ""}</td>
+        <!-- Action column intentionally omitted -->
+      </tr>
+    `;
+  }).join("");
+
+  const totalFiltered = filteredAccounts.reduce((s, it) => s + Number(it.amount || 0), 0);
+
+  const tableHtml = `
+    <table style="width:100%; border-collapse:collapse; font-size:13px;">
+      <thead>
+        <tr>
+          <th style="padding:10px; border:1px solid #e5e7eb;">SL</th>
+          <th style="padding:10px; border:1px solid #e5e7eb;">Date</th>
+          <th style="padding:10px; border:1px solid #e5e7eb;">Branch</th>
+          <th style="padding:10px; border:1px solid #e5e7eb;">PersonName</th>
+          <th style="padding:10px; border:1px solid #e5e7eb;">Type</th>
+          <th style="padding:10px; border:1px solid #e5e7eb;">Amount</th>
+          <th style="padding:10px; border:1px solid #e5e7eb;">Bank Name</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rowsHtml || `<tr><td colspan="7" style="padding:12px; text-align:center; color:#6b7280;">No data</td></tr>`}
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="5" style="padding:10px; text-align:right; font-weight:700;">Total:</td>
+          <td style="padding:10px; text-align:right; font-weight:700;">${totalFiltered}</td>
+          <td></td>
+        </tr>
+      </tfoot>
+    </table>
+  `;
+
+  const printWindow = window.open("", "_blank", "width=1000,height=800");
+  printWindow.document.write(`
+    <html>
+      <head>
+        <title>Fund Transfer Report</title>
+        <!-- Tailwind CDN (keeps the look similar). If you use a custom build, include that instead -->
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        <style>
+          body { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; padding:20px; color:#111827; }
+          table { border-collapse: collapse; width: 100%; }
+          th { background:#f3f4f6; color:#047857; text-transform: capitalize; }
+          @media print {
+            /* hide anything you don't want in print by adding .no-print class in your app */
+            .no-print { display: none !important; }
+          }
+        </style>
+      </head>
+      <body>
+        <h1 style="font-size:18px; margin-bottom:8px;">Fund Transfer Report</h1>
+        <div style="margin-bottom:10px; color:#374151;">Generated: ${format(new Date(), "dd/MM/yyyy HH:mm")}</div>
+        ${tableHtml}
+      </body>
+    </html>
+  `);
+  printWindow.document.close();
+  printWindow.focus();
+
+  // wait a tick for resources to load then print
+  setTimeout(() => {
+    printWindow.print();
+    // optionally close window after printing:
+    // printWindow.close();
+  }, 300);
+};
 
 
   // total amount calculation

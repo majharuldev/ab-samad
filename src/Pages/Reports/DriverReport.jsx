@@ -495,8 +495,6 @@ const DriverReport = () => {
   const [selectedMonth, setSelectedMonth] = useState("");
   const [showFilter, setShowFilter] = useState(false);
   const [loading, setLoading] = useState(true);
-console.log(drivers, "dr")
-console.log(trips, "tr")
   // pagination
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -543,27 +541,57 @@ console.log(trips, "tr")
   }, [selectedMonth, selectedDriver]);
 
   // Get unique months from trips data
+  // const getAvailableMonths = () => {
+  //   if (!Array.isArray(trips)) return [];
+
+  //   const monthSet = new Set();
+  //   trips.forEach(trip => {
+  //     if (trip.date && trip.transport_type === "own_transport") {
+  //       const date = new Date(trip.start_date);
+  //       const monthYear = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+  //       monthSet.add(monthYear);
+  //     }
+  //   });
+
+  //   return Array.from(monthSet).sort().map(month => {
+  //     const [year, monthNum] = month.split('-');
+  //     const date = new Date(year, monthNum - 1);
+  //     return {
+  //       value: month,
+  //       label: date.toLocaleString('default', { month: 'short', year: 'numeric' })
+  //     };
+  //   });
+  // };
+
   const getAvailableMonths = () => {
-    if (!Array.isArray(trips)) return [];
+  if (!Array.isArray(trips)) return [];
 
-    const monthSet = new Set();
-    trips.forEach(trip => {
-      if (trip.date && trip.transport_type === "own_transport") {
-        const date = new Date(trip.start_date);
-        const monthYear = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-        monthSet.add(monthYear);
-      }
-    });
+  const monthSet = new Set();
 
-    return Array.from(monthSet).sort().map(month => {
+  trips.forEach(trip => {
+    if (trip.start_date && trip.transport_type === "own_transport") {
+      const date = new Date(trip.start_date);
+      if (isNaN(date)) return; // invalid date skip
+      const monthYear = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      monthSet.add(monthYear);
+    }
+  });
+
+  return Array.from(monthSet)
+    .sort()
+    .map(month => {
       const [year, monthNum] = month.split('-');
-      const date = new Date(year, monthNum - 1);
+      const monthInt = parseInt(monthNum, 10);
+      const monthName = new Date(year, monthInt - 1, 1)
+        .toLocaleString('default', { month: 'short', year: 'numeric' });
+
       return {
         value: month,
-        label: date.toLocaleString('default', { month: 'short', year: 'numeric' })
+        label: monthName,
       };
     });
-  };
+};
+
 
   const availableMonths = getAvailableMonths();
 
@@ -804,7 +832,7 @@ console.log(trips, "tr")
         </div>
       </div>
     );
-
+console.log('currentDriverReport:', currentDriverReport);
   return (
     <div className="md:p-2">
       <div className="p-4 max-w-7xl mx-auto bg-white shadow rounded-lg border border-gray-200">

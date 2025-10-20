@@ -45,11 +45,11 @@ const Home = () => {
                 >
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
-                  <YAxis />
+                  <YAxis domain={[0, 'auto']} />
                   <Tooltip />
                   <Legend />
                   <Bar dataKey="totalExpense" fill="#ed4553" name="Total Expense" />
-                  <Bar dataKey="netProfit" fill="#239230" name="Net Profit" />
+                  <Bar dataKey="netProfit" fill="#239230" name="Net Profit"  minPointSize={5}/>
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -69,12 +69,12 @@ const Home = () => {
                 barGap={5}
               >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
+                <XAxis  dataKey="month" />
+                <YAxis domain={[0, 'auto']} />
                 <Tooltip />
                 <Legend />
                 <Bar dataKey="totalExpense" fill="#ed4553" name="Total Expense" />
-                <Bar dataKey="netProfit" fill="#239230" name="Net Profit" />
+                <Bar dataKey="netProfit" fill="#239230" name="Net Profit"  minPointSize={5}/>
               </BarChart>
             </ResponsiveContainer>
           </div>

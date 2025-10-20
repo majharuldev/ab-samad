@@ -84,3 +84,19 @@ input[type="date"].remove-date-icon::-moz-focusring {
     print-color-adjust: exact !important;
   }
 }
+
+/* select field multiple value */
+/* react-select multi value spacing fix */
+.react-select__multi-value {
+  margin-right: 4px;
+  margin-bottom: 4px;
+}
+
+.react-select__multi-value__label {
+  padding: 2px 6px;
+}
+
+.react-select__multi-value__remove {
+  padding-left: 4px;
+  padding-right: 4px;
+}

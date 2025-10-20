@@ -16,6 +16,7 @@ export const SelectField = ({
   defaultValue,
   onSelectChange,
   isCreatable = true,
+  isMulti = false,
 }) => {
   const {
     formState: { errors },
@@ -34,31 +35,59 @@ export const SelectField = ({
         name={name}
         control={control}
         rules={{ required: required ? `${label || name} is required` : false }}
-        render={({ field: { onChange, value, ref } }) => {
-          const SelectComponent = isCreatable ? CreatableSelect : Select;
+        // render={({ field: { onChange, value, ref } }) => {
+        //   const SelectComponent = isCreatable ? CreatableSelect : Select;
 
-          // Handle the value properly for both existing options and new values
+        //   // Handle the value properly for both existing options and new values
+        //   const getValue = () => {
+        //     if (!value) return null;
+
+        //     // Check if the value exists in the options
+        //     const foundOption = options.find((opt) => opt.value === value);
+        //     if (foundOption) return foundOption;
+
+        //     // If value doesn't exist in options but we have a value, 
+        //     // create a temporary option for display (for newly created values)
+        //     return { value, label: value };
+        //   };
+          render={({ field: { onChange, value, ref } }) => {
+             const SelectComponent = isCreatable ? CreatableSelect : Select; 
+          //  Corrected getValue() for both single & multiple mode
           const getValue = () => {
-            if (!value) return null;
+            if (!value) return isMulti ? [] : null;
 
-            // Check if the value exists in the options
-            const foundOption = options.find((opt) => opt.value === value);
-            if (foundOption) return foundOption;
-
-            // If value doesn't exist in options but we have a value, 
-            // create a temporary option for display (for newly created values)
-            return { value, label: value };
+            if (isMulti) {
+              // if value is array -> map matched options
+              return options.filter((opt) => value.includes(opt.value));
+            } else {
+              // single value
+              return options.find((opt) => opt.value === value) || null;
+            }
           };
 
           return (
             <SelectComponent
               inputRef={ref}
+              isMulti={isMulti}
               value={getValue()}
+              // onChange={(selectedOption) => {
+              //   const selectedValue = selectedOption?.value || "";
+              //   onChange(selectedValue);
+              //   if (onSelectChange) {
+              //     onSelectChange(selectedOption);
+              //   }
+              // }}
               onChange={(selectedOption) => {
-                const selectedValue = selectedOption?.value || "";
-                onChange(selectedValue);
-                if (onSelectChange) {
-                  onSelectChange(selectedOption);
+                if (isMulti) {
+                  const selectedValues = selectedOption
+                    ? selectedOption.map((opt) => opt.value)
+                    : [];
+                  onChange(selectedValues);
+                  onSelectChange?.(selectedOption);
+                } else {
+                  const selectedValue = selectedOption?.value || "";
+                  onChange(selectedValue);
+                  onSelectChange?.(selectedOption);
                 }
               }}
               options={options}
@@ -140,9 +169,8 @@ export const InputField = ({
                 onChange={(date) => field.onChange(date)}
                 dateFormat="dd-MM-yyyy"
                 placeholderText={placeholder || `Select ${label || name}`}
-                className={`mt-1 text-sm border border-gray-300 px-3 py-2 rounded outline-none ${
-                  icon ? "pr-12" : ""
-                } ${readOnly ? "bg-gray-200" : "bg-white"} w-full`}
+                className={`mt-1 text-sm border border-gray-300 px-3 py-2 rounded outline-none ${icon ? "pr-12" : ""
+                  } ${readOnly ? "bg-gray-200" : "bg-white"} w-full`}
                 readOnly={readOnly}
                 ref={(el) => {
                   if (inputRef) inputRef(el);
@@ -153,9 +181,9 @@ export const InputField = ({
           />
 
           {/* {icon && ( */}
-            <span className="absolute inset-y-0 right-0 flex items-center justify-center  px-3 rounded-r cursor-pointer">
-              <FiCalendar/>
-            </span>
+          <span className="absolute inset-y-0 right-0 flex items-center justify-center  px-3 rounded-r cursor-pointer">
+            <FiCalendar />
+          </span>
           {/* )} */}
         </div>
 
@@ -193,9 +221,8 @@ export const InputField = ({
             ref(el);
             if (inputRef) inputRef(el);
           }}
-          className={`remove-date-icon mt-1 w-full text-sm border border-gray-300 px-3 py-2 rounded outline-none ${
-            icon ? "pr-10" : ""
-          } ${readOnly ? "bg-gray-200" : "bg-white"}`}
+          className={`remove-date-icon mt-1 w-full text-sm border border-gray-300 px-3 py-2 rounded outline-none ${icon ? "pr-10" : ""
+            } ${readOnly ? "bg-gray-200" : "bg-white"}`}
         />
         {icon && icon}
       </div>

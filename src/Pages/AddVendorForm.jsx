@@ -270,6 +270,7 @@ const AddVendorForm = () => {
                 <SelectField
                   name="rent_category"
                   label="Rent Category"
+                  isMulti={true}
                   required={!isUpdateMode}
                 options={[
                   // { value: "", label: "Select Vehicle category..." },

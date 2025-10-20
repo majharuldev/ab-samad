@@ -2,7 +2,7 @@
 import axios from "axios";
 import { format, isAfter, isBefore, isEqual, parseISO } from "date-fns";
 import { useEffect, useState } from "react";
-import { FaFilter, FaPen, FaPlus, FaTrashAlt } from "react-icons/fa";
+import { FaFilter, FaPen, FaPlus, FaPrint, FaTrashAlt } from "react-icons/fa";
 import { FiFilter } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import Pagination from "../../components/Shared/Pagination";
@@ -19,10 +19,11 @@ const PaymentReceive = () => {
   const [endDate, setEndDate] = useState("");
   const [showFilter, setShowFilter] = useState(false);
   const [filteredPayment, setFilteredPayment] = useState([]);
-   // delete modal
-    const [isOpen, setIsOpen] = useState(false);
-    const [selectedPaymentId, setSelectedPaymentId] = useState(null);
-    const toggleModal = () => setIsOpen(!isOpen);
+  const [searchTerm, setSearchTerm] = useState("");
+  // delete modal
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedPaymentId, setSelectedPaymentId] = useState(null);
+  const toggleModal = () => setIsOpen(!isOpen);
 
   // Fetch payment data
   useEffect(() => {
@@ -42,35 +43,61 @@ const PaymentReceive = () => {
   }, []);
 
   // filter logic
+  // useEffect(() => {
+  //   if (!startDate && !endDate) {
+  //     setFilteredPayment(payment);
+  //     return;
+  //   }
+
+  //   const result = payment.filter((item) => {
+  //     if (!item.date) return false;
+
+  //     // Convert API string to Date
+  //     const itemDate = new Date(item.date);
+  //     if (isNaN(itemDate)) return false;
+
+  //     if (startDate && endDate) {
+  //       return (
+  //         (isEqual(itemDate, startDate) || isAfter(itemDate, startDate)) &&
+  //         (isEqual(itemDate, endDate) || isBefore(itemDate, endDate))
+  //       );
+  //     } else if (startDate) {
+  //       return isEqual(itemDate, startDate) || isAfter(itemDate, startDate);
+  //     } else if (endDate) {
+  //       return isEqual(itemDate, endDate) || isBefore(itemDate, endDate);
+  //     }
+
+  //     return true;
+  //   });
+
+  //   setFilteredPayment(result);
+  // }, [startDate, endDate, payment]);
+
   useEffect(() => {
-    if (!startDate && !endDate) {
-      setFilteredPayment(payment);
-      return;
+  const result = payment.filter((item) => {
+    const match =
+      item.customer_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.branch_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.bill_ref?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.cash_type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.created_by?.toLowerCase().includes(searchTerm.toLowerCase());
+
+    // apply date filter + search together
+    const itemDate = new Date(item.date);
+    let withinRange = true;
+    if (startDate && endDate) {
+      withinRange =
+        (isEqual(itemDate, startDate) || isAfter(itemDate, startDate)) &&
+        (isEqual(itemDate, endDate) || isBefore(itemDate, endDate));
     }
 
-    const result = payment.filter((item) => {
-      if (!item.date) return false;
+    return match && withinRange;
+  });
+  setFilteredPayment(result);
+  setCurrentPage(1);
+}, [searchTerm, startDate, endDate, payment]);
 
-      // Convert API string to Date
-      const itemDate = new Date(item.date);
-      if (isNaN(itemDate)) return false;
 
-      if (startDate && endDate) {
-        return (
-          (isEqual(itemDate, startDate) || isAfter(itemDate, startDate)) &&
-          (isEqual(itemDate, endDate) || isBefore(itemDate, endDate))
-        );
-      } else if (startDate) {
-        return isEqual(itemDate, startDate) || isAfter(itemDate, startDate);
-      } else if (endDate) {
-        return isEqual(itemDate, endDate) || isBefore(itemDate, endDate);
-      }
-
-      return true;
-    });
-
-    setFilteredPayment(result);
-  }, [startDate, endDate, payment]);
   // total amount footer
   const totalAmount = filteredPayment.reduce(
     (sum, item) => sum + Number(item.amount || 0),
@@ -99,6 +126,93 @@ const PaymentReceive = () => {
       });
     }
   };
+
+  // Print Function
+const handlePrint = () => {
+  const rowsHtml = filteredPayment.map((dt, idx) => {
+    const dateStr = dt.date ? format(new Date(dt.date), "dd/MM/yyyy") : "";
+    return `
+      <tr style="border:1px solid #e5e7eb;">
+        <td style="padding:6px;">${idx + 1}</td>
+        <td style="padding:6px;">${dateStr}</td>
+        <td style="padding:6px;">${dt.customer_name || ""}</td>
+        <td style="padding:6px;">${dt.branch_name || ""}</td>
+        <td style="padding:6px;">${dt.bill_ref || ""}</td>
+        <td style="padding:6px; text-align:right;">${dt.amount || 0}</td>
+        <td style="padding:6px;">${dt.cash_type || ""}</td>
+        <td style="padding:6px;">${dt.remarks || ""}</td>
+        <td style="padding:6px;">${dt.created_by || ""}</td>
+        <td style="padding:6px;">${dt.status || ""}</td>
+      </tr>
+    `;
+  }).join("");
+
+  const totalAmount = filteredPayment.reduce(
+    (sum, item) => sum + Number(item.amount || 0),
+    0
+  );
+
+  const tableHtml = `
+    <table style="width:100%; border-collapse:collapse; font-size:13px;">
+      <thead>
+        <tr style="background:#f3f4f6; color:#047857;">
+          <th style="padding:8px; border:1px solid #e5e7eb;">SL</th>
+          <th style="padding:8px; border:1px solid #e5e7eb;">Date</th>
+          <th style="padding:8px; border:1px solid #e5e7eb;">Customer</th>
+          <th style="padding:8px; border:1px solid #e5e7eb;">Branch</th>
+          <th style="padding:8px; border:1px solid #e5e7eb;">Bill Ref</th>
+          <th style="padding:8px; border:1px solid #e5e7eb;">Amount</th>
+          <th style="padding:8px; border:1px solid #e5e7eb;">Cash Type</th>
+          <th style="padding:8px; border:1px solid #e5e7eb;">Note</th>
+          <th style="padding:8px; border:1px solid #e5e7eb;">Created By</th>
+          <th style="padding:8px; border:1px solid #e5e7eb;">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rowsHtml || `<tr><td colspan="10" style="padding:10px;text-align:center;color:#6b7280;">No data found</td></tr>`}
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="5" style="text-align:right; font-weight:600; padding:8px;">Total:</td>
+          <td style="text-align:right; font-weight:600; padding:8px;">${totalAmount}</td>
+          <td colspan="4"></td>
+        </tr>
+      </tfoot>
+    </table>
+  `;
+
+  const printWindow = window.open("", "_blank", "width=1000,height=800");
+  printWindow.document.write(`
+    <html>
+      <head>
+        <title>Payment Receive Report</title>
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        <style>
+          body { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto; padding:20px; color:#111827; }
+          table { border-collapse: collapse; width: 100%; }
+          th, td { border: 1px solid #e5e7eb; }
+          tr:nth-child(even){ background-color: #f9fafb; }
+          @media print {
+            .no-print { display: none !important; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold text-gray-800">Payment Receive Report</h2>
+          <p class="text-gray-600 text-sm">Generated: ${format(new Date(), "dd/MM/yyyy HH:mm")}</p>
+        </div>
+        ${tableHtml}
+      </body>
+    </html>
+  `);
+  printWindow.document.close();
+  printWindow.focus();
+  setTimeout(() => {
+    printWindow.print();
+  }, 300);
+};
+
 
   // pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -140,6 +254,40 @@ const PaymentReceive = () => {
                 <FaPlus /> Recieve
               </button>
             </Link>
+          </div>
+        </div>
+        <div className="flex justify-between items-center">
+          <button
+            onClick={handlePrint}
+            className="flex items-center gap-2 py-1 px-4 hover:bg-primary bg-white shadow hover:text-white rounded-md transition-all duration-300 cursor-pointer"
+          >
+            <FaPrint className="" />
+            Print
+          </button>
+          {/* search */}
+          <div className="mt-3 md:mt-0">
+            {/* <span className="text-primary font-semibold pr-3">Search: </span> */}
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+              }}
+              placeholder="Search list..."
+              className="lg:w-60 border border-gray-300 rounded-md outline-none text-xs py-2 ps-2 pr-5"
+            />
+            {/*  Clear button */}
+            {searchTerm && (
+              <button
+                onClick={() => {
+                  setSearchTerm("");
+                  setCurrentPage(1);
+                }}
+                className="absolute right-5 top-[5.7rem] -translate-y-1/2 text-gray-400 hover:text-red-500 text-sm"
+              >
+                ✕
+              </button>
+            )}
           </div>
         </div>
         {/* filter */}
@@ -243,15 +391,15 @@ const PaymentReceive = () => {
                               <FaPen className="text-[12px]" />
                             </button>
                           </Link>
-                         <button
-                          onClick={() => {
-                            setSelectedPaymentId(dt.id);
-                            setIsOpen(true);
-                          }}
-                          className="text-red-500 hover:text-white hover:bg-red-600 px-2 py-1 rounded shadow-md transition-all cursor-pointer"
-                        >
-                          <FaTrashAlt className="text-[12px]" />
-                        </button>
+                          <button
+                            onClick={() => {
+                              setSelectedPaymentId(dt.id);
+                              setIsOpen(true);
+                            }}
+                            className="text-red-500 hover:text-white hover:bg-red-600 px-2 py-1 rounded shadow-md transition-all cursor-pointer"
+                          >
+                            <FaTrashAlt className="text-[12px]" />
+                          </button>
                         </div>
                       </td>
                     </tr>

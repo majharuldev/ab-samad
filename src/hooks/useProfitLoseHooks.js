@@ -113,14 +113,15 @@ const useProfitLoseData = (filterType = "year") => {
               values.purchaseCost +
               values.salaryExpense +
               values.officeExpense,
-            netProfit:
+            netProfit: Math.max(
+  0,
               values.ownTripIncome +
               values.vendorTripIncome -
               (values.ownTripCost +
                 values.vendorTripCost +
                 values.purchaseCost +
                 values.salaryExpense +
-                values.officeExpense)
+                values.officeExpense))
           }));
 
         setData(result);

@@ -63,7 +63,12 @@ export default function VehicleProfitReport() {
         ?.replace(/-+/g, "-")
         ?.trim()
     }
-
+    // date normalization function
+const normalizeDate = (dateStr) => {
+  if (!dateStr) return null;
+  const [year, month, day] = dateStr.split("T")[0].split("-").map(Number);
+  return new Date(year, month - 1, day); // month is 0-indexed
+};
     const vehicleDateMap = new Map()
 
     // Process trip data
@@ -96,10 +101,9 @@ export default function VehicleProfitReport() {
     let dateMatch = true;
 
     // সবকিছুকে YYYY-MM-DD format এ কনভার্ট করো
-    const tripDate = trip.start_date ? trip.start_date.split("T")[0] : "";
+    const tripDate = normalizeDate(trip.start_date) ? normalizeDate(trip.start_date) : "";
     const from = fromDate ? fromDate.toISOString().split("T")[0] : "";
     const to = toDate ? toDate.toISOString().split("T")[0] : "";
-
     if (from && to) {
       dateMatch = tripDate >= from && tripDate <= to;
     } else if (from) {
@@ -115,12 +119,12 @@ export default function VehicleProfitReport() {
   })
       .forEach((trip) => {
         // const key = `${trip.vehicle_no}-${trip.date}`
-        const key = `${normalizeVehicleNo(trip.vehicle_no)}-${trip.date}`
+        const key = `${normalizeVehicleNo(trip.vehicle_no)}-${normalizeDate(trip.start_date)}`
 
         if (!vehicleDateMap.has(key)) {
           vehicleDateMap.set(key, {
             vehicle_no: trip.vehicle_no,
-            date: trip.start_date,
+            date: normalizeDate(trip.start_date),
             total_revenue: 0,
             trip_expenses: 0,
             parts_cost: 0,
@@ -470,7 +474,6 @@ export default function VehicleProfitReport() {
     WinPrint.close()
   }
 
-
   return (
     <main className="p-2">
       <div className="w-[22rem] md:w-full overflow-hidden overflow-x-auto max-w-7xl mx-auto bg-white/80 backdrop-blur-md shadow-xl rounded-md p-2 py-10 md:p-4 border border-gray-200">
@@ -579,7 +582,6 @@ export default function VehicleProfitReport() {
             </div>
           </div>
         )}
-
 
         <div id="vehicleProfitTable" className="mt-5 overflow-x-auto rounded-xl border border-gray-200">
           <table className="min-w-full text-sm text-left">
