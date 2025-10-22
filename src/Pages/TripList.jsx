@@ -1839,23 +1839,23 @@ const TripList = () => {
                       <td className="p-2">{dt?.id}</td>
                       <td className="p-2">
                         <p>
-                          <span className="">name:</span> {dt.customer}
+                          <strong className="">name:</strong> {dt.customer}
                         </p>
                         <p>
-                          <span className="">Type:</span> {dt?.transport_type?.replace("_", " ")}
+                          <strong className="">Type:</strong> {dt?.transport_type?.replace("_", " ")}
                         </p>
                       </td>
                       <td className="p-2">
                         <p>
-                          <span className="">name:</span> {dt.driver_name}
+                          <strong className="">name:</strong> {dt.driver_name}
                         </p>
                         <p>
-                          <span className="">vehicle:</span> {dt.vehicle_no}
+                          <strong className="">vehicle:</strong> {dt.vehicle_no}
                         </p>
                       </td>
                       <td className="p-2">
-                        <p>Load: {dt.load_point}</p>
-                        <p>Unload: {dt.unload_point}</p>
+                        <p><strong>Load:</strong> {dt.load_point}</p>
+                        <p><strong>Unload:</strong> {dt.unload_point}</p>
                       </td>
 
                       <td className="p-2">{isAdmin ? (dt.total_rent) : "hide"}</td>
@@ -1927,7 +1927,7 @@ const TripList = () => {
                                   <BiPrinter className="mr-2 h-4 w-4" />
                                   Challan
                                 </button>
-                                {isAdmin && dt.status !== "Approved" && (
+                                {/* {isAdmin && dt.status !== "Approved" && (
                                   <button
                                     onClick={(e) => {
                                       e.preventDefault()
@@ -1940,7 +1940,7 @@ const TripList = () => {
                                   >
                                     <FcApproval className="mr-2 h-4 w-4" />{isApproving ? "Approving..." : "Approved"}
                                   </button>
-                                )}
+                                )} */}
                                 <button
                                   onClick={() => {
                                     setselectedTripId(dt.id);

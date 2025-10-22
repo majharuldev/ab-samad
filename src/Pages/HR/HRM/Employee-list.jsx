@@ -141,7 +141,7 @@ const EmployeeList = () => {
             <thead className="bg-gray-200 text-primary capitalize text-xs">
               <tr>
                 <th className="px-2 py-4">SL.</th>
-                {/* <th className="px-2 py-4">Image</th> */}
+                <th className="px-2 py-4">Image</th>
                 <th className="px-2 py-4">FullName</th>
                 <th className="px-2 py-4">Email</th>
                 <th className="px-2 py-4">JoinDate</th>
@@ -167,13 +167,13 @@ const EmployeeList = () => {
                         <td className="px-2 py-1 font-bold">
                           {indexOfFirstItem + index + 1}.
                         </td>
-                        {/* <td className="px-2 py-1">
+                        <td className="px-2 py-1">
                           <img
-                            src={`${import.meta.env.VITE_BASE_URL}/public/uploads/employee/${dt.image}`}
+                            src={`https://ajenterprise.tramessy.com/backend/uploads/employee/${dt.image}`}
                             alt=""
                             className="w-20 h-20 rounded-full"
                           />
-                        </td> */}
+                        </td>
                         <td className="px-2 py-1">{dt.employee_name}</td>
                         <td className="px-2 py-1">{dt.email}</td>
                         <td className="px-2 py-1">{tableFormatDate(dt.join_date)}</td>
@@ -275,13 +275,13 @@ const EmployeeList = () => {
 
             <div className="flex items-center gap-4 mb-4">
               <img
-                // src={
-                //   selectedEmployee.image
-                //     ? `${import.meta.env.VITE_BASE_URL}/public/uploads/employee/${selectedEmployee.image}`
-                //     : "https://i.ibb.co.com/CsSbwNvk/download.png"
-                // }
-                src="https://i.ibb.co.com/CsSbwNvk/download.png"
-                alt={selectedEmployee.full_name || "Employee"}
+                src={
+                  selectedEmployee.image
+                    ? `https://ajenterprise.tramessy.com/backend/uploads/employee/${selectedEmployee.image}`
+                    : "https://i.ibb.co.com/CsSbwNvk/download.png"
+                }
+                // src="https://i.ibb.co.com/CsSbwNvk/download.png"
+                alt={selectedEmployee.employee_name || "Employee"}
                 className="w-24 h-24 rounded-full border"
               />
               <div>

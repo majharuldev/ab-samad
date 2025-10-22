@@ -334,9 +334,9 @@ const EmployeeForm = () => {
           if (res.data.success) {
             const employee = res.data.data;
             reset(employee); // form এর মধ্যে data বসানো
-            // if (employee.image) {
-            //   setPreviewImage(employee.image); // server image preview
-            // }
+            if (employee.image) {
+  setPreviewImage(`https://ajenterprise.tramessy.com/backend/uploads/employee/${employee.image}`);
+}
           } else {
             toast.error("Employee not found!");
           }
@@ -352,29 +352,35 @@ const EmployeeForm = () => {
   // Submit Handler
   const onSubmit = async (data) => {
     try {
-      // const formData = new FormData();
-      // for (const key in data) {
-      //   formData.append(key, data[key]);
-      // }
+      const formData = new FormData();
+
+      // সব ফর্ম ফিল্ড ফর্মডাটায় যোগ করা
+      for (const key in data) {
+        if (key === "image" && data.image instanceof File) {
+          formData.append("image", data.image);
+        } else {
+          formData.append(key, data[key]);
+        }
+      }
 
       let response;
       if (isEditMode) {
-        // Update employee
-        response = await api.put(`/employee/${id}`, data, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+        // Update employee (multipart সহ)
+        response = await api.post(`/employee/${id}`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
       } else {
-        // Add employee
-        response = await api.post(`/employee`,  data, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+        // Add new employee (multipart সহ)
+        response = await api.post(`/employee`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
       }
 
-      if (response.data.success) {
+      if (response.data.status=== "Success") {
         toast.success(
           isEditMode
             ? "Employee updated successfully!"
@@ -413,23 +419,23 @@ const EmployeeForm = () => {
                 />
               </div> */}
               <div className="w-full">
-                <InputField name="employee_name" label="Full Name" required={isEditMode? false:true} />
+                <InputField name="employee_name" label="Full Name" required={isEditMode ? false : true} />
               </div>
               <div className="w-full">
-                <InputField name="email" label="Email" required={false}/>
+                <InputField name="email" label="Email" required={false} />
               </div>
             </div>
 
             {/* Row 2: Gender, Birth Date, Join Date */}
             <div className="md:flex justify-between gap-3">
               <div className="w-full">
-                <InputField name="mobile" label="Mobile" type="number" required={isEditMode? false:true} />
+                <InputField name="mobile" label="Mobile" type="number" required={isEditMode ? false : true} />
               </div>
               <div className="w-full relative">
                 <SelectField
                   name="gender"
                   label="Gender"
-                  required={isEditMode? false:true}
+                  required={isEditMode ? false : true}
                   options={[
                     { value: "Male", label: "Male" },
                     { value: "Female", label: "Female" },
@@ -441,7 +447,7 @@ const EmployeeForm = () => {
                 <SelectField
                   name="blood_group"
                   label="Blood Group"
-                  required={isEditMode? false:true}
+                  required={isEditMode ? false : true}
                   options={[
                     { value: "A+", label: "A+" },
                     { value: "A-", label: "A-" },
@@ -459,7 +465,7 @@ const EmployeeForm = () => {
                   name="birth_date"
                   label="Birth Date"
                   type="date"
-                  required={isEditMode? false:true}
+                  required={isEditMode ? false : true}
                   inputRef={(e) => {
                     register("birth_date").ref(e);
                     dateRef.current = e;
@@ -483,23 +489,23 @@ const EmployeeForm = () => {
                   name="join_date"
                   label="Join Date"
                   type="date"
-                  required={isEditMode? false:true}
+                  required={isEditMode ? false : true}
                   inputRef={(e) => {
                     register("join_date").ref(e);
                     joinDateRef.current = e;
                   }}
-                  
+
                 />
               </div>
               <div className="w-full">
-                <InputField name="nid" label="Nid" required={isEditMode? false:true} type="number" />
+                <InputField name="nid" label="Nid" required={isEditMode ? false : true} type="number" />
               </div>
               <div className="w-full">
-                <InputField name="designation" label="Designation" required={isEditMode? false:true} />
+                <InputField name="designation" label="Designation" required={isEditMode ? false : true} />
               </div>
-              
+
               <div className="w-full">
-                <InputField name="address" label="Address" required={isEditMode? false:true} />
+                <InputField name="address" label="Address" required={isEditMode ? false : true} />
               </div>
             </div>
 
@@ -509,16 +515,24 @@ const EmployeeForm = () => {
                 <InputField name="salary" label="Salary" type="number" required={isEditMode? false:true} />
               </div> */}
               <div className="w-full">
-                <InputField name="basic" label="Basic" type="number" required={isEditMode? false:true} />
+                <InputField name="basic" label="Basic" type="number" required={isEditMode ? false : true} />
               </div>
               <div className="w-full">
-                <InputField name="house_rent" label="House Rent" type="number" required={isEditMode? false:true} />
+                <InputField name="house_rent" label="House Rent" type="number" required={isEditMode ? false : true} />
               </div>
               <div className="w-full">
-                <InputField name="medical" label="Medical" type="number" required={isEditMode? false:true} />
+                <InputField name="medical" label="Medical" type="number" required={isEditMode ? false : true} />
               </div>
-              
-              {/* <div className="w-full">
+              <div className="w-full">
+                <InputField name="allowan" label="Allowan" type="number" required={isEditMode ? false : true} />
+              </div>
+            </div>
+            <div className="md:flex justify-between gap-3">
+
+              <div className="w-full">
+                <InputField name="conv" label="Conv" type="number" required={isEditMode ? false : true} />
+              </div>
+              <div className="w-full">
                 <label className="text-gray-700 text-sm font-semibold">Image</label>
                 <div className="relative">
                   <Controller
@@ -551,20 +565,12 @@ const EmployeeForm = () => {
                     )}
                   />
                 </div>
-              </div> */}
-            </div>
-            <div className="md:flex justify-between gap-3">
-              <div className="w-full">
-                <InputField name="allowan" label="Allowan" type="number" required={isEditMode? false:true} />
-              </div>
-              <div className="w-full">
-                <InputField name="conv" label="Conv" type="number" required={isEditMode? false:true} />
               </div>
               <div className="w-full">
                 <SelectField
                   name="status"
                   label="Status"
-                  required={isEditMode? false:true}
+                  required={isEditMode ? false : true}
                   options={[
                     { value: "Active", label: "Active" },
                     { value: "Inactive", label: "Inactive" },
@@ -574,7 +580,7 @@ const EmployeeForm = () => {
             </div>
 
             {/* Preview */}
-            {/* {previewImage && (
+            {previewImage && (
               <div className="mt-3 relative flex justify-end">
                 <button
                   type="button"
@@ -593,7 +599,7 @@ const EmployeeForm = () => {
                   className="max-w-xs h-auto rounded border border-gray-300"
                 />
               </div>
-            )} */}
+            )}
 
             <BtnSubmit>{isEditMode ? "Update" : "Submit"}</BtnSubmit>
           </form>

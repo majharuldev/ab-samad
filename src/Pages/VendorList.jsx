@@ -339,18 +339,18 @@ const VendorList = () => {
         )}
         {/* Table */}
         <div className="mt-5 overflow-x-auto rounded-md">
-          <table className="min-w-full text-sm text-left">
+          <table className="min-w-full table-fixed text-sm text-left">
             <thead className="bg-gray-200 text-primary capitalize text-xs">
               <tr>
-                <th className="px-2 py-4">#</th>
-                <th className="px-2 py-4">Date</th>
-                <th className="px-2 py-4">Name</th>
-                <th className="px-2 py-4">Mobile</th>
-                <th className="px-2 py-4">RentCate</th>
-                <th className="px-2 py-4">Work Area</th>
-                <th className="px-2 py-4">Opening Balance</th>
-                <th className="px-2 py-4">Status</th>
-                <th className="px-2 py-4 action_column">Action</th>
+                <th className="px-2 py-4 lg:w-[20px]">#</th>
+                <th className="px-2 py-4 lg:w-[120px]">Date</th>
+                <th className="px-2 py-4 lg:w-[120px]">Name</th>
+                <th className="px-2 py-4 lg:w-[100px]">Mobile</th>
+                <th className="px-2 py-4 lg:w-[20px]">RentCate</th>
+                <th className="px-2 py-4 lg:w-[80px]">Work Area</th>
+                <th className="px-2 py-4 lg:w-[120px]">Opening Balance</th>
+                <th className="px-2 py-4 lg:w-[80px]">Status</th>
+                <th className="px-2 py-4 action_column lg:w-[80px]">Action</th>
               </tr>
             </thead>
             <tbody className="text-gray-700 ">
