@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import BtnSubmit from "../../components/Button/BtnSubmit";
-import { Controller, FormProvider, useForm } from "react-hook-form";
+import { Controller, FormProvider, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { InputField, SelectField } from "../../components/Form/FormFields";
 import { FiCalendar } from "react-icons/fi";
 import toast, { Toaster } from "react-hot-toast";
@@ -10,6 +10,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import api from "../../../utils/axiosConfig";
 import { AuthContext } from "../../providers/AuthProvider";
 import useAdmin from "../../hooks/useAdmin";
+import FormSkeleton from "../../components/Form/FormSkeleton";
 
 const OfficialProductForm = () => {
   const navigate = useNavigate();
@@ -30,18 +31,28 @@ const OfficialProductForm = () => {
   const [supplier, setSupplier] = useState([]);
   const [isLoading, setIsLoading] = useState(isEditMode);
   const [existingImage, setExistingImage] = useState(null);
+// Dynamic item fields
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "items",
+  });
 
   const selectedCategory = watch("category");
 
-  // Calculate Total Expense
-  const quantity = parseFloat(watch("quantity") || 0);
-  const unitPrice = parseFloat(watch("unit_price") || 0);
-  const totalPrice = quantity * unitPrice;
-
-  useEffect(() => {
-    const totalPrice = quantity * unitPrice;
-    setValue("purchase_amount", totalPrice);
-  }, [quantity, unitPrice, setValue]);
+  // সব items এবং service charge এর হিসাব করার জন্য
+    const items = useWatch({ control, name: "items" });
+    const serviceCharge = useWatch({ control, name: "service_charge" });
+  
+    useEffect(() => {
+      const totalItemsAmount = (items || []).reduce((sum, item) => {
+        const quantity = parseFloat(item.quantity) || 0;
+        const unitPrice = parseFloat(item.unit_price) || 0;
+        return sum + quantity * unitPrice;
+      }, 0);
+  
+      const grandTotal = totalItemsAmount + (parseFloat(serviceCharge) || 0);
+      setValue("purchase_amount", grandTotal);
+    }, [items, serviceCharge, setValue]);
 
   // Preview image
   const [previewImage, setPreviewImage] = useState(null);
@@ -74,43 +85,44 @@ const OfficialProductForm = () => {
     if (isEditMode) {
       const fetchPurchaseData = async () => {
         try {
-          const response = await api.get(
-            `/purchase/${id}`
-          );
-          const purchaseData = response.data.data;
-          console.log("Fetched purchase data:", purchaseData);
+          const response = await api.get(`/purchase/${id}`)
+          const purchaseData = response.data.data
+          const formValues = {
+            date: purchaseData.date,
+            category: purchaseData.category,
+            item_name: purchaseData.item_name,
+            branch_name: purchaseData.branch_name,
+            supplier_name: purchaseData.supplier_name,
+            // service_date: purchaseData.service_date,
+            // next_service_date: purchaseData.next_service_date,
+            purchase_amount: purchaseData.purchase_amount,
+            remarks: purchaseData.remarks,
+            priority: purchaseData.priority,
+            created_by: purchaseData.created_by,
+            service_charge: purchaseData.service_charge,
+            items:
+              purchaseData.items && purchaseData.items.length > 0
+                ? purchaseData.items
+                : [{ item_name: "", quantity: 0, unit_price: 0, total: 0 }],
+          }
 
-          // Set form values
-          setValue("date", purchaseData.date);
-          setValue("category", purchaseData.category);
-          setValue("item_name", purchaseData.item_name);
-          setValue("driver_name", purchaseData.driver_name);
-          setValue("vehicle_no", purchaseData.vehicle_no);
-          setValue("branch_name", purchaseData.branch_name);
-          setValue("supplier_name", purchaseData.supplier_name);
-          setValue("quantity", purchaseData.quantity);
-          setValue("unit_price", purchaseData.unit_price);
-          setValue("purchase_amount", purchaseData.purchase_amount);
-          setValue("remarks", purchaseData.remarks);
-          setValue("priority", purchaseData.priority);
-          setValue("created_by", purchaseData.created_by);
+          reset(formValues)
 
-          // Set image preview if exists
-          // if (purchaseData.bill_image) {
-          //   const imageUrl = `${import.meta.env.VITE_BASE_URL}/uploads/${purchaseData.bill_image}`;
-          //   setPreviewImage(imageUrl);
-          //   setExistingImage(purchaseData.bill_image); // existing image নাম সংরক্ষণ করুন
-          // }
+          if (purchaseData.image) {
+            const imageUrl = `https://ajenterprise.tramessy.com/backend/uploads/purchase/${purchaseData.image}`
+            setPreviewImage(imageUrl)
+            setExistingImage(purchaseData.image)
+          }
 
-          setIsLoading(false);
+          setIsLoading(false)
         } catch (error) {
-          console.error("Error fetching purchase data:", error);
-          toast.error("Failed to load purchase data");
-          setIsLoading(false);
+          console.error("Error fetching purchase data:", error)
+          toast.error("Failed to load purchase data")
+          setIsLoading(false)
         }
-      };
+      }
 
-      fetchPurchaseData();
+      fetchPurchaseData()
     }
   }, [id, isEditMode, setValue]);
 
@@ -135,57 +147,153 @@ const OfficialProductForm = () => {
   }));
 
   // Handle form submission for both add and update
-  const onSubmit = async (data) => {
-    try {
-      // const payload = {
-      //   date: new Date(data.date).toISOString().split("T")[0],
-      //   category: data.category ?? "",
-      //   item_name: data.item_name ?? "",
-      //   driver_name: data.driver_name ?? "",
-      //   vehicle_no: data.vehicle_no ?? "",
-      //   vehicle_category: data.vehicle_category ?? "",
-      //   branch_name: data.branch_name ?? "",
-      //   supplier_name: data.supplier_name ?? "",
-      //   quantity: Number(data.quantity) || 0,
-      //   unit_price: Number(data.unit_price) || 0,
-      //   purchase_amount: Number(data.purchase_amount) || 0,
-      //   remarks: data.remarks ?? "",
-      //   priority: data.priority ?? "",
-      //   // bill_image: যদি backend JSON support করে, Base64 encode পাঠাও
-      // };
+  // const onSubmit = async (data) => {
+  //   try {
 
-      // date format local 
-      ["date", "service_date", "next_service_date"].forEach((field) => {
-        if (data[field]) {
-          const d = new Date(data[field]);
-          d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-          data[field] = d.toISOString().split("T")[0];
+  //     // date format local 
+  //     ["date", "service_date", "next_service_date"].forEach((field) => {
+  //       if (data[field]) {
+  //         const d = new Date(data[field]);
+  //         d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  //         data[field] = d.toISOString().split("T")[0];
+  //       }
+  //     });
+  //     // created_by ঠিকভাবে সেট করা
+  //     let createdByValue = "Unknown";
+  //     if (user?.name) createdByValue = user.name;
+  //     else if (user?.email) createdByValue = user.email;
+
+  //     // যদি Edit mode হয়, তাহলে আগেরটা রেখে দাও
+  //     if (isEditMode && data.created_by) {
+  //       createdByValue = data.created_by;
+  //     }
+
+  //     const payload = {
+  //       ...data,
+  //       created_by: createdByValue,
+  //     };
+
+  //     const response = isEditMode
+  //       ? await api.put(`/purchase/${id}`, payload)
+  //       : await api.post(`/purchase`, payload);
+
+  //     if (response.data.success) {
+  //       toast.success(isEditMode ? "Official Products Purchase updated!" : "Official Products Purchase submitted!");
+  //       //  Only send SMS if it's a new trip and sms_sent = "yes"
+  //       if (!id && !isAdmin && data.sms_sent === "yes") {
+  //         const purchase = response.data.data;
+  //         const purchaseId = purchase.id;
+  //         const purchaseDate = purchase.date || "";
+  //         const supplierName = purchase.supplier_name || "";
+  //         const userName = user.name || "";
+  //         const purchaseItem = purchase?.item_name || "";
+
+  //         // Build message content
+  //         const messageContent = `Dear Sir, A new Official Product created by ${userName}.\nPurchase Id: ${purchaseId}\nPurchase Date: ${purchaseDate}\nSupplier: ${supplierName}\nPurchase Name: ${purchaseItem}`;
+
+  //         // SMS Config
+  //         const adminNumber = "01872121862"; // or multiple separated by commas
+  //         const API_KEY = "3b82495582b99be5";
+  //         const SECRET_KEY = "ae771458";
+  //         const CALLER_ID = "1234";
+
+  //         // Correct URL (same structure as your given example)
+  //         const smsUrl = `http://smpp.revesms.com:7788/sendtext?apikey=${API_KEY}&secretkey=${SECRET_KEY}&callerID=${CALLER_ID}&toUser=${adminNumber}&messageContent=${encodeURIComponent(messageContent)}`;
+  //         try {
+  //           await fetch(smsUrl);
+  //           toast.success("SMS sent to admin!");
+  //         } catch (smsError) {
+  //           // console.error("SMS sending failed:", smsError);
+  //           // toast.error("Trip saved, but SMS failed to send.");
+  //         }
+  //       }
+  //       navigate("/tramessy/Purchase/official-product");
+  //       reset();
+  //     } else {
+  //       throw new Error(isEditMode ? "Failed to update Purchase" : "Failed to create Purchase");
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //     toast.error(error.response?.data?.message || "Server error");
+  //   }
+  // };
+
+   // Handle form submission for both add and update
+    const onSubmit = async (data) => {
+      try {
+        //  Date fields localize করা
+        ["date", "service_date", "next_service_date"].forEach((field) => {
+          if (data[field]) {
+            const d = new Date(data[field]);
+            d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+            data[field] = d.toISOString().split("T")[0];
+          }
+        });
+  
+        //  created_by
+        // let createdByValue = user?.name || user?.email || "Unknown";
+        // if (isEditMode && data.created_by) {
+        //   createdByValue = data.created_by;
+        // }
+         const createdByValue = user?.name || user?.email || "Unknown";
+        //  items array আলাদা করে নেওয়া
+        const item_name = data.items.map((item) => item.item_name);
+        const quantity = data.items.map((item) => Number(item.quantity));
+        const unit_price = data.items.map((item) => Number(item.unit_price));
+        const total = data.items.map((item) => Number(item.quantity) * Number(item.unit_price));
+  
+        //  purchase_amount হিসাব করা
+        const purchase_amount =
+          total.reduce((sum, val) => sum + val, 0) + Number(data.service_charge || 0);
+  
+        //  FormData তৈরি
+        const formData = new FormData();
+  
+        formData.append("date", data.date || "");
+        formData.append("supplier_name", data.supplier_name || "");
+        formData.append("category", data.category || "");
+        formData.append("purchase_amount", purchase_amount);
+        formData.append("service_charge", data.service_charge || 0);
+        formData.append("remarks", data.remarks || "");
+        // formData.append("driver_name", data.driver_name || "");
+        formData.append("branch_name", data.branch_name || "");
+        // formData.append("vehicle_no", data.vehicle_no || "");
+        // formData.append("vehicle_category", data.vehicle_category || "");
+        formData.append("priority", data.priority || "");
+        // formData.append("validity", data.validity || "");
+        // formData.append("next_service_date", data.next_service_date || "");
+        // formData.append("service_date", data.service_date || "");
+        // formData.append("last_km", data.last_km || 0);
+        // formData.append("next_km", data.next_km || 0);
+        formData.append("created_by", createdByValue);
+  
+        //  items গুলো আলাদা array হিসেবে append করা
+        item_name.forEach((name, i) => formData.append("item_name[]", name));
+        quantity.forEach((q, i) => formData.append("quantity[]", q));
+        unit_price.forEach((u, i) => formData.append("unit_price[]", u));
+        total.forEach((t, i) => formData.append("total[]", t));
+  
+        if (data.bill_image instanceof File) {
+          formData.append("image", data.bill_image);
+        } else if (isEditMode && existingImage) {
+          formData.append("existing_image", existingImage);
         }
-      });
-      // created_by ঠিকভাবে সেট করা
-    let createdByValue = "Unknown";
-    if (user?.name) createdByValue = user.name;
-    else if (user?.email) createdByValue = user.email;
-
-    // যদি Edit mode হয়, তাহলে আগেরটা রেখে দাও
-    if (isEditMode && data.created_by) {
-      createdByValue = data.created_by;
-    }
-
-    const payload = {
-      ...data,
-      created_by: createdByValue,
-    };
-
-      const response = isEditMode
-        ? await api.put(`/purchase/${id}`, payload)
-        : await api.post(`/purchase`, payload);
-
-      if (response.data.success) {
+  
+  
+        //  API Call
+        const response = isEditMode
+          ? await api.post(`/purchase/${id}`, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          })
+          : await api.post(`/purchase`, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+  
+         if (response.data.success) {
         toast.success(isEditMode ? "Official Products Purchase updated!" : "Official Products Purchase submitted!");
         //  Only send SMS if it's a new trip and sms_sent = "yes"
         if (!id && !isAdmin && data.sms_sent === "yes") {
-          const purchase = response.data.data; 
+          const purchase = response.data.data;
           const purchaseId = purchase.id;
           const purchaseDate = purchase.date || "";
           const supplierName = purchase.supplier_name || "";
@@ -216,16 +324,12 @@ const OfficialProductForm = () => {
       } else {
         throw new Error(isEditMode ? "Failed to update Purchase" : "Failed to create Purchase");
       }
-    } catch (error) {
-      console.error(error);
-      toast.error(error.response?.data?.message || "Server error");
-    }
-  };
+      } catch (error) {
+        console.error("Error:", error);
+        toast.error(error.response?.data?.message || "Server error");
+      }
+    };
 
-
-  if (isLoading) {
-    return <div className="flex justify-center items-center h-64">Loading purchase data...</div>;
-  }
 
   return (
     <div className="mt-5 md:p-2">
@@ -235,7 +339,11 @@ const OfficialProductForm = () => {
           {isEditMode ? "Update Official Purchase " : "Add Official Purchase"}
         </h3>
         <FormProvider {...methods}>
-          <form
+          {isLoading  ? (
+                      <div className="p-4 bg-white rounded-md shadow border-t-2 border-primary">
+                        <FormSkeleton />
+                      </div>
+                    ) : (<form
             onSubmit={handleSubmit(onSubmit)}
             className="mx-auto p-6 space-y-4"
           >
@@ -283,33 +391,6 @@ const OfficialProductForm = () => {
                 />
               </div>
               <div className="w-full">
-                <InputField name="item_name" label="Item Name" required={!isEditMode} />
-              </div>
-            </div>
-
-            {/* <div className="md:flex justify-between gap-x-3">
-            <div className="w-full">
-              <SelectField
-                name="driver_name"
-                label="Driver Name"
-                required={!isEditMode}
-                options={driverOptions}
-                control={control}
-              />
-            </div>
-            <div className="w-full">
-              <SelectField
-                name="vehicle_no"
-                label="Vehicle No."
-                required={!isEditMode}
-                options={vehicleOptions}
-                control={control}
-              />
-            </div>
-          </div> */}
-
-            <div className="flex flex-col lg:flex-row justify-between gap-x-3">
-              <div className="w-full">
                 <SelectField
                   name="branch_name"
                   label="Branch Name"
@@ -327,31 +408,60 @@ const OfficialProductForm = () => {
                   control={control}
                 />
               </div>
-              <div className="w-full">
-                <InputField
-                  name="quantity"
-                  label="Quantity"
-                  type="number"
-                  required={!isEditMode}
-                />
-              </div>
+            </div>
+            <div>
+              {/*  Dynamic Item Fields */}
+              {(<div className="space-y-4">
+                <h4 className="text-lg font-semibold text-primary">Items</h4>
+
+                {fields.map((field, index) => {
+                  const quantity = watch(`items.${index}.quantity`) || 0;
+                  const unitPrice = parseFloat(watch(`items.${index}.unit_price`)) || 0;
+                  const total = quantity * unitPrice;
+
+                  return (
+                    <div key={field.id} className="flex flex-col md:flex-row gap-3 border border-gray-300 p-3 rounded-md relative">
+                      <InputField name={`items.${index}.item_name`} label="Item Name" required={!isEditMode} className="!w-full" />
+                      <InputField name={`items.${index}.quantity`} label="Quantity" type="number" required={!isEditMode} className="!w-full" />
+                      <InputField name={`items.${index}.unit_price`} label="Unit Price" type="number" required={!isEditMode} className="!w-full" />
+                      <InputField name={`items.${index}.total`} label="Total" readOnly value={total} className="!salw-full" />
+
+                      <button
+                        type="button"
+                        onClick={() => remove(index)}
+                        className="absolute -top-3 -right-3 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold hover:bg-red-600"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  );
+                })}
+
+                <button
+                  type="button"
+                  onClick={() => append({ item_name: "", quantity: 0, unit_price: 0, total: 0 })}
+                  className="bg-primary text-white px-3 py-1 rounded-md hover:bg-primary/80"
+                >
+                  + Add Item
+                </button>
+              </div>)}
             </div>
 
             <div className="flex flex-col lg:flex-row justify-between gap-3">
               <div className="w-full">
                 <InputField
-                  name="unit_price"
-                  label="Unit Price"
+                  name="service_charge"
+                  label="Service Charge"
                   type="number"
-                  required={!isEditMode}
+                  required={false}
                 />
               </div>
               <div className="w-full">
                 <InputField
                   name="purchase_amount"
-                  label="Total"
+                  label="Total Purchase Amount"
                   readOnly
-                  value={totalPrice}
+                 value={watch("purchase_amount") || 0}
                   required={!isEditMode}
                 />
               </div>
@@ -363,7 +473,7 @@ const OfficialProductForm = () => {
               </div>
             </div>
 
-            {/* <div className="md:flex justify-between gap-3">
+            <div className="md:flex justify-between gap-3">
             <div className="w-full">
               <label className="text-gray-700 text-sm font-semibold">
                 Bill Image {!isEditMode && "(Required)"}
@@ -371,7 +481,7 @@ const OfficialProductForm = () => {
               <Controller
                 name="bill_image"
                 control={control}
-                rules={isEditMode ? {} : { required: "This field is required" }}
+                rules={isEditMode ? false : { required: "This field is required" }}
                 render={({
                   field: { onChange, ref },
                   fieldState: { error },
@@ -415,10 +525,10 @@ const OfficialProductForm = () => {
                 )}
               />
             </div>
-          </div> */}
+          </div>
 
             {/* Preview */}
-            {/* {previewImage && (
+            {previewImage && (
             <div className="mt-2 relative flex justify-end">
               <button
                 type="button"
@@ -443,7 +553,7 @@ const OfficialProductForm = () => {
                 className="max-w-xs h-auto rounded border border-gray-300"
               />
             </div>
-          )} */}
+          )}
             {!isAdmin && <div className="mt-4">
               <h3 className="text-secondary font-medium mb-2">SMS Sent</h3>
               <div className="flex gap-6">
@@ -467,7 +577,7 @@ const OfficialProductForm = () => {
             </div>}
 
             <BtnSubmit>{isEditMode ? "Update Purchase" : "Submit"}</BtnSubmit>
-          </form>
+          </form>)}
         </FormProvider>
       </div>
     </div>

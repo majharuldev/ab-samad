@@ -10,6 +10,7 @@ import BtnSubmit from "../../../components/Button/BtnSubmit";
 import toast from "react-hot-toast";
 import { AuthContext } from "../../../providers/AuthProvider";
 import { IoMdClose } from "react-icons/io";
+import * as XLSX from "xlsx";
 
 const Loan = () => {
   const [loanData, setLoanData] = useState([]);
@@ -20,6 +21,7 @@ const Loan = () => {
   const [selectedLoan, setSelectedLoan] = useState(null);
   const loanDateRef = useRef(null);
   const { user } = useContext(AuthContext);
+  const [searchTerm, setSearchTerm] = useState("");
   // delete modal
   const [isOpen, setIsOpen] = useState(false);
   const [selectedLoanId, setSelectedLoanId] = useState(null);
@@ -93,16 +95,107 @@ const Loan = () => {
     }
   }, [isModalOpen, selectedLoan, reset]);
 
-  // Pagination logic
-  const indexOfLast = currentPage * itemsPerPage;
-  const indexOfFirst = indexOfLast - itemsPerPage;
-  const currentItems = loanData.slice(indexOfFirst, indexOfLast);
-  const totalPages = Math.ceil(loanData.length / itemsPerPage);
-
-  const getEmployeeName = (empId) => {
+  // employee name fetch
+    const getEmployeeName = (empId) => {
     const emp = employee.find((e) => e.id === Number(empId));
     return emp ? emp.employee_name || emp.email : empId;
   };
+
+  // filter data based on search term
+  const filteredData = loanData.filter((item) => {
+  const empName = getEmployeeName(item.employee_id)?.toLowerCase() || "";
+  const status = item.status?.toLowerCase() || "";
+  const createdBy = item.created_by?.toLowerCase() || "";
+  const search = searchTerm.toLowerCase();
+  return (
+    empName.includes(search) ||
+    status.includes(search) ||
+    createdBy.includes(search) ||
+    item.amount?.toString().includes(search)
+  );
+});
+
+// excel export function 
+const exportExcel = () => {
+  const exportData = filteredData.map((item, index) => ({
+    SL: index + 1,
+    Date: tableFormatDate(item.created_at),
+    "Employee Name": getEmployeeName(item.employee_id),
+    Amount: item.amount,
+    "Monthly Deduction": item.monthly_deduction,
+    "After Adjustment": item.adjustment,
+    Status: item.status,
+    "Created By": item.created_by,
+  }));
+
+  const worksheet = XLSX.utils.json_to_sheet(exportData);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Loan List");
+  XLSX.writeFile(workbook, "Loan_List.xlsx");
+};
+
+// Print
+  const printTable = () => {
+    const printWindow = window.open("", "", "width=900,height=600");
+    const tableHTML = `
+      <html>
+        <head>
+          <title></title>
+          <style>
+            table { width: 100%; border-collapse: collapse; font-size: 12px; }
+            th, td { border: 1px solid #333; padding: 6px; text-align: left; }
+            th { background-color: #f2f2f2; }
+            h2 { text-align: center; margin-bottom: 10px; }
+          </style>
+        </head>
+        <body>
+          <h2>Loan Report</h2>
+          <table>
+            <thead>
+              <tr>
+              <th>"SL"</th>
+              <th>Date</th>
+              <th>Employee Name</th>
+              <th>Amount</th>
+              <th>Monthly Deduction</th>
+              <th>After Adjustment</th>
+              <th>Status</th>
+              <th>Created By</th>
+            </tr>
+            </thead>
+            <tbody>
+              ${filteredData
+        .map(
+          (item, index) => `
+                <tr>
+        <td>${index + 1}</td>
+        <td>${tableFormatDate(item.created_at)}</td>
+        <td>${getEmployeeName(item.employee_id)}</td>
+        <td>${item.amount} ৳</td>
+        <td>${item.monthly_deduction}</td>
+        <td>${item.adjustment} ৳</td>
+        <td>${item.status}</td>
+        <td>${item.created_by}</td>
+      </tr>`
+        )
+        .join("")}
+            </tbody>
+          </table>
+        </body>
+      </html>
+    `;
+    printWindow.document.write(tableHTML);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+  };
+
+  // Pagination logic
+  const indexOfLast = currentPage * itemsPerPage;
+  const indexOfFirst = indexOfLast - itemsPerPage;
+  const currentItems = filteredData.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+
 
 // Add Mode: amount দিলে adjustment auto-fill হবে
 const amountValue = watch("amount");
@@ -189,6 +282,49 @@ useEffect(() => {
             >
               <FaPlus /> Loan
             </button>
+          </div>
+        </div>
+        {/* export */}
+        <div className="md:flex justify-between items-center">
+          <div className="flex gap-1 md:gap-3 text-gray-700 font-semibold rounded-md">
+            <button
+              onClick={exportExcel}
+              className="py-1 px-5 hover:bg-primary bg-white hover:text-white rounded shadow transition-all duration-300 cursor-pointer"
+            >
+              Excel
+            </button>
+            <button
+              onClick={printTable}
+              className="py-1 px-5 hover:bg-primary bg-white hover:text-white rounded shadow transition-all duration-300 cursor-pointer"
+            >
+              Print
+            </button>
+          </div>
+          {/* search */}
+          <div className="mt-3 md:mt-0">
+            {/* <span className="text-primary font-semibold pr-3">Search: </span> */}
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
+              placeholder="Search by Product ..."
+              className="lg:w-60 border border-gray-300 rounded-md outline-none text-xs py-2 ps-2 pr-5"
+            />
+            {/*  Clear button */}
+            {searchTerm && (
+              <button
+                onClick={() => {
+                  setSearchTerm("");
+                  setCurrentPage(1);
+                }}
+                className="absolute right-5 top-[5.5rem] -translate-y-1/2 text-gray-400 hover:text-red-500 text-sm"
+              >
+                ✕
+              </button>
+            )}
           </div>
         </div>
 

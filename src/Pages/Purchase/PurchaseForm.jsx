@@ -1,5 +1,4 @@
 
-
 import { useContext, useEffect, useRef, useState } from "react";
 import BtnSubmit from "../../components/Button/BtnSubmit";
 import { Controller, FormProvider, useFieldArray, useForm, useWatch } from "react-hook-form";
@@ -10,6 +9,7 @@ import api from "../../../utils/axiosConfig";
 import useAdmin from "../../hooks/useAdmin";
 import { AuthContext } from "../../providers/AuthProvider";
 import { IoMdClose } from "react-icons/io";
+import FormSkeleton from "../../components/Form/FormSkeleton";
 
 const PurchaseForm = () => {
   const navigate = useNavigate();
@@ -46,21 +46,6 @@ const PurchaseForm = () => {
     name: "items",
   });
 
-  // useEffect(() => {
-  //   const items = watch("items") || [];
-  //   const serviceCharge = parseFloat(watch("service_charge")) || 0;
-
-  //   const totalItemsAmount = items.reduce((sum, item) => {
-  //     const quantity = parseFloat(item.quantity) || 0;
-  //     const unitPrice = parseFloat(item.unit_price) || 0;
-  //     return sum + quantity * unitPrice;
-  //   }, 0);
-
-  //   const grandTotal = totalItemsAmount + serviceCharge;
-  //   setValue("purchase_amount", grandTotal);
-  // }, [watch("items"), watch("service_charge"), setValue]);
-
-
   // সব items এবং service charge এর হিসাব করার জন্য
   const items = useWatch({ control, name: "items" });
   const serviceCharge = useWatch({ control, name: "service_charge" });
@@ -78,62 +63,48 @@ const PurchaseForm = () => {
 
 
   // Set vehicle category when vehicle is selected
-  //  useEffect(() => {
+  // useEffect(() => {
   //   if (selectedVehicle) {
   //     const selectedVehicleData = vehicle.find(
   //       (v) =>
   //         `${v.reg_zone} ${v.reg_serial} ${v.reg_no}`.trim() ===
   //         selectedVehicle.trim()
   //     );
+
   //     if (selectedVehicleData) {
-  //       console.log("Setting vehicle_category:", selectedVehicleData.vehicle_category); // Debug
-  //       setValue("vehicle_category", selectedVehicleData.vehicle_category, {
+  //       // Vehicle category বসাও
+  //       setValue("vehicle_category", selectedVehicleData.vehicle_category || "", {
+  //         shouldValidate: true,
+  //         shouldDirty: true,
+  //       });
+
+  //       // Driver Name auto বসাও
+  //       setValue("driver_name", selectedVehicleData.driver_name || "", {
   //         shouldValidate: true,
   //         shouldDirty: true,
   //       });
   //     } else {
-  //       console.log("No vehicle data found, setting vehicle_category to empty"); // Debug
   //       setValue("vehicle_category", "");
+  //       setValue("driver_name", "");
   //     }
   //   } else {
-  //     console.log("No vehicle selected, setting vehicle_category to empty"); // Debug
   //     setValue("vehicle_category", "");
+  //     setValue("driver_name", "");
   //   }
   // }, [selectedVehicle, vehicle, setValue]);
-  // Vehicle select করলে auto Driver Name update হবে
 
-
-
-
-  useEffect(() => {
-    if (selectedVehicle) {
+   useEffect(() => {
+    if (watch("vehicle_no")) {
       const selectedVehicleData = vehicle.find(
-        (v) =>
-          `${v.reg_zone} ${v.reg_serial} ${v.reg_no}`.trim() ===
-          selectedVehicle.trim()
-      );
-
+        (v) => `${v.reg_zone} ${v.reg_serial} ${v.reg_no}`.trim() === watch("vehicle_no").trim(),
+      )
       if (selectedVehicleData) {
-        // Vehicle category বসাও
-        setValue("vehicle_category", selectedVehicleData.vehicle_category || "", {
-          shouldValidate: true,
-          shouldDirty: true,
-        });
-
-        // Driver Name auto বসাও
-        setValue("driver_name", selectedVehicleData.driver_name || "", {
-          shouldValidate: true,
-          shouldDirty: true,
-        });
-      } else {
-        setValue("vehicle_category", "");
-        setValue("driver_name", "");
+        setValue("vehicle_category", selectedVehicleData.vehicle_category || "")
+        setValue("driver_name", selectedVehicleData.driver_name || "")
       }
-    } else {
-      setValue("vehicle_category", "");
-      setValue("driver_name", "");
     }
-  }, [selectedVehicle, vehicle, setValue]);
+  }, [vehicle, watch("vehicle_no"), setValue])
+
 
   // Preview image
   const [previewImage, setPreviewImage] = useState(null);
@@ -163,63 +134,68 @@ const PurchaseForm = () => {
 
   // Fetch purchase data if in edit mode
   useEffect(() => {
-    if (isEditMode) {
+    if (isEditMode && vehicle.length > 0) {
       const fetchPurchaseData = async () => {
         try {
-          const response = await api.get(
-            `/purchase/${id}`
-          );
-          const purchaseData = response.data.data;
-          console.log("Fetched purchase data:", purchaseData);
+          const response = await api.get(`/purchase/${id}`)
+          const purchaseData = response.data.data
+          console.log("Fetched purchase data:", purchaseData)
 
-          // Set form values
-          setValue("date", purchaseData.date);
-          setValue("category", purchaseData.category);
-          setValue("item_name", purchaseData.item_name);
-          setValue("driver_name", purchaseData.driver_name);
-          setValue("vehicle_category", purchaseData.vehicle_category);
-          setValue("vehicle_no", purchaseData.vehicle_no);
-          setValue("branch_name", purchaseData.branch_name);
-          setValue("supplier_name", purchaseData.supplier_name);
-          setValue("quantity", purchaseData.quantity);
-          setValue("service_date", purchaseData.service_date);
-          setValue("next_service_date", purchaseData.next_service_date);
-          setValue("unit_price", purchaseData.unit_price);
-          setValue("last_km", purchaseData.last_km);
-          setValue("next_km", purchaseData.next_km);
-          setValue("purchase_amount", purchaseData.purchase_amount);
-          setValue("remarks", purchaseData.remarks);
-          setValue("priority", purchaseData.priority);
-          setValue("created_by", purchaseData.created_by);
+          const formValues = {
+            date: purchaseData.date,
+            category: purchaseData.category,
+            item_name: purchaseData.item_name,
+            driver_name: purchaseData.driver_name,
+            vehicle_category: purchaseData.vehicle_category,
+            vehicle_no: purchaseData.vehicle_no,
+            branch_name: purchaseData.branch_name,
+            supplier_name: purchaseData.supplier_name,
+            quantity: purchaseData.quantity,
+            service_date: purchaseData.service_date,
+            next_service_date: purchaseData.next_service_date,
+            unit_price: purchaseData.unit_price,
+            last_km: purchaseData.last_km,
+            next_km: purchaseData.next_km,
+            purchase_amount: purchaseData.purchase_amount,
+            remarks: purchaseData.remarks,
+            priority: purchaseData.priority,
+            created_by: purchaseData.created_by,
+            service_charge: purchaseData.service_charge,
+            items:
+              purchaseData.items && purchaseData.items.length > 0
+                ? purchaseData.items
+                : [{ item_name: "", quantity: 0, unit_price: 0, total: 0 }],
+          }
 
-          // Set image preview if exists
-          // if (purchaseData.bill_image) {
-          //   const imageUrl = `${import.meta.env.VITE_BASE_URL}/uploads/${purchaseData.bill_image}`;
-          //   setPreviewImage(imageUrl);
-          //   setExistingImage(purchaseData.bill_image); // existing image নাম সংরক্ষণ করুন
-          // }
+          reset(formValues)
 
-          setIsLoading(false);
+          if (purchaseData.image) {
+            const imageUrl = `https://ajenterprise.tramessy.com/backend/uploads/purchase/${purchaseData.image}`
+            setPreviewImage(imageUrl)
+            setExistingImage(purchaseData.image)
+          }
+
+          setIsLoading(false)
         } catch (error) {
-          console.error("Error fetching purchase data:", error);
-          toast.error("Failed to load purchase data");
-          setIsLoading(false);
+          console.error("Error fetching purchase data:", error)
+          toast.error("Failed to load purchase data")
+          setIsLoading(false)
         }
-      };
+      }
 
-      fetchPurchaseData();
+      fetchPurchaseData()
     }
-  }, [id, isEditMode, setValue]);
+  }, [id, isEditMode, vehicle, reset])
 
   const driverOptions = drivers.map((driver) => ({
     value: driver.driver_name,
     label: driver.driver_name,
   }));
 
-  const vehicleOptions = vehicle.map((dt) => ({
-    value: `${dt.reg_zone} ${dt.reg_serial} ${dt.reg_no} `,
-    label: `${dt.reg_zone} ${dt.reg_serial} ${dt.reg_no} `,
-  }));
+ const vehicleOptions = vehicle.map((dt) => ({
+    value: `${dt.reg_zone} ${dt.reg_serial} ${dt.reg_no}`,
+    label: `${dt.reg_zone} ${dt.reg_serial} ${dt.reg_no}`,
+  }))
 
   const branchOptions = branch.map((branch) => ({
     value: branch.branch_name,
@@ -231,90 +207,8 @@ const PurchaseForm = () => {
     label: supply.supplier_name,
   }));
 
-  //   const formData = new FormData();
-  // Object.entries(data).forEach(([key, value]) => {
-  //   formData.append(key, value);
-  // });
-
-  // await api.post("/purchase", formData, {
-  //   headers: { "Content-Type": "multipart/form-data" },
-  // });
-
 
   // Handle form submission for both add and update
-  // const onSubmit = async (data) => {
-  //   try {
-
-  //     // date format local 
-  //     ["date", "service_date", "next_service_date"].forEach((field) => {
-  //       if (data[field]) {
-  //         const d = new Date(data[field]);
-  //         d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-  //         data[field] = d.toISOString().split("T")[0];
-  //       }
-  //     });
-  //     // created_by ঠিকভাবে সেট করা
-  //     let createdByValue = "Unknown";
-  //     if (user?.name) createdByValue = user.name;
-  //     else if (user?.email) createdByValue = user.email;
-
-  //     // যদি Edit mode হয়, তাহলে আগেরটা রেখে দাও
-  //     if (isEditMode && data.created_by) {
-  //       createdByValue = data.created_by;
-  //     }
-
-  //     const payload = {
-  //       ...data,
-  //       created_by: createdByValue,
-  //     };
-
-  //     const response = isEditMode
-  //       ? await api.put(`/purchase/${id}`, payload)   // JSON
-  //       : await api.post(`/purchase`, payload);
-
-  //     if (response.data.success) {
-  //       toast.success(isEditMode ? "Purchase updated!" : "Purchase submitted!");
-  //       //  Only send SMS if it's a new trip and sms_sent = "yes"
-  //       if (!id && !isAdmin && data.sms_sent === "yes") {
-  //         const purchase = response.data.data; // Assuming your backend returns created trip data
-  //         const purchaseId = purchase.id;
-  //         const purchaseDate = purchase.date || "";
-  //         const supplierName = purchase.supplier_name || "";
-  //         const userName = user.name || "";
-  //         const purchaseCategory = purchase?.category || "";
-  //         const vehicleNo = purchase?.vehicle_no || "";
-
-  //         // Build message content
-  //         const messageContent = `Dear Sir, A new Maintenance created by ${userName}.\nPurchase Id: ${purchaseId}\nPurchase Date: ${purchaseDate}\nSupplier: ${supplierName}\nVehicle: ${vehicleNo}\nPurchase Name: ${purchaseCategory}`;
-
-  //         // SMS Config
-  //         const adminNumber = "01872121862"; // or multiple separated by commas
-  //         const API_KEY = "3b82495582b99be5";
-  //         const SECRET_KEY = "ae771458";
-  //         const CALLER_ID = "1234";
-
-  //         // Correct URL (same structure as your given example)
-  //         const smsUrl = `http://smpp.revesms.com:7788/sendtext?apikey=${API_KEY}&secretkey=${SECRET_KEY}&callerID=${CALLER_ID}&toUser=${adminNumber}&messageContent=${encodeURIComponent(messageContent)}`;
-  //         try {
-  //           await fetch(smsUrl);
-  //           toast.success("SMS sent to admin!");
-  //         } catch (smsError) {
-  //           // console.error("SMS sending failed:", smsError);
-  //           // toast.error("Trip saved, but SMS failed to send.");
-  //         }
-  //       }
-  //       navigate("/tramessy/Purchase/maintenance");
-  //       reset();
-  //     } else {
-  //       throw new Error(isEditMode ? "Failed to update Purchase" : "Failed to create Purchase");
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //     toast.error(error.response?.data?.message || "Server error");
-  //   }
-  // };
-
-
   const onSubmit = async (data) => {
     try {
       //  Date fields localize করা
@@ -326,11 +220,7 @@ const PurchaseForm = () => {
         }
       });
 
-      //  created_by
-      let createdByValue = user?.name || user?.email || "Unknown";
-      if (isEditMode && data.created_by) {
-        createdByValue = data.created_by;
-      }
+    const createdByValue = user?.name || user?.email || "Unknown";
       //  items array আলাদা করে নেওয়া
       const item_name = data.items.map((item) => item.item_name);
       const quantity = data.items.map((item) => Number(item.quantity));
@@ -368,18 +258,16 @@ const PurchaseForm = () => {
       unit_price.forEach((u, i) => formData.append("unit_price[]", u));
       total.forEach((t, i) => formData.append("total[]", t));
 
-      // image handle
       if (data.bill_image instanceof File) {
-        formData.append("bill_image", data.bill_image);
+        formData.append("image", data.bill_image);
       } else if (isEditMode && existingImage) {
-        // পূর্বের image থাকলে পাঠাও
         formData.append("existing_image", existingImage);
       }
 
 
       //  API Call
       const response = isEditMode
-        ? await api.put(`/purchase/${id}`, formData, {
+        ? await api.post(`/purchase/${id}`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         })
         : await api.post(`/purchase`, formData, {
@@ -388,7 +276,33 @@ const PurchaseForm = () => {
 
       if (response.data.success) {
         toast.success(isEditMode ? "Purchase updated!" : "Purchase submitted!");
-        navigate("/tramessy/Purchase/maintenance");
+        //  Only send SMS if it's a new trip and sms_sent = "yes"
+        if (!id && !isAdmin && data.sms_sent === "yes") {
+          const purchase = response.data.data; // Assuming your backend returns created trip data
+          const purchaseId = purchase.id;
+          const purchaseDate = purchase.date || "";
+          const supplierName = purchase.supplier_name || "";
+          const userName = user.name || "";
+          const purchaseCategory = purchase?.category || "";
+          const vehicleNo = purchase?.vehicle_no || "";
+        // Build message content
+     const messageContent = `Dear Sir, A new Maintenance created by ${userName}.\nPurchase Id: ${purchaseId}\nPurchase Date: ${purchaseDate}\nSupplier: ${supplierName}\nVehicle: ${vehicleNo}\nPurchase Name: ${purchaseCategory}`;
+         // SMS Config
+          const adminNumber = "01872121862"; // or multiple separated by commas
+          const API_KEY = "3b82495582b99be5";
+          const SECRET_KEY = "ae771458";
+          const CALLER_ID = "1234";
+           // Correct URL (same structure as your given example)
+          const smsUrl = `http://smpp.revesms.com:7788/sendtext?apikey=${API_KEY}&secretkey=${SECRET_KEY}&callerID=${CALLER_ID}&toUser=${adminNumber}&messageContent=${encodeURIComponent(messageContent)}`;
+          try {
+            await fetch(smsUrl);
+            toast.success("SMS sent to admin!");
+          } catch (smsError) {
+            // console.error("SMS sending failed:", smsError);
+            // toast.error("Trip saved, but SMS failed to send.");
+          }
+        }
+     navigate("/tramessy/Purchase/maintenance");
         reset();
       } else {
         throw new Error("Failed to save purchase");
@@ -400,9 +314,9 @@ const PurchaseForm = () => {
   };
 
 
-  if (isLoading) {
-    return <div className="flex justify-center items-center h-64">Loading purchase data...</div>;
-  }
+  // if (isLoading) {
+  //   return <div className="flex justify-center items-center h-64">Loading purchase data...</div>;
+  // }
 
   return (
     <div className="mt-5 md:p-2">
@@ -412,7 +326,11 @@ const PurchaseForm = () => {
           {isEditMode ? "Update Maintenance Purchase " : "Add Maintenance Purchase"}
         </h3>
         <FormProvider {...methods}>
-          <form
+          {isLoading  ? (
+            <div className="p-4 bg-white rounded-md shadow border-t-2 border-primary">
+              <FormSkeleton />
+            </div>
+          ) : (<form
             onSubmit={handleSubmit(onSubmit)}
             className="mx-auto p-6 space-y-4"
           >
@@ -467,6 +385,7 @@ const PurchaseForm = () => {
                   required={!isEditMode}
                   options={vehicleOptions}
                   control={control}
+                  defaultValue={watch("vehicle_no")}
                 />
               </div>
               <div className="w-full">
@@ -514,15 +433,6 @@ const PurchaseForm = () => {
                   {...register("vehicle_category")}
                 />
               </div>
-
-              {/* {selectedCategory==="engine_oil"&&(<div className="w-full">
-              <InputField
-                name="quantity"
-                label="Quantity"
-                type="number"
-                required={!isEditMode}
-              />
-            </div>)} */}
             </div>
             <div>
               {/*  Dynamic Item Fields */}
@@ -563,25 +473,6 @@ const PurchaseForm = () => {
             </div>
 
             <div className="flex flex-col lg:flex-row  gap-x-3">
-              {/* {selectedCategory=== "engine_oil" &&(<div className="flex flex-col lg:flex-row  gap-x-3 w-full">
-                <div className="w-full">
-                  <InputField
-                    name="unit_price"
-                    label="Unit Price"
-                    type="number"
-                    required={!isEditMode}
-                  />
-                </div>
-                <div className="w-full">
-                  <InputField
-                    name="purchase_amount"
-                    label="Total"
-                    readOnly
-                    value={totalPrice}
-                    required={!isEditMode}
-                  />
-                </div>
-              </div>)} */}
               <div className="w-full">
                 <InputField
                   name="purchase_amount"
@@ -780,7 +671,7 @@ const PurchaseForm = () => {
             )}
 
             <BtnSubmit>{isEditMode ? "Update Purchase" : "Submit"}</BtnSubmit>
-          </form>
+          </form>)}
         </FormProvider>
       </div>
     </div>
@@ -788,5 +679,3 @@ const PurchaseForm = () => {
 };
 
 export default PurchaseForm;
-
-

@@ -13,6 +13,7 @@ import { tableFormatDate } from "../../hooks/formatDate";
 import api from "../../../utils/axiosConfig";
 import DatePicker from "react-datepicker";
 import { IoMdClose } from "react-icons/io";
+import toNumber from "../../hooks/toNumber";
 
 const PurchaseList = () => {
   const [purchase, setPurchase] = useState([]);
@@ -46,7 +47,7 @@ const PurchaseList = () => {
         setLoading(false);
       });
   }, []);
-  console.log(purchase, "all purchase");
+
   // state
   const [vehicleFilter, setVehicleFilter] = useState("");
 
@@ -73,23 +74,22 @@ const PurchaseList = () => {
     return true;
   });
 
-  console.log(vehicleFiltered, "vehicleFiltered");
-
   // Search (Product ID, Supplier, Vehicle, Driver)
   const filteredPurchase = vehicleFiltered.filter((dt) => {
-    // শুধু এই দুইটা ক্যাটেগরি দেখানোর জন্য
-const category = dt.category?.toLowerCase();
-  console.log("CATEGORY:", dt.category);
-  if (!(category === "engine_oil" || category === "parts" || category === "documents")) {
-    return false;
-  }
-    const term = searchTerm.toLowerCase();
-    // যদি সার্চ term সংখ্যা হয় (যেমন "3")
-    const isNumeric = !isNaN(term);
+    const category = dt.category?.toLowerCase()
+    if (!(category === "engine_oil" || category === "parts" || category === "documents")) {
+      return false
+    }
+
+    const term = searchTerm.toLowerCase()
+    if (!term) {
+      return true
+    }
+
+    const isNumeric = !isNaN(term) && term !== ""
 
     if (isNumeric) {
-      // exact match for ID (3 দিলে শুধু ID=3 রিটার্ন করবে)
-      return dt.id === Number(term);
+      return dt.id === Number(term)
     }
     return (
       // dt.id?.toString().toLowerCase().includes(term) ||
@@ -98,7 +98,7 @@ const category = dt.category?.toLowerCase();
       dt.driver_name?.toLowerCase().includes(term)
     );
   });
-  console.log(filteredPurchase)
+
   // Vehicle No dropdown unique values
   const uniqueVehicles = [...new Set(purchase.map((p) => p.vehicle_no))];
   // view car by id
@@ -126,7 +126,7 @@ const category = dt.category?.toLowerCase();
 
       // Remove driver from local list
       setPurchase((prev) => prev.filter((account) => account.id !== id));
-      toast.success("Advance Salary deleted successfully", {
+      toast.success("Maintenance deleted successfully", {
         position: "top-right",
         autoClose: 3000,
       });
@@ -154,48 +154,197 @@ const category = dt.category?.toLowerCase();
   const totalPages = Math.ceil(filteredPurchase.length / itemsPerPage);
 
   // Excel Export Function
+  // const exportExcel = () => {
+  //   const dataToExport = filteredPurchase.map((item, index) => ({
+  //     "SL No": index + 1,
+  //     "Product ID": item.id,
+  //     "Supplier Name": item.supplier_name,
+  //     "Driver Name": item.driver_name !== "null" ? item.driver_name : "N/A",
+  //     "Vehicle No": item.vehicle_no !== "null" ? item.vehicle_no : "N/A",
+  //     "Category": item.category,
+  //     "Item Name": item.item_name,
+  //     "Quantity": toNumber(item.quantity),
+  //     "Unit Price": toNumber(item.unit_price),
+  //     "Total": toNumber(item.purchase_amount),
+  //     "Date": tableFormatDate(item.date),
+  //     "Remarks": item.remarks || "N/A"
+  //   }));
+
+  //   const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+  //   const workbook = XLSX.utils.book_new();
+  //   XLSX.utils.book_append_sheet(workbook, worksheet, "Purchase List");
+
+  //   // Generate Excel file
+  //   XLSX.writeFile(workbook, "Purchase_List.xlsx");
+  //   toast.success("Excel file downloaded successfully!");
+  // };
+
+
+  // // Print Function
+  // const printTable = () => {
+  //   // শুধু filtered data ব্যবহার
+  //   const tableHeader = `
+  //   <thead>
+  //     <tr>
+  //       <th>SL</th>
+  //       <th>Product ID</th>
+  //       <th>Supplier</th>
+  //       <th>Driver</th>
+  //       <th>Vehicle No</th>
+  //       <th>Category</th>
+  //       <th>Item</th>
+  //       <th>Qty</th>
+  //       <th>Unit Price</th>
+  //       <th>Service Charge</th>
+  //       <th>Total</th>
+  //     </tr>
+  //   </thead>
+  // `;
+
+  //   const tableRows = filteredPurchase
+  //     .map(
+  //       (item, index) =>{ 
+  //         // Join items into a string separated by commas or line breaks
+  //   const itemNames = item.items.map(i => i.item_name).join(", ");
+  //   const quantities = item.items.map(i => i.quantity).join(", ");
+  //   const unitPrices = item.items.map(i => i.unit_price).join(", ");
+  //         return `
+  //       <tr>
+  //         <td>${index + 1}</td>
+  //         <td>${item.id}</td>
+  //         <td>${item.supplier_name}</td>
+  //         <td>${item.driver_name !== "null" ? item.driver_name : "N/A"}</td>
+  //         <td>${item.vehicle_no !== "null" ? item.vehicle_no : "N/A"}</td>
+  //         <td>${item.category}</td>
+  //         <td>${item.itemNames}</td>
+  //         <td>${toNumber(item.quantities)}</td>
+  //         <td>${toNumber(item.unitPrices)}</td>
+  //                   <td>${item.service_charge}</td>
+  //         <td>${item.purchase_amount}</td>
+  //       </tr>
+  //     `}
+  //     )
+  //     .join("");
+
+  //   const printContent = `<table>${tableHeader}<tbody>${tableRows}</tbody></table>`;
+
+  //   const printWindow = window.open("", "", "width=1000,height=700");
+  //   printWindow.document.write(`
+  //   <html>
+  //     <head>
+  //       <title>Purchase List</title>
+  //       <style>
+  //         body { font-family: Arial, sans-serif; margin: 20px; }
+  //         h2 { color: #11375B; text-align: center; font-size: 22px; margin-bottom: 10px; }
+  //         table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 12px; }
+  //         thead tr {
+  //           background: linear-gradient(to right, #11375B, #1e4a7c);
+  //           color: white;
+  //         }
+  //         th, td { padding: 8px; border: 1px solid #ddd; text-align: center; }
+  //         td { color: #11375B; }
+  //         tr:nth-child(even) { background-color: #f9f9f9; }
+  //         tr:hover { background-color: #f1f5f9; }
+  //         .footer { margin-top: 20px; text-align: right; font-size: 12px; color: #555; }
+  //         @media print { body { margin: 0; } }
+  //          thead th {
+  //         color: #000000 !important;
+  //         background-color: #ffffff !important;
+  //         -webkit-print-color-adjust: exact !important;
+  //         print-color-adjust: exact !important;
+  //       }
+  //       </style>
+  //     </head>
+  //     <body>
+  //       <h2>Purchase List</h2>
+  //       ${printContent}
+  //       <div class="footer">
+  //         Printed on: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}
+  //       </div>
+  //     </body>
+  //   </html>
+  // `);
+  //   printWindow.document.close();
+  //   printWindow.focus();
+  //   printWindow.print();
+  //   printWindow.close();
+  // };
+
+   // Excel Export Function
   const exportExcel = () => {
-    const dataToExport = filteredPurchase.map((item, index) => ({
-      "SL No": index + 1,
-      "Product ID": item.id,
-      "Supplier Name": item.supplier_name,
-      "Driver Name": item.driver_name !== "null" ? item.driver_name : "N/A",
-      "Vehicle No": item.vehicle_no !== "null" ? item.vehicle_no : "N/A",
-      "Category": item.category,
-      "Item Name": item.item_name,
-      "Quantity": item.quantity,
-      "Unit Price": item.unit_price,
-      "Total": item.purchase_amount,
-      "Date": item.date,
-      "Remarks": item.remarks || "N/A"
-    }));
+    const dataToExport = []
 
-    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Purchase List");
+    filteredPurchase.forEach((purchase, purchaseIndex) => {
+      if (purchase.items && purchase.items.length > 0) {
+        purchase.items.forEach((item, itemIndex) => {
+          dataToExport.push({
+            "SL No": dataToExport.length + 1,
+            Date: tableFormatDate(purchase.date),
+            "Product ID": purchase.id,
+            "Supplier Name": purchase.supplier_name,
+            "Branch Name": purchase.branch_name,
+            "Driver Name": purchase.driver_name !== "null" ? purchase.driver_name : "N/A",
+            "Vehicle No": purchase.vehicle_no !== "null" ? purchase.vehicle_no : "N/A",
+            "Vehicle Category": purchase.vehicle_category !== "null" ? purchase.vehicle_category : "N/A",
+            Category: purchase.category,
+            "Item Name": item.item_name,
+            Quantity: toNumber(item.quantity),
+            "Unit Price": toNumber(item.unit_price),
+            Total: toNumber(purchase.total),
+          "Service Charge": toNumber(purchase.service_charge),
+          "Purcahse Amount": toNumber(purchase.purchase_amount),
+            "Service Date": tableFormatDate(purchase.service_date || "N/A"),
+            "Next Service Date": tableFormatDate(purchase.next_service_date || "N/A"),
+            "Last KM": purchase.last_km || "N/A",
+            "Next KM": purchase.next_km || "N/A",
+            Remarks: purchase.remarks || "N/A",
+          })
+        })
+      } else {
+        // If no items, still add the purchase record
+        dataToExport.push({
+          "SL No": dataToExport.length + 1,
+          Date: tableFormatDate(purchase.date),
+          "Product ID": purchase.id,
+          "Supplier Name": purchase.supplier_name,
+          "Driver Name": purchase.driver_name !== "null" ? purchase.driver_name : "N/A",
+          "Vehicle No": purchase.vehicle_no !== "null" ? purchase.vehicle_no : "N/A",
+          "Vehicle Category": purchase.vehicle_category !== "null" ? purchase.vehicle_category : "N/A",
+          Category: purchase.category,
+          "Item Name": "N/A",
+          Quantity: 0,
+          "Unit Price": 0,
+          Total: toNumber(purchase.total),
+          "Service Charge": purchase.service_charge,
+          "Purcahse Amount": toNumber(purchase.purchase_amount),
+          "Last KM": purchase.last_km || "N/A",
+            "Next KM": purchase.next_km || "N/A",
+          Remarks: purchase.remarks || "N/A",
+        })
+      }
+    })
 
-    // Generate Excel file
-    XLSX.writeFile(workbook, "Purchase_List.xlsx");
-    toast.success("Excel file downloaded successfully!");
-  };
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport)
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Purchase List")
+
+    XLSX.writeFile(workbook, "Purchase_List.xlsx")
+    toast.success("Excel file downloaded successfully!")
+  }
 
   // PDF Export Function
   const exportPDF = () => {
-    const doc = new jsPDF();
+    const doc = new jsPDF()
 
-    doc.setFontSize(18);
-    doc.text("Purchase List", 14, 15);
+    doc.setFontSize(18)
+    doc.text("Purchase List", 14, 15)
 
     if (startDate || endDate) {
-      doc.setFontSize(10);
-      doc.text(
-        `Date Range: ${startDate || "Start"} to ${endDate || "End"}`,
-        14,
-        22
-      );
+      doc.setFontSize(10)
+      doc.text(`Date Range: ${startDate || "Start"} to ${endDate || "End"}`, 14, 22)
     }
 
-    // শুধু Action বাদ দিয়ে table data তৈরি
+    // শুধু Action বাদ দিয়ে table data তৈরি
     const tableData = filteredPurchase.map((item, index) => [
       index + 1,
       item.id,
@@ -207,22 +356,11 @@ const category = dt.category?.toLowerCase();
       item.quantity,
       item.unit_price,
       item.purchase_amount,
-    ]);
+    ])
 
     autoTable(doc, {
       head: [
-        [
-          "SL",
-          "Product ID",
-          "Supplier",
-          "Driver",
-          "Vehicle No",
-          "Category",
-          "Item",
-          "Qty",
-          "Unit Price",
-          "Total",
-        ],
+        ["SL", "Product ID", "Supplier", "Driver", "Vehicle No", "Category", "Item", "Qty", "Unit Price", "Total"],
       ],
       body: tableData,
       startY: 30,
@@ -236,11 +374,11 @@ const category = dt.category?.toLowerCase();
         cellPadding: 2,
       },
       margin: { top: 30 },
-    });
+    })
 
-    doc.save("Purchase_List.pdf");
-    toast.success("PDF file downloaded successfully!");
-  };
+    doc.save("Purchase_List.pdf")
+    toast.success("PDF file downloaded successfully!")
+  }
 
   // Print Function
   const printTable = () => {
@@ -249,41 +387,76 @@ const category = dt.category?.toLowerCase();
     <thead>
       <tr>
         <th>SL</th>
+        <th>Date</th>
         <th>Product ID</th>
         <th>Supplier</th>
         <th>Driver</th>
         <th>Vehicle No</th>
+        <th>Vehicle Category</th>
         <th>Category</th>
         <th>Item</th>
         <th>Qty</th>
         <th>Unit Price</th>
         <th>Total</th>
+        <th>Service Charge</th>
+        <th>Purchase Amount</th>
       </tr>
     </thead>
-  `;
+  `
 
+    let rowIndex = 1
     const tableRows = filteredPurchase
-      .map(
-        (item, index) => `
-        <tr>
-          <td>${index + 1}</td>
-          <td>${item.id}</td>
-          <td>${item.supplier_name}</td>
-          <td>${item.driver_name !== "null" ? item.driver_name : "N/A"}</td>
-          <td>${item.vehicle_no !== "null" ? item.vehicle_no : "N/A"}</td>
-          <td>${item.category}</td>
-          <td>${item.item_name}</td>
-          <td>${item.quantity}</td>
-          <td>${item.unit_price}</td>
-          <td>${item.purchase_amount}</td>
-        </tr>
-      `
-      )
-      .join("");
+      .map((item) => {
+        // If purchase has items, create a row for each item
+        if (item.items && item.items.length > 0) {
+          return item.items
+            .map(
+              (subItem, i) => `
+            <tr>
+              <td>${rowIndex++}</td>
+              <td>${tableFormatDate(item.date)}</td>
+              <td>${item.id}</td>
+              <td>${item.supplier_name}</td>
+              <td>${item.driver_name !== "null" ? item.driver_name : "N/A"}</td>
+              <td>${item.vehicle_no !== "null" ? item.vehicle_no : "N/A"}</td>
+              <td>${item.vehicle_category !== "null" ? item.vehicle_category : "N/A"}</td>
+              <td>${item.category}</td>
+              <td>${subItem.item_name}</td>
+              <td>${toNumber(subItem.quantity)}</td>
+              <td>${toNumber(subItem.unit_price)}</td>
+              <td>${toNumber(subItem.total)}</td>
+              <td>${item.service_charge}</td>
+              <td>${toNumber(item.purchase_amount)}</td>
+            </tr>
+          `,
+            )
+            .join("")
+        } else {
+          // If no items, still show the purchase
+          return `
+            <tr>
+              <td>${rowIndex++}</td>
+              <td>${tableFormatDate(item.date)}</td>
+              <td>${item.id}</td>
+              <td>${item.supplier_name}</td>
+              <td>${item.driver_name !== "null" ? item.driver_name : "N/A"}</td>
+              <td>${item.vehicle_no !== "null" ? item.vehicle_no : "N/A"}</td>
+              <td>${item.vehicle_category !== "null" ? item.vehicle_category : "N/A"}</td>
+              <td>${item.category}</td>
+              <td>N/A</td>
+              <td>0</td>
+              <td>0</td>
+              <td>${toNumber(item.service_charge)}</td>
+              <td>${toNumber(item.purchase_amount)}</td>
+            </tr>
+          `
+        }
+      })
+      .join("")
 
-    const printContent = `<table>${tableHeader}<tbody>${tableRows}</tbody></table>`;
+    const printContent = `<table>${tableHeader}<tbody>${tableRows}</tbody></table>`
 
-    const printWindow = window.open("", "", "width=1000,height=700");
+    const printWindow = window.open("", "", "width=1200,height=700")
     printWindow.document.write(`
     <html>
       <head>
@@ -291,7 +464,7 @@ const category = dt.category?.toLowerCase();
         <style>
           body { font-family: Arial, sans-serif; margin: 20px; }
           h2 { color: #11375B; text-align: center; font-size: 22px; margin-bottom: 10px; }
-          table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 12px; }
+          table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 11px; }
           thead tr {
             background: linear-gradient(to right, #11375B, #1e4a7c);
             color: white;
@@ -302,12 +475,12 @@ const category = dt.category?.toLowerCase();
           tr:hover { background-color: #f1f5f9; }
           .footer { margin-top: 20px; text-align: right; font-size: 12px; color: #555; }
           @media print { body { margin: 0; } }
-           thead th {
-          color: #000000 !important;
-          background-color: #ffffff !important;
-          -webkit-print-color-adjust: exact !important;
-          print-color-adjust: exact !important;
-        }
+          thead th {
+            color: #000000 !important;
+            background-color: #ffffff !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
         </style>
       </head>
       <body>
@@ -318,13 +491,12 @@ const category = dt.category?.toLowerCase();
         </div>
       </body>
     </html>
-  `);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
-    printWindow.close();
-  };
-
+  `)
+    printWindow.document.close()
+    printWindow.focus()
+    printWindow.print()
+    printWindow.close()
+  }
   return (
     <div className=" p-2">
       <div className="w-[22rem] md:w-full overflow-hidden overflow-x-auto max-w-7xl mx-auto bg-white/80 backdrop-blur-md shadow-xl rounded-md p-2 py-10 md:p-4 border border-gray-200">
@@ -462,14 +634,14 @@ const category = dt.category?.toLowerCase();
                 <th className="px-2 py-4">Date</th>
                 <th className="px-2 py-4">Prod.ID</th>
                 <th className="px-2 py-4">Supplier</th>
-                <th className="px-2 py-2">Driver </th>
+                {/* <th className="px-2 py-2">Driver </th> */}
                 <th className="px-2 py-2">VehicleCategory</th>
                 <th className="px-2 py-2">VehicleNo</th>
-
                 <th className="px-2 py-4">Category</th>
                 <th className="px-2 py-4">ItemName</th>
                 <th className="px-2 py-4">Quantity</th>
                 <th className="px-2 py-4">UnitPrice</th>
+                <th className="px-2 py-4">ServiceCharge</th>
                 <th className="px-2 py-4">Total</th>
                 {/* <th className="px-2 py-4">Bill Image</th> */}
                 <th className="px-2 py-4">Action</th>
@@ -493,14 +665,21 @@ const category = dt.category?.toLowerCase();
                     <td className="p-2">{tableFormatDate(dt.date)}</td>
                     <td className="p-2">{dt.id}</td>
                     <td className="p-2">{dt.supplier_name}</td>
-                    <td className="px-2 py-2">{dt.driver_name !== "null" ? dt.driver_name : "N/A"}</td>
+                    {/* <td className="px-2 py-2">{dt.driver_name !== "null" ? dt.driver_name : "N/A"}</td> */}
                     <td className="px-2 py-2">{dt.vehicle_category !== "null" ? dt.vehicle_category : "N/A"}</td>
                     <td className="px-2 py-2">{dt.vehicle_no !== "null" ? dt.vehicle_no : "N/A"}</td>
 
                     <td className="p-2">{dt.category}</td>
-                    <td className="p-2">{dt.item_name}</td>
-                    <td className="p-2">{dt.quantity}</td>
-                    <td className="p-2">{dt.unit_price}</td>
+                    <td className="p-2">{dt.items.map((item, i) => (
+                      <div key={i}>{item.item_name}</div>
+                    ))}</td>
+                    <td className="p-2">{dt.items.map((item, i) => (
+                      <div key={i}>{item.quantity}</div>
+                    ))}</td>
+                    <td className="p-2">{dt.items.map((item, i) => (
+                      <div key={i}>{item.unit_price}</div>
+                    ))}</td>
+                    <td className="p-2">{dt.service_charge}</td>
                     <td className="p-2">{dt.purchase_amount}</td>
                     {/* <td className="p-2">
                     <img
@@ -552,88 +731,147 @@ const category = dt.category?.toLowerCase();
           />
         )}
       </div>
+      {/* view modal */}
       {viewModalOpen && selectedPurchase && (
-        <div className="fixed inset-0 flex items-center justify-center bg-[#000000ad] z-50 p-4 overflow-auto scroll-hidden">
-          <div className="w-full max-w-3xl bg-white rounded-2xl shadow-lg p-5 relative">
-            <h2 className="text-xl font-bold text-primary border-b pb-4 mb-6">
-              Purchase Information
-            </h2>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-white rounded-2xl shadow-2xl">
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-800">
-              <div className="flex justify-between p-2">
-                <span className="font-medium w-1/2">Product ID:</span>
-                <span>{selectedPurchase.id}</span>
-              </div>
-              <div className="flex justify-between p-2">
-                <span className="font-medium w-1/2">Supplier Name:</span>
-                <span>{selectedPurchase.supplier_name}</span>
-              </div>
-              <div className="flex justify-between p-2">
-                <span className="font-medium w-1/2">Vehicle No:</span>
-                <span>{selectedPurchase.vehicle_no}</span>
-              </div>
-              <div className="flex justify-between p-2">
-                <span className="font-medium w-1/2">Driver:</span>
-                <span>{selectedPurchase.driver_name}</span>
-              </div>
-              <div className="flex justify-between p-2">
-                <span className="font-medium w-1/2">Vehicle Category:</span>
-                <span>{selectedPurchase.vehicle_category}</span>
-              </div>
-              <div className="flex justify-between p-2">
-                <span className="font-medium w-1/2">Category:</span>
-                <span>{selectedPurchase.category}</span>
-              </div>
-              <div className="flex justify-between p-2">
-                <span className="font-medium w-1/2">Item Name:</span>
-                <span>{selectedPurchase.item_name || "N/A"}</span>
-              </div>
-              <div className="flex justify-between p-2">
-                <span className="font-medium w-1/2">Quantity:</span>
-                <span>{selectedPurchase.quantity}</span>
-              </div>
-              <div className="flex justify-between p-2">
-                <span className="font-medium w-1/2">Service Date:</span>
-                <span>{tableFormatDate(selectedPurchase.service_date || "N/A")}</span>
-              </div>
-              <div className="flex justify-between p-2">
-                <span className="font-medium w-1/2">Next Service Date:</span>
-                <span>{tableFormatDate(selectedPurchase.next_service_date || "N/A")}</span>
-              </div>
-              <div className="flex justify-between p-2">
-                <span className="font-medium w-1/2">Last KM:</span>
-                <span>{selectedPurchase.last_km || "N/A"}</span>
-              </div>
-              <div className="flex justify-between p-2">
-                <span className="font-medium w-1/2">Next KM:</span>
-                <span>{selectedPurchase.next_km || "N/A"}</span>
-              </div>
-              <div className="flex justify-between p-2">
-                <span className="font-medium w-1/2">Unit Price:</span>
-                <span>{selectedPurchase.unit_price}</span>
-              </div>
-              <div className="flex justify-between p-2">
-                <span className="font-medium w-1/2">Total:</span>
-                <span>{selectedPurchase.purchase_amount}</span>
-              </div>
-              <div className="flex justify-between p-2">
-                <span className="font-medium w-1/2">Created By:</span>
-                <span>{selectedPurchase.created_by}</span>
-              </div>
-              {/* <div className="flex flex-col items-start p-2">
-                <span className="font-medium mb-2">Bill Image:</span>
-                <img
-                  src={`${import.meta.env.VITE_BASE_URL}/public/uploads/purchase/${selectedPurchase.bill_image}`}
-                  alt="Bill"
-                  className="w-32 h-32 object-cover rounded-lg border"
-                />
-              </div> */}
-            </div>
-
-            <div className="flex justify-end mt-5">
+            {/* Header */}
+            <div className="sticky top-0 bg-white z-10 flex justify-between items-center p-5">
+              <h2 className="text-2xl font-semibold text-gray-800">
+                Purchase Details
+              </h2>
               <button
                 onClick={() => setViewModalOpen(false)}
-                className="bg-primary text-white px-5 py-2 rounded-md hover:bg-primary/80 transition"
+                className="text-gray-500 hover:text-red-500 transition-colors text-xl font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 space-y-10">
+
+              {/* Image Preview */}
+              {/* {selectedPurchase.image && (
+                <div className="flex justify-center">
+                  <img
+                    src={selectedPurchase.image}
+                    alt="Purchase"
+                    className="w-60 h-60 object-cover rounded-xl border shadow-md"
+                  />
+                </div>
+              )} */}
+
+              {/* Basic Information */}
+              <section>
+                <h3 className="text-lg font-semibold text-primary border-b pb-2 mb-4">
+                  Basic Information
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm md:text-base">
+                  <p><span className="font-medium text-gray-600">Date:</span> {tableFormatDate(selectedPurchase.date)}</p>
+                  <p><span className="font-medium text-gray-600">Supplier Name:</span> {selectedPurchase.supplier_name}</p>
+                  <p><span className="font-medium text-gray-600">Category:</span> {selectedPurchase.category}</p>
+                  <p><span className="font-medium text-gray-600">Purchase Amount:</span> {selectedPurchase.purchase_amount}</p>
+                  <p><span className="font-medium text-gray-600">Service Charge:</span> {selectedPurchase.service_charge || "N/A"}</p>
+                  <p><span className="font-medium text-gray-600">Remarks:</span> {selectedPurchase.remarks}</p>
+                  <p><span className="font-medium text-gray-600">Status:</span>
+                    <span className={`ml-2 px-3 py-1 rounded-full text-sm font-medium ${selectedPurchase.status === "pending"
+                        ? "bg-yellow-100 text-yellow-700"
+                        : selectedPurchase.status === "completed"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-gray-100 text-gray-600"
+                      }`}>
+                      {selectedPurchase.status}
+                    </span>
+                  </p>
+                </div>
+              </section>
+
+              {/* Vehicle Information */}
+              <section>
+                <h3 className="text-lg font-semibold text-primary border-b pb-2 mb-4">
+                  Vehicle Information
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm md:text-base">
+                  <p><span className="font-medium text-gray-600">Driver Name:</span> {selectedPurchase.driver_name}</p>
+                  <p><span className="font-medium text-gray-600">Branch Name:</span> {selectedPurchase.branch_name}</p>
+                  <p><span className="font-medium text-gray-600">Vehicle No:</span> {selectedPurchase.vehicle_no}</p>
+                  <p><span className="font-medium text-gray-600">Vehicle Category:</span> {selectedPurchase.vehicle_category}</p>
+                </div>
+              </section>
+
+              {/* Service Information */}
+              <section>
+                <h3 className="text-lg font-semibold text-primary border-b pb-2 mb-4">
+                  Service Information
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm md:text-base">
+                  <p><span className="font-medium text-gray-600">Service Date:</span> {selectedPurchase.service_date || "N/A"}</p>
+                  <p><span className="font-medium text-gray-600">Next Service Date:</span> {selectedPurchase.next_service_date || "N/A"}</p>
+                  <p><span className="font-medium text-gray-600">Last KM:</span> {selectedPurchase.last_km || "N/A"}</p>
+                  <p><span className="font-medium text-gray-600">Next KM:</span> {selectedPurchase.next_km || "N/A"}</p>
+                  <p><span className="font-medium text-gray-600">Priority:</span> {selectedPurchase.priority}</p>
+                  <p><span className="font-medium text-gray-600">Validity:</span> {selectedPurchase.validity || "N/A"}</p>
+                </div>
+              </section>
+
+              {/* Creator Info */}
+              <section>
+                <h3 className="text-lg font-semibold text-primary border-b pb-2 mb-4">
+                  System Info
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm md:text-base">
+                  <p><span className="font-medium text-gray-600">Created By:</span> {selectedPurchase.created_by}</p>
+                  <div className="flex flex-col items-start ">
+                    <span className="font-medium mb-2">Bill Image:</span>
+                    <img
+                      src={`https://ajenterprise.tramessy.com/backend/uploads/purchase/${selectedPurchase.image}`}
+                      alt="Bill"
+                      className="w-32 h-32 object-cover rounded-lg border"
+                    />
+                  </div>
+                </div>
+              </section>
+
+              {/* Purchase Items */}
+              {(
+                <section>
+                  <h3 className="text-lg font-semibold text-primary border-b pb-2 mb-4">
+                    Purchased Items
+                  </h3>
+                  <div className="overflow-x-auto">
+                    <table className="w-full border border-gray-200 rounded-lg overflow-hidden text-sm md:text-base">
+                      <thead className="bg-gray-100 text-gray-700">
+                        <tr>
+                          <th className="p-3 text-left">Item Name</th>
+                          <th className="p-3 text-center">Quantity</th>
+                          <th className="p-3 text-center">Unit Price</th>
+                          <th className="p-3 text-center">Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {selectedPurchase?.items?.map((item, index) => (
+                          <tr key={item.id} className=" hover:bg-gray-50">
+                            <td className="p-3">{item.item_name}</td>
+                            <td className="p-3 text-center">{item.quantity}</td>
+                            <td className="p-3 text-center">{item.unit_price}</td>
+                            <td className="p-3 text-center font-medium text-gray-800">{item.total}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+              )}
+
+            </div>
+
+            {/* Footer */}
+            <div className="sticky bottom-0 bg-white flex justify-end p-2">
+              <button
+                onClick={() => setViewModalOpen(false)}
+                className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary/90 transition-all font-medium"
               >
                 Close
               </button>
@@ -641,6 +879,7 @@ const category = dt.category?.toLowerCase();
           </div>
         </div>
       )}
+
       {/* Delete Modal */}
       <div className="flex justify-center items-center">
         {isOpen && (

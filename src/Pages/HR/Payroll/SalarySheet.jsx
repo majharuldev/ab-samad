@@ -59,57 +59,132 @@ const SalarySheet = () => {
   }, []);
 
   // Merge data for salary sheet
-  useEffect(() => {
-    if (employees.length === 0) return;
-    console.log(employees, "em")
+  // useEffect(() => {
+  //   if (employees.length === 0) return;
+  //   console.log(employees, "em")
 
-    const merged = employees.map((emp, index) => {
-      const empSalary = salaryAdvances.find(s => s.employee_id == emp.id) || {};
-      const empAttend = attendences.find(a => a.employee_id == emp.id) || {};
-      const empLoan = loanData.find(l => l.employee_id == emp.id) || {};
-  const empBonus = bonusData.filter(b => b.employee_id == emp.id && b.status === "Completed")
-                            .reduce((sum, b) => sum + Number(b.amount), 0);
-      // Dynamic month-year & net pay in words
-      const monthYear =
-        empAttend?.month ||
-        empSalary?.salary_month ||
-        new Date().toISOString().slice(0, 7);
+  //   const merged = employees.map((emp, index) => {
+  //     const empSalary = salaryAdvances.find(s => s.employee_id == emp.id) || {};
+  //     const empAttend = attendences.find(a => a.employee_id == emp.id) || {};
+  //     const empLoan = loanData.find(l => l.employee_id == emp.id) || {};
+  // const empBonus = bonusData.filter(b => b.employee_id == emp.id && b.status === "Completed")
+  //                           .reduce((sum, b) => sum + Number(b.amount), 0);
+  //     // Dynamic month-year & net pay in words
+  //     const loanMonth = l.date?.slice(0, 7); 
+  //     const monthYear =
+  //       empAttend?.month ||
+  //       empSalary?.salary_month ||
+  //       new Date().toISOString().slice(0, 7);
 
-      const basic = emp.basic ? Number(emp.basic) : "";
-      const rent = emp.house_rent ? Number(emp.house_rent) : "";
-      const conv = emp.conv ? Number(emp.conv) : "";
-      const medical = emp.medical ? Number(emp.medical) : "";
-      const allowance = emp.allowan ? Number(emp.allowan) : "";
-      const totalEarnings = basic + rent + conv + medical + allowance + empBonus;
-      // const total = [basic, rent, conv, medical, allowance].reduce((acc, v) => acc + (v || 0), 0);
-      const advance = empSalary.amount ? Number(empSalary.amount) : 0;
-      const loanDeduction = Number(empLoan.monthly_deduction || 0);
-      const deductionTotal = advance + loanDeduction;
-      const netPay = totalEarnings - deductionTotal;
+  //     const basic = emp.basic ? Number(emp.basic) : "";
+  //     const rent = emp.house_rent ? Number(emp.house_rent) : "";
+  //     const conv = emp.conv ? Number(emp.conv) : "";
+  //     const medical = emp.medical ? Number(emp.medical) : "";
+  //     const allowance = emp.allowan ? Number(emp.allowan) : "";
+  //     const totalEarnings = basic + rent + conv + medical + allowance + empBonus;
+  //     // const total = [basic, rent, conv, medical, allowance].reduce((acc, v) => acc + (v || 0), 0);
+  //     const advance = empSalary.amount ? Number(empSalary.amount) : 0;
+  //     const loanDeduction = Number(empLoan.monthly_deduction || 0);
+  //     const deductionTotal = advance + loanDeduction;
+  //     const netPay = totalEarnings - deductionTotal;
 
-      return {
-        empId: emp.id,
-        name: emp.employee_name,
-        designation: emp.designation || "",
-        days: empAttend.working_day || "",
-        monthYear,
-        basic,
-        rent,
-        conv,
-        medical,
-        allowance,
-        total: basic + rent + conv + medical + allowance,
-    bonus: empBonus,
-        advance,
-        monthly_deduction: loanDeduction,
-        deductionTotal,
-        netPay
-      };
+  //     return {
+  //       empId: emp.id,
+  //       name: emp.employee_name,
+  //       designation: emp.designation || "",
+  //       days: empAttend.working_day || "",
+  //       monthYear,
+  //       basic,
+  //       rent,
+  //       conv,
+  //       medical,
+  //       allowance,
+  //       total: basic + rent + conv + medical + allowance,
+  //   bonus: empBonus,
+  //       advance,
+  //       monthly_deduction: loanDeduction,
+  //       deductionTotal,
+  //       netPay
+  //     };
+  //   });
+
+  //   setData(merged);
+  // }, [employees, salaryAdvances, attendences]);
+ 
+  // Merge data for salary sheet
+useEffect(() => {
+  if (employees.length === 0) return;
+
+  const merged = employees.map((emp) => {
+    const empSalary = salaryAdvances.find(s => s.employee_id == emp.id) || {};
+    const empAttend = attendences.find(a => a.employee_id == emp.id) || {};
+
+    // বর্তমান মাস নির্ধারণ
+    const monthYear =
+      empAttend?.month ||
+      empSalary?.salary_month ||
+      new Date().toISOString().slice(0, 7);
+
+    //  loan শুধুমাত্র ঐ মাসেরটিই দেখাবে
+    // const empLoans = loanData.filter(l => {
+    //   if (l.employee_id != emp.id) return false;
+    //   const loanMonth = l.date?.slice(0, 7);
+    //   return loanMonth === monthYear;
+    // });
+    const empLoans = loanData.filter(l => {
+      if (l.employee_id != emp.id) return false;
+      const loanMonth = l.date?.slice(0, 7);
+      return loanMonth === monthYear && Number(l.adjustment) > 0;
     });
 
-    setData(merged);
-  }, [employees, salaryAdvances, attendences]);
-  console.log(data, "data")
+    //  যদি ঐ মাসে একাধিক loan থাকে, সবগুলোর monthly_deduction যোগ করো
+    const totalLoanDeduction = empLoans.reduce(
+      (sum, l) => sum + Number(l.monthly_deduction || 0),
+      0
+    );
+
+    //  Bonus হিসাব
+    const empBonus = bonusData
+      .filter(b => b.employee_id == emp.id && b.status === "Completed")
+      .reduce((sum, b) => sum + Number(b.amount), 0);
+
+    //  Salary অংশ
+    const basic = emp.basic ? Number(emp.basic) : 0;
+    const rent = emp.house_rent ? Number(emp.house_rent) : 0;
+    const conv = emp.conv ? Number(emp.conv) : 0;
+    const medical = emp.medical ? Number(emp.medical) : 0;
+    const allowance = emp.allowan ? Number(emp.allowan) : 0;
+    const totalEarnings = basic + rent + conv + medical + allowance + empBonus;
+
+    //  Deduction হিসাব
+    const advance = empSalary.amount ? Number(empSalary.amount) : 0;
+    const loanDeduction = totalLoanDeduction;
+    const deductionTotal = advance + loanDeduction;
+    const netPay = totalEarnings - deductionTotal;
+
+    // ✅ Return merged data row
+    return {
+      empId: emp.id,
+      name: emp.employee_name,
+      designation: emp.designation || "",
+      days: empAttend.working_day || "",
+      monthYear,
+      basic,
+      rent,
+      conv,
+      medical,
+      allowance,
+      total: basic + rent + conv + medical + allowance,
+      bonus: empBonus,
+      advance,
+      monthly_deduction: loanDeduction,
+      deductionTotal,
+      netPay
+    };
+  });
+
+  setData(merged);
+}, [employees, salaryAdvances, attendences, loanData, bonusData]);
 
     // Month options
   const months = [...new Set(data.map(d => d.monthYear))]; 

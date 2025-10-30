@@ -8,6 +8,7 @@ import api from "../../../../utils/axiosConfig";
 import { AuthContext } from "../../../providers/AuthProvider";
 import { useNavigate, useParams } from "react-router-dom";
 import { set } from "date-fns";
+import FormSkeleton from "../../../components/Form/FormSkeleton";
 
 const AdvanceSalaryForm = () => {
   const methods = useForm();
@@ -18,8 +19,8 @@ const AdvanceSalaryForm = () => {
   const userId = user?.id;
   const { id } = useParams();
   const navigate = useNavigate()
+    const [loading, setLoading] = useState(true);
 
-  console.log(employees, "employee")
 
   // Fetch employees & user info
   useEffect(() => {
@@ -40,28 +41,92 @@ const AdvanceSalaryForm = () => {
   }, [userId]);
 
   // Fetch existing advance salary (for edit mode)
+  // useEffect(() => {
+  //   if (id) {
+  //     const fetchAdvanceSalary = async () => {
+  //        if (!id) {
+  //       setLoading(false);
+  //       return;
+  //     }
+
+  //       try {
+  //         const res = await api.get(`/salaryAdvanced/${id}`);
+  //         const data = res.data?.data;
+  //         if (data) {
+  //            // Wait until employees loaded
+  //         const waitForEmployees = new Promise((resolve) => {
+  //           const interval = setInterval(() => {
+  //             if (employees.length > 0) {
+  //               clearInterval(interval);
+  //               resolve();
+  //             }
+  //           }, 100);
+  //         });
+
+  //         await waitForEmployees;
+  //           setValue("employee_id", data.employee_id);
+  //           setValue("amount", data.amount);
+  //           setValue("salary_month", data.salary_month);
+  //           setValue("adjustment", data.adjustment);
+  //           setValue("status", data.status);
+  //           setValue("created_by", data.created_by);
+  //         }
+  //       } catch (err) {
+  //         console.error("Error fetching salary data:", err);
+  //         toast.error("Failed to load advance salary info!");
+  //       }finally {
+  //       setLoading(false);
+  //     }
+  //     };
+  //     fetchAdvanceSalary();
+  //   }
+  // }, [id, id, setValue]);
+
   useEffect(() => {
-    if (id) {
-      const fetchAdvanceSalary = async () => {
-        try {
-          const res = await api.get(`/salaryAdvanced/${id}`);
-          const data = res.data?.data;
-          if (data) {
-            setValue("employee_id", data.employee_id);
-            setValue("amount", data.amount);
-            setValue("salary_month", data.salary_month);
-            setValue("adjustment", data.adjustmemnt);
-            setValue("status", data.status);
-            setValue("created_by", data.created_by);
-          }
-        } catch (err) {
-          console.error("Error fetching salary data:", err);
-          toast.error("Failed to load advance salary info!");
-        }
-      };
-      fetchAdvanceSalary();
+  const fetchAdvanceSalary = async () => {
+    // new record হলে সরাসরি loading false
+    if (!id) {
+      setLoading(false);
+      return;
     }
-  }, [id, id, setValue]);
+
+    try {
+      const res = await api.get(`/salaryAdvanced/${id}`);
+      const data = res.data?.data;
+
+      if (data) {
+        // Wait until employees loaded
+        const waitForEmployees = new Promise((resolve) => {
+          const interval = setInterval(() => {
+            if (employees.length > 0) {
+              clearInterval(interval);
+              resolve();
+            }
+          }, 100);
+        });
+
+        await waitForEmployees;
+
+        // এখন employees ready, তাই value set করা নিরাপদ
+        setValue("employee_id", data.employee_id);
+        setValue("amount", data.amount);
+        setValue("salary_month", data.salary_month);
+        setValue("adjustment", data.adjustment);
+        setValue("status", data.status);
+        setValue("created_by", data.created_by);
+      }
+    } catch (err) {
+      console.error("Error fetching salary data:", err);
+      toast.error("Failed to load advance salary info!");
+    } finally {
+      // সবশেষে loading বন্ধ
+      setLoading(false);
+    }
+  };
+
+  fetchAdvanceSalary();
+}, [id, employees, setValue]);
+
 
   // Auto set adjustment same as amount when adding new
 useEffect(() => {
@@ -115,7 +180,11 @@ useEffect(() => {
   return (
     <div className="p-2">
       <FormProvider {...methods}>
-        <form
+        {loading && id ? (
+                <div className="p-4 bg-white rounded-md shadow border-t-2 border-primary">
+                  <FormSkeleton />
+                </div>
+              ) : (<form
           onSubmit={handleSubmit(onSubmit)}
           className="mx-auto p-6 border-t-2 border-primary rounded-md shadow space-y-4 max-w-3xl bg-white"
         >
@@ -203,7 +272,7 @@ useEffect(() => {
 
           {/* Submit */}
           <BtnSubmit> {id ? "Update" : "Submit"}</BtnSubmit>
-        </form>
+        </form>)}
       </FormProvider>
     </div>
   );

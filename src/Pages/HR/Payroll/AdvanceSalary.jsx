@@ -6,16 +6,18 @@ import Pagination from "../../../components/Shared/Pagination";
 import { tableFormatDate } from "../../../hooks/formatDate";
 import { IoMdClose } from "react-icons/io";
 import toast from "react-hot-toast";
+import * as XLSX from "xlsx";
 
 const AdvanceSalary = () => {
   const [advanceSalary, setAdvanceSalary] = useState([]);
   const [employee, setEmployee] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
+  const [searchTerm, setSearchTerm] = useState("");
   // delete modal
-    const [isOpen, setIsOpen] = useState(false);
-    const [selectedAdvanceSalaryId, setSelectedAdvanceSalaryId] = useState(null);
-    const toggleModal = () => setIsOpen(!isOpen);
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedAdvanceSalaryId, setSelectedAdvanceSalaryId] = useState(null);
+  const toggleModal = () => setIsOpen(!isOpen);
 
   // salary advance fetch
   useEffect(() => {
@@ -68,16 +70,103 @@ const AdvanceSalary = () => {
     }
   };
 
-  // pagination logic
-  const indexOfLast = currentPage * itemsPerPage;
-  const indexOfFirst = indexOfLast - itemsPerPage;
-  const currentItems = advanceSalary.slice(indexOfFirst, indexOfLast);
-  const totalPages = Math.ceil(advanceSalary.length / itemsPerPage);
 
   // helper to get employee name
   const getEmployeeName = (empId) => {
     const emp = employee.find((e) => e.id === Number(empId));
     return emp ? emp.employee_name || emp.email : empId;
+  };
+
+  // Search filter
+  const filteredData = advanceSalary.filter((item) => {
+    const empName = getEmployeeName(item.employee_id)?.toLowerCase() || "";
+    const amount = item.amount?.toString() || "";
+    const month = item.salary_month?.toLowerCase() || "";
+    const term = searchTerm.toLowerCase();
+
+    return (
+      empName.includes(term) || amount.includes(term) || month.includes(term)
+    );
+  });
+
+  // pagination logic
+  const indexOfLast = currentPage * itemsPerPage;
+  const indexOfFirst = indexOfLast - itemsPerPage;
+  const currentItems = filteredData.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+
+  // Export Excel
+  const exportExcel = () => {
+    const data = filteredData.map((item) => ({
+      Date: tableFormatDate(item.created_at),
+      "Employee Name": getEmployeeName(item.employee_id),
+      Amount: item.amount,
+      "Salary Month": item.salary_month,
+      "After Adjustment": item.adjustment,
+      Status: item.status,
+      "Created By": item.created_by,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Advance Salary");
+    XLSX.writeFile(workbook, "Advance_Salary_List.xlsx");
+  };
+
+  // Print
+  const printTable = () => {
+    const printWindow = window.open("", "", "width=900,height=600");
+    const tableHTML = `
+      <html>
+        <head>
+          <title></title>
+          <style>
+            table { width: 100%; border-collapse: collapse; font-size: 12px; }
+            th, td { border: 1px solid #333; padding: 6px; text-align: left; }
+            th { background-color: #f2f2f2; }
+            h2 { text-align: center; margin-bottom: 10px; }
+          </style>
+        </head>
+        <body>
+          <h2>Advance Salary Report</h2>
+          <table>
+            <thead>
+              <tr>
+              <th>#</th>
+              <th>Date</th>
+              <th>Employee Name</th>
+              <th>Amount</th>
+              <th>Salary Month</th>
+              <th>After Adjustment</th>
+              <th>Status</th>
+              <th>Created By</th>
+            </tr>
+            </thead>
+            <tbody>
+              ${filteredData
+        .map(
+          (item, index) => `
+                <tr>
+        <td>${index + 1}</td>
+        <td>${tableFormatDate(item.created_at)}</td>
+        <td>${getEmployeeName(item.employee_id)}</td>
+        <td>${item.amount} ৳</td>
+        <td>${item.salary_month}</td>
+        <td>${item.adjustment} ৳</td>
+        <td>${item.status}</td>
+        <td>${item.created_by}</td>
+      </tr>`
+        )
+        .join("")}
+            </tbody>
+          </table>
+        </body>
+      </html>
+    `;
+    printWindow.document.write(tableHTML);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
   };
 
   return (
@@ -95,6 +184,49 @@ const AdvanceSalary = () => {
                 <FaPlus /> Advance
               </button>
             </Link>
+          </div>
+        </div>
+        {/* export */}
+        <div className="md:flex justify-between items-center">
+          <div className="flex gap-1 md:gap-3 text-gray-700 font-semibold rounded-md">
+            <button
+              onClick={exportExcel}
+              className="py-1 px-5 hover:bg-primary bg-white hover:text-white rounded shadow transition-all duration-300 cursor-pointer"
+            >
+              Excel
+            </button>
+            <button
+              onClick={printTable}
+              className="py-1 px-5 hover:bg-primary bg-white hover:text-white rounded shadow transition-all duration-300 cursor-pointer"
+            >
+              Print
+            </button>
+          </div>
+          {/* search */}
+          <div className="mt-3 md:mt-0">
+            {/* <span className="text-primary font-semibold pr-3">Search: </span> */}
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
+              placeholder="Search by Product ..."
+              className="lg:w-60 border border-gray-300 rounded-md outline-none text-xs py-2 ps-2 pr-5"
+            />
+            {/*  Clear button */}
+            {searchTerm && (
+              <button
+                onClick={() => {
+                  setSearchTerm("");
+                  setCurrentPage(1);
+                }}
+                className="absolute right-5 top-[5.5rem] -translate-y-1/2 text-gray-400 hover:text-red-500 text-sm"
+              >
+                ✕
+              </button>
+            )}
           </div>
         </div>
 
