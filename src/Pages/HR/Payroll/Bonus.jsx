@@ -10,6 +10,7 @@ import BtnSubmit from "../../../components/Button/BtnSubmit";
 import { AuthContext } from "../../../providers/AuthProvider";
 import toast, { Toaster } from "react-hot-toast";
 import { IoMdClose } from "react-icons/io";
+import toNumber from "../../../hooks/toNumber";
 
 const Bonus = () => {
   const [advanceSalary, setAdvanceSalary] = useState([]);
@@ -159,7 +160,7 @@ const Bonus = () => {
       SL: index + 1,
       Date: tableFormatDate(item.created_at),
       "Employee Name": getEmployeeName(item.employee_id),
-      Amount: item.amount,
+      Amount: toNumber(item.amount),
       "Salary Month": item.month_of,
       Status: item.status,
       "Created By": item.created_by

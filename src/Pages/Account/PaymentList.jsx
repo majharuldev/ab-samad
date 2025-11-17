@@ -18,6 +18,7 @@ import Pagination from "../../components/Shared/Pagination";
 import api from "../../../utils/axiosConfig";
 import { tableFormatDate } from "../../hooks/formatDate";
 import DatePicker from "react-datepicker";
+import toNumber from "../../hooks/toNumber";
 
 const PaymentList = () => {
   const generateRefId = useRefId();
@@ -80,39 +81,62 @@ const PaymentList = () => {
   });
 
 
-  // excel
-  const exportToExcel = () => {
-    const exportData = filteredPaymentList.map((dt, index) => ({
-      SL: index + 1,
-      Date: dt.date,
-      SupplierName: dt.supplier_name,
-      Category: dt.category,
-      ItemName: dt.item_name,
-      Quantity: dt.quantity,
-      UnitPrice: dt.unit_price,
-      TotalAmount: dt.total,
-      PayAmount: dt.pay_amount,
-      DueAmount: parseFloat(dt.total) - parseFloat(dt.pay_amount),
-      Status:
-        parseFloat(dt.pay_amount) === 0
-          ? "Unpaid"
-          : parseFloat(dt.pay_amount) >= parseFloat(dt.total)
-            ? "Paid"
-            : "Partial",
-    }));
+// excel export
+const exportToExcel = () => {
+  if (!filteredPaymentList.length) {
+    toast.error("No data to export!");
+    return;
+  }
 
-    const worksheet = XLSX.utils.json_to_sheet(exportData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Payments");
-    const excelBuffer = XLSX.write(workbook, {
-      bookType: "xlsx",
-      type: "array",
-    });
-    const dataBlob = new Blob([excelBuffer], {
-      type: "application/octet-stream",
-    });
-    saveAs(dataBlob, "PaymentReport.xlsx");
-  };
+  const exportData = filteredPaymentList.map((dt, index) => {
+    // Convert item list to readable strings
+    const itemNames = dt.items?.map((item) => item.item_name).join(", ") || "";
+    const quantities = dt.items?.map((item) => item.quantity).join(", ") || "";
+
+    // Safely convert numbers
+    const total = Number(dt.total || 0);
+    const pay = Number(dt.pay_amount || 0);
+    const due = total - pay;
+
+    // Payment status
+    const status =
+      pay === 0 ? "Unpaid" : pay >= total ? "Paid" : "Partial";
+
+    return {
+      SL: index + 1,
+      Date: dt.date ? new Date(dt.date).toLocaleDateString("en-GB") : "",
+      SupplierName: dt.supplier_name || "",
+      Category: dt.category || "",
+      ItemNames: itemNames,
+      Quantity: quantities,
+      UnitPrice: Number(dt.unit_price || 0),
+      TotalAmount: total,
+      PayAmount: pay,
+      DueAmount: due,
+      Status: status,
+    };
+  });
+
+  // Create worksheet and workbook
+  const worksheet = XLSX.utils.json_to_sheet(exportData);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Payments");
+
+  // Optional: auto-fit columns
+  const colWidths = Object.keys(exportData[0]).map((key) => ({
+    wch: Math.max(
+      key.length,
+      ...exportData.map((item) => String(item[key] || "").length),
+      10
+    ),
+  }));
+  worksheet["!cols"] = colWidths;
+
+  // Save file
+  XLSX.writeFile(workbook, "PaymentReport.xlsx");
+  toast.success("Excel file exported successfully!");
+};
+
   // pdf
   const exportToPDF = () => {
     const doc = new jsPDF();
@@ -166,9 +190,16 @@ const PaymentList = () => {
         <td>${dt.date ? format(parseISO(dt.date), "dd-MMMM-yyyy") : ""}</td>
         <td>${dt.supplier_name}</td>
         <td>${dt.category}</td>
-        <td>${dt.item_name}</td>
-        <td>${dt.quantity}</td>
-        <td>${dt.unit_price}</td>
+        <td>${dt.items.map((item, i) => (
+                      <div key={i}>{item.item_name}</div>
+                    ))}</td>
+        <td>${dt.items.map((item, i) => (
+                      <div key={i}>{item.quantity}</div>
+                    ))}</td>
+        <td>${dt.items.map((item, i) => (
+                      <div key={i}>{item.unit_price}</div>
+                    ))}</td>
+        <td>${dt.service_charge}</td>
         <td>${dt.total_amount}</td>
         <td>${dt.pay_amount}</td>
         <td>${parseFloat(dt.total_amount) - parseFloat(dt.pay_amount)}</td>
@@ -221,6 +252,7 @@ const PaymentList = () => {
               <th>Item Name</th>
               <th>Qty</th>
               <th>Unit Price</th>
+              <th>Service Charge</th>
               <th>Total</th>
               <th>Paid</th>
               <th>Due</th>
@@ -264,16 +296,16 @@ const PaymentList = () => {
       // Prepare the complete payment payload
       const paymentPayload = {
         supplier_name: selectedPayment.supplier_name,
-        category: selectedPayment.category,
-        item_name: selectedPayment.item_name,
-        quantity: selectedPayment.quantity,
-        unit_price: selectedPayment.unit_price,
+        // category: selectedPayment.category,
+        // item_name: selectedPayment.item_name,
+        // quantity: selectedPayment.quantity,
+        // unit_price: selectedPayment.unit_price,
         total_amount: selectedPayment.total_amount,
         pay_amount: updatedAmount,
         remarks: data.note || "Partial payment",
-        driver_name: selectedPayment.driver_name,
+        // driver_name: selectedPayment.driver_name,
         branch_name: selectedPayment.branch_name,
-        vehicle_no: selectedPayment.vehicle_no,
+        // vehicle_no: selectedPayment.vehicle_no,
         created_by: selectedPayment.created_by || "admin"
       };
 
@@ -472,6 +504,7 @@ const PaymentList = () => {
                 <th className="px-1 py-4">Item Name</th>
                 <th className="px-1 py-4">Quantity</th>
                 <th className="px-1 py-4">Unit Price</th>
+                <th className="px-1 py-4">Service Charge</th>
                 <th className="px-1 py-4">Total Amount</th>
                 <th className="px-1 py-4">Pay Amount</th>
                 <th className="px-1 py-4">Due Amount</th>
@@ -513,9 +546,16 @@ const PaymentList = () => {
 
                       <td className="px-1 py-2">{dt.supplier_name}</td>
                       <td className="px-1 py-2">{dt.category}</td>
-                      <td className="px-1 py-2">{dt.item_name}</td>
-                      <td className="px-1 py-2">{dt.quantity}</td>
-                      <td className="px-1 py-2">{dt.unit_price}</td>
+                      <td className="px-1 py-2">{dt.items.map((item, i) => (
+                      <div key={i}>{item.item_name}</div>
+                    ))}</td>
+                      <td className="px-1 py-2">{dt.items.map((item, i) => (
+                      <div key={i}>{item.quantity}</div>
+                    ))}</td>
+                      <td className="px-1 py-2">{dt.items.map((item, i) => (
+                      <div key={i}>{item.unit_price}</div>
+                    ))}</td>
+                    <td className="px-1 py-2">{dt.service_charge}</td>
                       <td className="px-1 py-2">{dt.total_amount}</td>
                       <td className="px-1 py-2">{dt.pay_amount}</td>
                       <td className="px-1 py-2">{dt.due_amount}</td>

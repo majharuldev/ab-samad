@@ -487,6 +487,7 @@ import autoTable from "jspdf-autotable";
 import { FiFilter } from "react-icons/fi";
 import Pagination from "../../components/Shared/Pagination";
 import api from "../../../utils/axiosConfig";
+import toNumber from "../../hooks/toNumber";
 
 const DriverReport = () => {
   const [drivers, setDrivers] = useState([]);
@@ -712,10 +713,10 @@ const DriverReport = () => {
       Month: d.month,
       Driver: d.name,
       Mobile: d.mobile,
-      Trips: d.totalTrips,
-      Rent: d.totalRent,
-      Expense: d.totalExp,
-      Profit: d.totalProfit,
+      Trips: toNumber(d.totalTrips),
+      Rent: toNumber(d.totalRent),
+      Expense: toNumber(d.totalExp),
+      Profit: toNumber(d.totalProfit),
     }));
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();

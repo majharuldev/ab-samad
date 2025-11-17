@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 import { AuthContext } from "../../../providers/AuthProvider";
 import { IoMdClose } from "react-icons/io";
 import * as XLSX from "xlsx";
+import toNumber from "../../../hooks/toNumber";
 
 const Loan = () => {
   const [loanData, setLoanData] = useState([]);
@@ -121,9 +122,9 @@ const exportExcel = () => {
     SL: index + 1,
     Date: tableFormatDate(item.created_at),
     "Employee Name": getEmployeeName(item.employee_id),
-    Amount: item.amount,
-    "Monthly Deduction": item.monthly_deduction,
-    "After Adjustment": item.adjustment,
+    Amount: toNumber(item.amount),
+    "Monthly Deduction": toNumber(item.monthly_deduction),
+    "After Adjustment": toNumber(item.adjustment),
     Status: item.status,
     "Created By": item.created_by,
   }));

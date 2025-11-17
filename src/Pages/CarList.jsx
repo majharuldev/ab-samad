@@ -78,7 +78,7 @@ const CarList = () => {
     category: dt.category,
     size: dt.size,
     registration_zone: dt.registration_zone,
-    trip: 0,
+    registration_serial: dt.registration_serial,
     registration_number: dt.registration_number,
   }));
   // export

@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import { FaPen, FaPlus, FaPrint, FaTrashAlt } from "react-icons/fa";
+import { FaFileExcel, FaPen, FaPlus, FaPrint, FaTrashAlt } from "react-icons/fa";
 import { MdOutlineAirplaneTicket } from "react-icons/md";
 import { Link } from "react-router-dom";
 import Pagination from "../../components/Shared/Pagination";
@@ -8,6 +8,7 @@ import api from "../../../utils/axiosConfig";
 import { tableFormatDate } from "../../hooks/formatDate";
 import { IoMdClose } from "react-icons/io";
 import toast from "react-hot-toast";
+import * as XLSX from "xlsx";
 
 const VendorPayment = () => {
   const [payment, setPayment] = useState([]);
@@ -32,13 +33,13 @@ const VendorPayment = () => {
       });
   }, []);
 
-// Filter data by search
-const filteredPayments = payment.filter((item) => {
-  const searchableText = Object.values(item)
-    .map((v) => (v ? String(v).toLowerCase() : ""))
-    .join(" ");
-  return searchableText.includes(searchTerm.toLowerCase());
-});
+  // Filter data by search
+  const filteredPayments = payment.filter((item) => {
+    const searchableText = Object.values(item)
+      .map((v) => (v ? String(v).toLowerCase() : ""))
+      .join(" ");
+    return searchableText.includes(searchTerm.toLowerCase());
+  });
 
   // মোট যোগফল বের করা
   const totalAmount = payment.reduce(
@@ -69,11 +70,69 @@ const filteredPayments = payment.filter((item) => {
     }
   };
 
+  // Excel Export Function
+const exportToExcel = () => {
+  if (!filteredPayments.length) {
+    toast.error("No data available to export!");
+    return;
+  }
+
+  // Prepare export data
+  const exportData = filteredPayments.map((dt, index) => ({
+    SL: index + 1,
+    Date: dt.date ? tableFormatDate(dt.date) : "",
+    Vendor_Name: dt.vendor_name || "",
+    Bill_Ref: dt.bill_ref || "",
+    Amount: Number(dt.amount || 0),
+    Cash_Type: dt.cash_type || "",
+    Status: dt.status || "",
+  }));
+
+  // Add total at the end
+  const totalAmount = filteredPayments.reduce(
+    (sum, item) => sum + Number(item.amount || 0),
+    0
+  );
+  exportData.push({
+    SL: "",
+    Date: "",
+    Vendor_Name: "",
+    Bill_Ref: "Total:",
+    Amount: totalAmount,
+    Cash_Type: "",
+    Status: "",
+  });
+
+  // Create worksheet & workbook
+  const worksheet = XLSX.utils.json_to_sheet(exportData);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Vendor Payment Report");
+
+  // Set column widths for readability
+  const colWidths = [
+    { wch: 5 },  // SL
+    { wch: 12 }, // Date
+    { wch: 20 }, // Vendor Name
+    { wch: 15 }, // BillRef
+    { wch: 12 }, // Amount
+    { wch: 12 }, // Cash Type
+    { wch: 10 }, // Status
+  ];
+  worksheet["!cols"] = colWidths;
+
+  // Export file
+  const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+  const data = new Blob([excelBuffer], { type: "application/octet-stream" });
+  saveAs(data, `Vendor_Payment_Report_${new Date().toISOString().slice(0, 10)}.xlsx`);
+
+  toast.success("Excel file exported successfully!");
+};
+
   // handle print
-const handlePrint = () => {
-  const WindowPrint = window.open("", "", "width=900,height=650");
-  const printTableRows = filteredPayments.map(
-    (dt, index) => `
+  const handlePrint = () => {
+    const WindowPrint = window.open("", "", "width=900,height=650");
+    const printTableRows = filteredPayments.map(
+      (dt, index) => `
       <tr>
         <td>${index + 1}</td>
         <td>${tableFormatDate(dt.date)}</td>
@@ -84,9 +143,9 @@ const handlePrint = () => {
         <td>${dt.status}</td>
       </tr>
     `
-  ).join("");
+    ).join("");
 
-  const totalRow = `
+    const totalRow = `
     <tr style="font-weight:bold; background:#f9f9f9;">
       <td colspan="4" style="text-align:right;">Total:</td>
       <td>${totalAmount}</td>
@@ -94,7 +153,7 @@ const handlePrint = () => {
     </tr>
   `;
 
-  WindowPrint.document.write(`
+    WindowPrint.document.write(`
     <html>
       <head>
         <title>Vendor Payment Report</title>
@@ -134,13 +193,13 @@ const handlePrint = () => {
       </body>
     </html>
   `);
-  WindowPrint.document.close();
-  WindowPrint.focus();
-  setTimeout(() => {
-    WindowPrint.print();
-    WindowPrint.close();
-  }, 500);
-};
+    WindowPrint.document.close();
+    WindowPrint.focus();
+    setTimeout(() => {
+      WindowPrint.print();
+      WindowPrint.close();
+    }, 500);
+  };
 
   // pagination
   const [currentPage, setCurrentPage] = useState([1]);
@@ -172,13 +231,23 @@ const handlePrint = () => {
           </div>
         </div>
         <div className="flex justify-between items-center">
-          <button
-            onClick={handlePrint}
-            className="flex items-center gap-2 py-1 px-4 hover:bg-primary bg-white shadow hover:text-white rounded-md transition-all duration-300 cursor-pointer"
-          >
-            <FaPrint className="" />
-            Print
-          </button>
+          <div className="flex items-center gap-5">
+            <button
+              onClick={exportToExcel}
+              className="flex items-center gap-2 py-1 px-5 hover:bg-primary bg-white shadow hover:text-white rounded-md transition-all duration-300 cursor-pointer"
+            >
+              <FaFileExcel className="" />
+              Excel
+            </button>
+            <button
+              onClick={handlePrint}
+              className="flex items-center gap-2 py-1 px-4 hover:bg-primary bg-white shadow hover:text-white rounded-md transition-all duration-300 cursor-pointer"
+            >
+              <FaPrint className="" />
+              Print
+            </button>
+          </div>
+
           {/* search */}
           <div className="mt-3 md:mt-0">
             {/* <span className="text-primary font-semibold pr-3">Search: </span> */}

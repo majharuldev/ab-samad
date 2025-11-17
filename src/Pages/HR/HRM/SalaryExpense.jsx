@@ -19,6 +19,7 @@ import { useReactToPrint } from "react-to-print"
 import api from "../../../../utils/axiosConfig"
 import DatePicker from "react-datepicker"
 import { IoMdClose } from "react-icons/io"
+import toNumber from "../../../hooks/toNumber"
 
 
 const SalaryExpense = () => {
@@ -283,7 +284,7 @@ const SalaryExpense = () => {
       SL: i + 1,
       Date: item.date,
       "Paid To": item.paid_to,
-      Amount: item.amount,
+      Amount: toNumber(item.amount),
       Category: item.payment_category,
       Remarks: item.particulars,
       status: item.status

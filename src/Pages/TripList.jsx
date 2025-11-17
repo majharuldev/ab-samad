@@ -1346,36 +1346,42 @@ const TripList = () => {
   //   saveAs(data, "trip_report.xlsx")
   // }
   const exportTripsToExcel = async () => {
-    try {
-      // full trip data from database (no filter)
-      const response = await api.get("/trip");
-      let allTrips = response.data;
+  try {
+    // Filtered trip list use করবে (no API call)
+    let filteredData = filteredTripList;
 
-      // Non-admin হলে total_rent field বাদ দেবে
-      if (!isAdmin) {
-        allTrips = allTrips.map(({ total_rent, ...rest }) => rest);
-      }
-
-      // Excel sheet বানানো (auto header = object keys)
-      const worksheet = XLSX.utils.json_to_sheet(allTrips);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Trips");
-
-      // Excel buffer তৈরি
-      const excelBuffer = XLSX.write(workbook, {
-        bookType: "xlsx",
-        type: "array",
-      });
-
-      // File save
-      const data = new Blob([excelBuffer], { type: "application/octet-stream" });
-      saveAs(data, "trip_full_database.xlsx");
-      toast.success("Full trip data downloaded successfully!");
-    } catch (error) {
-      console.error("Excel export error:", error);
-      toast.error("Failed to download Excel file!");
+    // Non-admin হলে total_rent field বাদ দেবে
+    if (!isAdmin) {
+      filteredData = filteredData.map(({ total_rent, ...rest }) => rest);
     }
-  };
+
+    // যদি filtered data না থাকে
+    if (!filteredData || filteredData.length === 0) {
+      toast.error("No filtered trip data found!");
+      return;
+    }
+
+    // Excel sheet বানানো (auto header = object keys)
+    const worksheet = XLSX.utils.json_to_sheet(filteredData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Filtered Trips");
+
+    // Excel buffer তৈরি
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    // File save
+    const data = new Blob([excelBuffer], { type: "application/octet-stream" });
+    saveAs(data, "filtered_trip_report.xlsx");
+    toast.success("Filtered trip data downloaded successfully!");
+  } catch (error) {
+    console.error("Excel export error:", error);
+    toast.error("Failed to download Excel file!");
+  }
+};
+
 
   // pdf
   const exportTripsToPDF = () => {

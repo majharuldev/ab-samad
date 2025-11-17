@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 import { FaFilter, FaFilePdf, FaFileExcel, FaSearch } from "react-icons/fa";
@@ -9,6 +8,7 @@ import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import api from "../../../utils/axiosConfig";
 import DatePicker from "react-datepicker";
+import toNumber from "../../hooks/toNumber";
 // Extend dayjs with isBetween plugin
 dayjs.extend(isBetween);
 
@@ -193,7 +193,7 @@ export default function FuelReport() {
 
     // Data
     filteredReport.forEach(item => {
-      csvContent += `${item.date},${item.vehicle},${item.driver},${item.customer},"${item.route}",${item.fuel_cost},${item.total_rent},${item.fuel_percentage}%\n`;
+      csvContent += `${item.date},${item.vehicle},${item.driver},${item.customer},"${item.route}",${toNumber(item.fuel_cost)},${toNumber(item.total_rent)},${item.fuel_percentage}%\n`;
     });
 
     // Add totals row

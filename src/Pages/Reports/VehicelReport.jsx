@@ -9,6 +9,7 @@ import Pagination from "../../components/Shared/Pagination"
 import api from "../../../utils/axiosConfig"
 import DatePicker from "react-datepicker"
 import { tableFormatDate } from "../../hooks/formatDate"
+import toNumber from "../../hooks/toNumber"
 
 export default function VehicleProfitReport() {
   const [tripData, setTripData] = useState([])
@@ -327,13 +328,13 @@ const normalizeDate = (dateStr) => {
       profitData.map((d) => ({
         Date: tableFormatDate(d.date),
         "Vehicle No": d.vehicle_no,
-        Trips: d.trip_count,
-        "Trip Rent": d.total_revenue,
-        "Trip Cost": d.trip_expenses,
-        "Parts Cost": d.parts_cost,
-        "Fuel Cost": d.fuel_cost,
-        "Engine Oil": d.engine_oil_cost,
-        "Net Profit": d.net_profit,
+        Trips: toNumber(d.trip_count),
+        "Trip Rent": toNumber(d.total_revenue),
+        "Trip Cost": toNumber(d.trip_expenses),
+        "Parts Cost": toNumber(d.parts_cost),
+        "Fuel Cost": toNumber(d.fuel_cost),
+        "Engine Oil": toNumber(d.engine_oil_cost),
+        "Net Profit": toNumber(d.net_profit),
       }))
     )
     const workbook = XLSX.utils.book_new()

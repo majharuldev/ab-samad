@@ -14,6 +14,7 @@ import Pagination from "../../../components/Shared/Pagination"
 import api from "../../../../utils/axiosConfig"
 import DatePicker from "react-datepicker"
 import { IoMdClose } from "react-icons/io"
+import toNumber from "../../../hooks/toNumber"
 
 
 const OfficialExpense = () => {
@@ -308,7 +309,7 @@ const OfficialExpense = () => {
           <td>${item.date || ""}</td>
           <td>${item.branch_name || ""}</td>
           <td>${item.paid_to || ""}</td>
-          <td>${item.amount || ""}</td>
+          <td>${toNumber(item.amount) || ""}</td>
           <td>${item.payment_category || ""}</td>
           <td>${item.particulars || ""}</td>
            <td>${item.status || ""}</td>

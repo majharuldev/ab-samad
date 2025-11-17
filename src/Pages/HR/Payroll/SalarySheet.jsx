@@ -10,6 +10,7 @@ import PaySlipPrint from '../HRM/PaySlipPrint';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
+import toNumber from '../../../hooks/toNumber';
 const SalarySheet = () => {
   const [employees, setEmployees] = useState([]);
   const [salaryAdvances, setSalaryAdvances] = useState([]);
@@ -240,7 +241,7 @@ useEffect(() => {
     const doc = new jsPDF();
     autoTable(doc, {
       head: [['Name', 'Designation', 'Days', 'Basic', 'H/Rent', 'Conv', 'Medical', 'Allowance', 'Total', 'Advance', 'NetPay']],
-      body: filteredData.map(d => [d.name, d.designation, d.days, d.basic, d.rent, d.conv, d.medical, d.allowance, d.total, d.advance, d.netPay]),
+      body: filteredData.map(d => [d.name, d.designation, toNumber(d.days), toNumber(d.basic), toNumber(d.rent), toNumber(d.conv), toNumber(d.medical), toNumber( d.allowance), toNumber(d.total), toNumber(d.advance), toNumber(d.netPay)]),
     });
     doc.save('SalarySheet.pdf');
   };

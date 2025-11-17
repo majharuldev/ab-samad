@@ -10,6 +10,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import Pagination from "../components/Shared/Pagination";
 import api from "../../utils/axiosConfig";
+import toNumber from "../hooks/toNumber";
 
 const MonthlyStatement = () => {
   const [allData, setAllData] = useState([]); // Store all data
@@ -164,15 +165,15 @@ const trips = (tripsRes.data?.data || []).filter(
   const exportToExcel = () => {
     const worksheet = XLSX.utils.json_to_sheet(filteredData.map(item => ({
       "Month": item.month,
-      "Own Trip Income": item.ownTripIncome,
-      "Vendor Trip Income": item.vendorTripIncome,
-      "Own Trip Cost": item.ownTripCost,
-      "Vendor Trip Cost": item.vendorTripCost,
-      "Purchase Cost": item.purchaseCost,
-      "Salary Expense": item.salaryExpense,
-      "Office Expense": item.officeExpense,
-      "Total Expense": item.totalExpense,
-      "Net Profit": item.netProfit
+      "Own Trip Income": toNumber(item.ownTripIncome),
+      "Vendor Trip Income": toNumber(item.vendorTripIncome),
+      "Own Trip Cost": toNumber(item.ownTripCost),
+      "Vendor Trip Cost": toNumber(item.vendorTripCost),
+      "Purchase Cost": toNumber(item.purchaseCost),
+      "Salary Expense": toNumber(item.salaryExpense),
+      "Office Expense": toNumber(item.officeExpense),
+      "Total Expense": toNumber(item.totalExpense),
+      "Net Profit": toNumber(item.netProfit)
     })));
     
     const workbook = XLSX.utils.book_new();
@@ -192,15 +193,15 @@ const trips = (tripsRes.data?.data || []).filter(
       ],
       body: filteredData.map(item => [
         item.month,
-        item.ownTripIncome,
-        item.vendorTripIncome,
-        item.ownTripCost,
-        item.vendorTripCost,
-        item.purchaseCost,
-        item.salaryExpense,
-        item.officeExpense,
-        item.totalExpense,
-        item.netProfit
+        toNumber(item.ownTripIncome),
+        toNumber(item.vendorTripIncome),
+        toNumber(item.ownTripCost),
+        toNumber(item.vendorTripCost),
+        toNumber(item.purchaseCost),
+        toNumber(item.salaryExpense),
+        toNumber(item.officeExpense),
+        toNumber(item.totalExpense),
+        toNumber(item.netProfit)
       ]),
       startY: 20
     });

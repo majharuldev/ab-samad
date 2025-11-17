@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { FaEye, FaFilter, FaPen, FaPrint, FaTrashAlt } from "react-icons/fa";
+import { FaEye, FaFileExcel, FaFilter, FaPen, FaPrint, FaTrashAlt } from "react-icons/fa";
 import { FaPlus } from "react-icons/fa6";
 import { FiFilter } from "react-icons/fi";
 import { GrFormNext, GrFormPrevious } from "react-icons/gr";
@@ -13,6 +13,7 @@ import DatePicker from "react-datepicker";
 import { tableFormatDate } from "../../hooks/formatDate";
 import { IoMdClose } from "react-icons/io";
 import toast from "react-hot-toast";
+import toNumber from "../../hooks/toNumber";
 
 const CashDispatch = () => {
   const [account, setAccount] = useState([]);
@@ -81,59 +82,113 @@ const CashDispatch = () => {
   //   });
   // }, [account, startDate, endDate]);
   const filteredAccounts = useMemo(() => {
-  return account.filter((item) => {
-    const itemDate = new Date(item.date);
-    if (isNaN(itemDate)) return false;
+    return account.filter((item) => {
+      const itemDate = new Date(item.date);
+      if (isNaN(itemDate)) return false;
 
-    // Date filtering
-    if (startDate && !endDate) {
-      if (itemDate.toDateString() !== startDate.toDateString()) return false;
-    }
-    if (!startDate && endDate) {
-      if (itemDate.toDateString() !== endDate.toDateString()) return false;
-    }
-    if (startDate && endDate) {
-      if (
-        !(isAfter(itemDate, startDate) || isEqual(itemDate, startDate)) ||
-        !(isBefore(itemDate, endDate) || isEqual(itemDate, endDate))
-      ) {
-        return false;
+      // Date filtering
+      if (startDate && !endDate) {
+        if (itemDate.toDateString() !== startDate.toDateString()) return false;
       }
-    }
-
-    // Text search (by name, branch, type, etc.)
-    const search = searchTerm.toLowerCase();
-    if (search) {
-      return (
-        item?.person_name?.toLowerCase().includes(search) ||
-        item?.branch_name?.toLowerCase().includes(search) ||
-        item?.type?.toLowerCase().includes(search) ||
-        item?.bank_name?.toLowerCase().includes(search)
-      );
-    }
-
-    return true;
-  });
-}, [account, startDate, endDate, searchTerm]);
-
-// handle print
-const handlePrint = () => {
-  // Use the filteredAccounts (all filtered data, not currentCash page)
-  const rowsHtml = filteredAccounts.map((dt, idx) => {
-    // safe date formatting
-    let dateStr = "";
-    try {
-      const d = new Date(dt.date);
-      if (!isNaN(d)) {
-        // using date-fns format if available in scope; otherwise fallback
-        // you have `format` imported already at top of file
-        dateStr = format(d, "dd/MM/yyyy");
+      if (!startDate && endDate) {
+        if (itemDate.toDateString() !== endDate.toDateString()) return false;
       }
-    } catch (e) {
-      dateStr = "";
+      if (startDate && endDate) {
+        if (
+          !(isAfter(itemDate, startDate) || isEqual(itemDate, startDate)) ||
+          !(isBefore(itemDate, endDate) || isEqual(itemDate, endDate))
+        ) {
+          return false;
+        }
+      }
+
+      // Text search (by name, branch, type, etc.)
+      const search = searchTerm.toLowerCase();
+      if (search) {
+        return (
+          item?.person_name?.toLowerCase().includes(search) ||
+          item?.branch_name?.toLowerCase().includes(search) ||
+          item?.type?.toLowerCase().includes(search) ||
+          item?.bank_name?.toLowerCase().includes(search)
+        );
+      }
+
+      return true;
+    });
+  }, [account, startDate, endDate, searchTerm]);
+
+  // Excel export (filtered data only)
+const exportExcel = async () => {
+  try {
+    if (!filteredAccounts.length) {
+      toast.error("No data available to export!");
+      return;
     }
 
-    return `
+    // Dynamically import XLSX (no need to import globally)
+    const XLSX = await import("xlsx");
+
+    // Map filtered data to a clean format for Excel
+    const excelData = filteredAccounts.map((item, index) => ({
+      SL: index + 1,
+      Date: item.date ? format(new Date(item.date), "dd/MM/yyyy") : "",
+      Branch: item.branch_name || "",
+      PersonName: item.person_name || "",
+      Type: item.type || "",
+      Amount: toNumber(item.amount) || "",
+      BankName: item.bank_name || "",
+    }));
+
+    // Create worksheet & workbook
+    const ws = XLSX.utils.json_to_sheet(excelData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "FundTransfer");
+
+    // Add total row at bottom
+    const total = filteredAccounts.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+    const totalRow = [
+      { SL: "", Date: "", Branch: "", PersonName: "", Type: "Total", Amount: total, BankName: "" },
+    ];
+    XLSX.utils.sheet_add_json(ws, totalRow, { skipHeader: true, origin: -1 });
+
+    // Auto-fit column widths
+    const colWidths = Object.keys(excelData[0]).map((key) => ({
+      wch: Math.max(
+        key.length,
+        ...excelData.map((item) => String(item[key] || "").length),
+        10
+      ),
+    }));
+    ws["!cols"] = colWidths;
+
+    // Save file
+    XLSX.writeFile(wb, "FundTransfer_Report.xlsx");
+    toast.success("Excel file exported successfully!");
+  } catch (error) {
+    console.error("Excel export failed:", error);
+    toast.error("Failed to export Excel file!");
+  }
+};
+
+
+  // handle print
+  const handlePrint = () => {
+    // Use the filteredAccounts (all filtered data, not currentCash page)
+    const rowsHtml = filteredAccounts.map((dt, idx) => {
+      // safe date formatting
+      let dateStr = "";
+      try {
+        const d = new Date(dt.date);
+        if (!isNaN(d)) {
+          // using date-fns format if available in scope; otherwise fallback
+          // you have `format` imported already at top of file
+          dateStr = format(d, "dd/MM/yyyy");
+        }
+      } catch (e) {
+        dateStr = "";
+      }
+
+      return `
       <tr style="border:1px solid #e5e7eb;">
         <td style="padding:8px; font-weight:600;">${idx + 1}</td>
         <td style="padding:8px;">${dateStr}</td>
@@ -145,11 +200,11 @@ const handlePrint = () => {
         <!-- Action column intentionally omitted -->
       </tr>
     `;
-  }).join("");
+    }).join("");
 
-  const totalFiltered = filteredAccounts.reduce((s, it) => s + Number(it.amount || 0), 0);
+    const totalFiltered = filteredAccounts.reduce((s, it) => s + Number(it.amount || 0), 0);
 
-  const tableHtml = `
+    const tableHtml = `
     <table style="width:100%; border-collapse:collapse; font-size:13px;">
       <thead>
         <tr>
@@ -175,8 +230,8 @@ const handlePrint = () => {
     </table>
   `;
 
-  const printWindow = window.open("", "_blank", "width=1000,height=800");
-  printWindow.document.write(`
+    const printWindow = window.open("", "_blank", "width=1000,height=800");
+    printWindow.document.write(`
     <html>
       <head>
         <title>Fund Transfer Report</title>
@@ -199,17 +254,16 @@ const handlePrint = () => {
       </body>
     </html>
   `);
-  printWindow.document.close();
-  printWindow.focus();
+    printWindow.document.close();
+    printWindow.focus();
 
-  // wait a tick for resources to load then print
-  setTimeout(() => {
-    printWindow.print();
-    // optionally close window after printing:
-    // printWindow.close();
-  }, 300);
-};
-
+    // wait a tick for resources to load then print
+    setTimeout(() => {
+      printWindow.print();
+      // optionally close window after printing:
+      // printWindow.close();
+    }, 300);
+  };
 
   // total amount calculation
   const totalAmount = useMemo(() => {
@@ -272,6 +326,13 @@ const handlePrint = () => {
           </div>
         </div>
         <div className="flex justify-between items-center">
+         <div className="flex items-center gap-5">
+           <button
+            onClick={exportExcel}
+            className="py-1 px-5 bg-white shadow rounded hover:bg-primary hover:text-white flex items-center gap-2"
+          >
+            <FaFileExcel /> Excel
+          </button>
           <button
             onClick={handlePrint}
             className="flex items-center gap-2 py-1 px-4 hover:bg-primary bg-white shadow hover:text-white rounded-md transition-all duration-300 cursor-pointer"
@@ -279,7 +340,8 @@ const handlePrint = () => {
             <FaPrint className="" />
             Print
           </button>
-           {/* search */}
+         </div>
+          {/* search */}
           <div className="mt-3 md:mt-0">
             {/* <span className="text-primary font-semibold pr-3">Search: </span> */}
             <input

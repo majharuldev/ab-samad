@@ -117,6 +117,16 @@ const OfficeLedger = () => {
     branchDataWithBalance.length > 0
       ? branchDataWithBalance[branchDataWithBalance.length - 1].runningBalance
       : openingBalance;
+      // Calculate total Cash In, Cash Out, and Net Balance
+const totalCashIn = filteredBranch.reduce(
+  (sum, item) => sum + (parseFloat(item.cash_in) || 0),
+  0
+);
+const totalCashOut = filteredBranch.reduce(
+  (sum, item) => sum + (parseFloat(item.cash_out) || 0),
+  0
+);
+const totalBalance = openingBalance + totalCashIn - totalCashOut;
 
 
   // ================= Excel Export =================
@@ -348,13 +358,17 @@ const OfficeLedger = () => {
           <table className="w-full text-sm text-left">
             <thead className="text-black capitalize font-bold">
               <tr className="bg-gray-100 font-bold text-black">
-                <td colSpan="8" className="text-right border border-gray-700 px-2 py-2">
+                <td colSpan="6" className="text-right border border-gray-700 px-2 py-2">
                   Closing Balance:
                 </td>
                 <td className="border border-gray-700 px-2 py-2">
-                  {closingBalance < 0
-                    ? `${Math.abs(closingBalance)}`
-                    : closingBalance}
+                  <span className="text-gray-800">{totalCashIn}</span>
+                </td>
+                <td className="border border-gray-700 px-2 py-2">
+                 <span className="text-gray-800">{totalCashOut}</span>
+                </td>
+                <td className="border border-gray-700 px-2 py-2">
+                <span className="text-gray-800">{totalBalance.toFixed(2)}</span>
                 </td>
                 <td className="border border-gray-700 px-2 py-2"></td>
               </tr>

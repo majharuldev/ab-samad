@@ -14,6 +14,7 @@ import Pagination from "../components/Shared/Pagination"
 import api from "../../utils/axiosConfig"
 import { tableFormatDate } from "../hooks/formatDate"
 import DatePicker from "react-datepicker"
+import toNumber from "../hooks/toNumber"
 
 const DailyIncome = () => {
   const [trips, setTrips] = useState([])
@@ -115,7 +116,7 @@ const DailyIncome = () => {
       unload_point: dt.unload_point,
       total_rent: totalRent,
       total_exp: totalExp,
-      profit: profit,
+      profit: toNumber(profit),
     }
   })
 

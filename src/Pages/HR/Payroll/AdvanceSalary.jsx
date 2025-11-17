@@ -7,6 +7,7 @@ import { tableFormatDate } from "../../../hooks/formatDate";
 import { IoMdClose } from "react-icons/io";
 import toast from "react-hot-toast";
 import * as XLSX from "xlsx";
+import toNumber from "../../../hooks/toNumber";
 
 const AdvanceSalary = () => {
   const [advanceSalary, setAdvanceSalary] = useState([]);
@@ -100,9 +101,9 @@ const AdvanceSalary = () => {
     const data = filteredData.map((item) => ({
       Date: tableFormatDate(item.created_at),
       "Employee Name": getEmployeeName(item.employee_id),
-      Amount: item.amount,
+      Amount: toNumber(item.amount),
       "Salary Month": item.salary_month,
-      "After Adjustment": item.adjustment,
+      "After Adjustment": toNumber(item.adjustment),
       Status: item.status,
       "Created By": item.created_by,
     }));

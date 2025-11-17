@@ -2,7 +2,7 @@
 import axios from "axios";
 import { format, isAfter, isBefore, isEqual, parseISO } from "date-fns";
 import { useEffect, useState } from "react";
-import { FaFilter, FaPen, FaPlus, FaPrint, FaTrashAlt } from "react-icons/fa";
+import { FaFileExcel, FaFilter, FaPen, FaPlus, FaPrint, FaTrashAlt } from "react-icons/fa";
 import { FiFilter } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import Pagination from "../../components/Shared/Pagination";
@@ -11,6 +11,8 @@ import { tableFormatDate } from "../../hooks/formatDate";
 import DatePicker from "react-datepicker";
 import toast from "react-hot-toast";
 import { IoMdClose } from "react-icons/io";
+import toNumber from "../../hooks/toNumber";
+import * as XLSX from "xlsx";
 
 const PaymentReceive = () => {
   const [payment, setPayment] = useState([]);
@@ -74,28 +76,28 @@ const PaymentReceive = () => {
   // }, [startDate, endDate, payment]);
 
   useEffect(() => {
-  const result = payment.filter((item) => {
-    const match =
-      item.customer_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.branch_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.bill_ref?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.cash_type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.created_by?.toLowerCase().includes(searchTerm.toLowerCase());
+    const result = payment.filter((item) => {
+      const match =
+        item.customer_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.branch_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.bill_ref?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.cash_type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.created_by?.toLowerCase().includes(searchTerm.toLowerCase());
 
-    // apply date filter + search together
-    const itemDate = new Date(item.date);
-    let withinRange = true;
-    if (startDate && endDate) {
-      withinRange =
-        (isEqual(itemDate, startDate) || isAfter(itemDate, startDate)) &&
-        (isEqual(itemDate, endDate) || isBefore(itemDate, endDate));
-    }
+      // apply date filter + search together
+      const itemDate = new Date(item.date);
+      let withinRange = true;
+      if (startDate && endDate) {
+        withinRange =
+          (isEqual(itemDate, startDate) || isAfter(itemDate, startDate)) &&
+          (isEqual(itemDate, endDate) || isBefore(itemDate, endDate));
+      }
 
-    return match && withinRange;
-  });
-  setFilteredPayment(result);
-  setCurrentPage(1);
-}, [searchTerm, startDate, endDate, payment]);
+      return match && withinRange;
+    });
+    setFilteredPayment(result);
+    setCurrentPage(1);
+  }, [searchTerm, startDate, endDate, payment]);
 
 
   // total amount footer
@@ -127,11 +129,58 @@ const PaymentReceive = () => {
     }
   };
 
+  // Excel Export Function
+const exportToExcel = () => {
+  if (!filteredPayment || filteredPayment.length === 0) {
+    toast.error("No data available to export!");
+    return;
+  }
+
+  const exportData = filteredPayment.map((dt, idx) => ({
+    SL: idx + 1,
+    Date: dt.date ? format(new Date(dt.date), "dd/MM/yyyy") : "",
+    Customer: dt.customer_name || "",
+    Branch: dt.branch_name || "",
+    Bill_Ref: dt.bill_ref || "",
+    Amount: toNumber(dt.amount) || 0,
+    Cash_Type: dt.cash_type || "",
+    Note: dt.remarks || "",
+    Created_By: dt.created_by || "",
+    Status: dt.status || "",
+  }));
+
+  // Create worksheet and workbook
+  const worksheet = XLSX.utils.json_to_sheet(exportData);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Payment Receive");
+
+  // Set column width for better readability
+  const colWidths = [
+    { wch: 5 },  // SL
+    { wch: 12 }, // Date
+    { wch: 20 }, // Customer
+    { wch: 18 }, // Branch
+    { wch: 15 }, // Bill Ref
+    { wch: 12 }, // Amount
+    { wch: 12 }, // Cash Type
+    { wch: 25 }, // Note
+    { wch: 15 }, // Created By
+    { wch: 10 }, // Status
+  ];
+  worksheet["!cols"] = colWidths;
+
+  // Convert to Excel file
+  const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+  const data = new Blob([excelBuffer], { type: "application/octet-stream" });
+  saveAs(data, `Payment_Receive_Report_${format(new Date(), "ddMMyyyy_HHmm")}.xlsx`);
+};
+
+
   // Print Function
-const handlePrint = () => {
-  const rowsHtml = filteredPayment.map((dt, idx) => {
-    const dateStr = dt.date ? format(new Date(dt.date), "dd/MM/yyyy") : "";
-    return `
+  const handlePrint = () => {
+    const rowsHtml = filteredPayment.map((dt, idx) => {
+      const dateStr = dt.date ? format(new Date(dt.date), "dd/MM/yyyy") : "";
+      return `
       <tr style="border:1px solid #e5e7eb;">
         <td style="padding:6px;">${idx + 1}</td>
         <td style="padding:6px;">${dateStr}</td>
@@ -145,14 +194,14 @@ const handlePrint = () => {
         <td style="padding:6px;">${dt.status || ""}</td>
       </tr>
     `;
-  }).join("");
+    }).join("");
 
-  const totalAmount = filteredPayment.reduce(
-    (sum, item) => sum + Number(item.amount || 0),
-    0
-  );
+    const totalAmount = filteredPayment.reduce(
+      (sum, item) => sum + Number(item.amount || 0),
+      0
+    );
 
-  const tableHtml = `
+    const tableHtml = `
     <table style="width:100%; border-collapse:collapse; font-size:13px;">
       <thead>
         <tr style="background:#f3f4f6; color:#047857;">
@@ -181,8 +230,8 @@ const handlePrint = () => {
     </table>
   `;
 
-  const printWindow = window.open("", "_blank", "width=1000,height=800");
-  printWindow.document.write(`
+    const printWindow = window.open("", "_blank", "width=1000,height=800");
+    printWindow.document.write(`
     <html>
       <head>
         <title>Payment Receive Report</title>
@@ -206,12 +255,12 @@ const handlePrint = () => {
       </body>
     </html>
   `);
-  printWindow.document.close();
-  printWindow.focus();
-  setTimeout(() => {
-    printWindow.print();
-  }, 300);
-};
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => {
+      printWindow.print();
+    }, 300);
+  };
 
 
   // pagination
@@ -257,13 +306,22 @@ const handlePrint = () => {
           </div>
         </div>
         <div className="flex justify-between items-center">
-          <button
-            onClick={handlePrint}
-            className="flex items-center gap-2 py-1 px-4 hover:bg-primary bg-white shadow hover:text-white rounded-md transition-all duration-300 cursor-pointer"
-          >
-            <FaPrint className="" />
-            Print
-          </button>
+          <div className="flex items-center gap-5">
+            <button
+              onClick={exportToExcel}
+              className="flex items-center gap-2 py-1 px-5 hover:bg-primary bg-white shadow hover:text-white rounded-md transition-all duration-300 cursor-pointer"
+            >
+              <FaFileExcel className="" />
+              Excel
+            </button>
+            <button
+              onClick={handlePrint}
+              className="flex items-center gap-2 py-1 px-4 hover:bg-primary bg-white shadow hover:text-white rounded-md transition-all duration-300 cursor-pointer"
+            >
+              <FaPrint className="" />
+              Print
+            </button>
+          </div>
           {/* search */}
           <div className="mt-3 md:mt-0">
             {/* <span className="text-primary font-semibold pr-3">Search: </span> */}
