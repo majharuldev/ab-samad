@@ -25,7 +25,10 @@ const Requisition = () => {
           api.get(`/employee`),
         ]);
         if (reqRes.data?.success) setRequisition(reqRes.data.data);
-        if (empRes.data?.success) setEmployee(empRes.data.data);
+        if (empRes.data?.success){ const activeEmployee = response?.data?.data?.filter(
+        (employee) => employee.status?.toLowerCase() === "active"
+      );
+          setEmployee(activeEmployee);}
       } catch (error) {
         console.error("Error fetching data:", error);
       }

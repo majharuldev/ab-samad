@@ -26,7 +26,10 @@ const AddCarForm = () => {
   const fetchDrivers = async () => {
     try {
       const response = await api.get("/driver"); 
-      setDrivers(response.data);
+       const activeDrivers = response.data.filter(
+        (driver) => driver.status?.toLowerCase() === "active"
+      );
+      setDrivers(activeDrivers);
     } catch (error) {
       console.error("Error fetching driver data:", error);
     }

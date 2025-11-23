@@ -42,7 +42,14 @@ const SalarySheet = () => {
         api.get('/bonous'),
         ]);
 
-        setEmployees(empRes.data.data || []);
+        // setEmployees(empRes.data.data || []);
+         if (empRes.data?.success) {
+        //  active employee filter
+        const activeEmployees = empRes.data.data.filter(
+          (employee) => employee.status?.toLowerCase() === "active"
+        );
+        setEmployees(activeEmployees);
+      }
         setSalaryAdvances(salaryRes.data.data || []);
         setAttendences(attRes.data.data || []);
         setLoanData(loanRes.data.data || []); 
@@ -163,7 +170,7 @@ useEffect(() => {
     const deductionTotal = advance + loanDeduction;
     const netPay = totalEarnings - deductionTotal;
 
-    // ✅ Return merged data row
+    //  Return merged data row
     return {
       empId: emp.id,
       name: emp.employee_name,

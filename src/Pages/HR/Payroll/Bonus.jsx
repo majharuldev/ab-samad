@@ -45,7 +45,10 @@ const Bonus = () => {
       try {
         const res = await api.get(`/employee`);
         if (res.data?.success) {
-          setEmployee(res.data.data);
+          const activeEmployees = res.data.data.filter(
+          (employee) => employee.status?.toLowerCase() === "active"
+        );
+        setEmployee(activeEmployees);
         }
       } catch (error) {
         console.error("Error fetching employees:", error);

@@ -46,12 +46,13 @@ const VendorList = () => {
   // Export Excel
   const exportExcel = () => {
     const exportData = filteredvendor.map(
-      ({ date, vendor_name, mobile, rent_category, work_area, status }) => ({
+      ({ date, vendor_name, mobile, rent_category, work_area, opening_balance, status }) => ({
         Date: date,
         Name: vendor_name,
         Mobile: mobile,
         RentCategory: rent_category,
         WorkArea: work_area,
+        OpeningBalance: opening_balance,
         Status: status,
       })
     );
@@ -142,6 +143,7 @@ const VendorList = () => {
               <th>Mobile</th>
               <th>RentCategory</th>
               <th>WorkArea</th>
+              <th>Openning Balance</th>
               <th>Status</th>
             </tr>
           </thead>
@@ -156,6 +158,7 @@ const VendorList = () => {
                 <td>${dt.mobile}</td>
                 <td>${dt.rent_category}</td>
                 <td>${dt.work_area}</td>
+                <td>${dt.opening_balance}</td>
                 <td>${dt.status}</td>
               </tr>`
               )

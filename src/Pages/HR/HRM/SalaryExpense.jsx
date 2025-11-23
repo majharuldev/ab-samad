@@ -80,7 +80,10 @@ const SalaryExpense = () => {
         setEmployeesLoading(true);
         const response = await api.get(`/employee`);
         if (response.data.success) {
-          setEmployees(response.data.data);
+           const activeEmployee = response?.data?.data?.filter(
+        (employee) => employee.status?.toLowerCase() === "active"
+      );
+          setEmployees(activeEmployee);
         }
       } catch (err) {
         console.error("Error fetching employees:", err);

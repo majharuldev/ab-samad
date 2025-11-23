@@ -1319,68 +1319,104 @@ const TripList = () => {
 
 
   // excel
-  // const exportTripsToExcel = () => {
-  //   const tableData = trip.map((dt, index) => ({
-  //     "SL.": index + 1,
-  //     Date: dt.date,
-  //     "Driver Name": dt.driver_name || "N/A",
-  //     "Driver Mobile": dt.driver_mobile || "N/A",
-  //     Commission: dt.driver_commission || "0",
-  //     "Load Point": dt.load_point,
-  //     "Unload Point": dt.unload_point,
-  //     "Trip Cost": dt.total_exp || 0,
-  //     "Trip Fare": dt.total_rent || 0,
-  //     "Total Profit": Number.parseFloat(dt.total_rent || 0) - Number.parseFloat(dt.total_exp || 0),
-  //   }))
+//   const exportTripsToExcel = async () => {
+//   try {
+//     // Filtered trip list use করবে (no API call)
+//     let filteredData = filteredTripList;
 
-  //   const worksheet = XLSX.utils.json_to_sheet(tableData)
-  //   const workbook = XLSX.utils.book_new()
-  //   XLSX.utils.book_append_sheet(workbook, worksheet, "Trips")
+//     // Non-admin হলে total_rent field বাদ দেবে
+//     if (!isAdmin) {
+//       filteredData = filteredData.map(({ total_rent, ...rest }) => rest);
+//     }
 
-  //   const excelBuffer = XLSX.write(workbook, {
-  //     bookType: "xlsx",
-  //     type: "array",
-  //   })
+//     // যদি filtered data না থাকে
+//     if (!filteredData || filteredData.length === 0) {
+//       toast.error("No filtered trip data found!");
+//       return;
+//     }
 
-  //   const data = new Blob([excelBuffer], { type: "application/octet-stream" })
-  //   saveAs(data, "trip_report.xlsx")
-  // }
-  const exportTripsToExcel = async () => {
+//     // Excel sheet বানানো (auto header = object keys)
+//     const worksheet = XLSX.utils.json_to_sheet(filteredData);
+//     const workbook = XLSX.utils.book_new();
+//     XLSX.utils.book_append_sheet(workbook, worksheet, "Filtered Trips");
+
+//     // Excel buffer তৈরি
+//     const excelBuffer = XLSX.write(workbook, {
+//       bookType: "xlsx",
+//       type: "array",
+//     });
+
+//     // File save
+//     const data = new Blob([excelBuffer], { type: "application/octet-stream" });
+//     saveAs(data, "filtered_trip_report.xlsx");
+//     toast.success("Filtered trip data downloaded successfully!");
+//   } catch (error) {
+//     console.error("Excel export error:", error);
+//     toast.error("Failed to download Excel file!");
+//   }
+// };
+
+const exportTripsToExcel = async () => {
   try {
-    // Filtered trip list use করবে (no API call)
     let filteredData = filteredTripList;
 
-    // Non-admin হলে total_rent field বাদ দেবে
     if (!isAdmin) {
       filteredData = filteredData.map(({ total_rent, ...rest }) => rest);
     }
 
-    // যদি filtered data না থাকে
     if (!filteredData || filteredData.length === 0) {
       toast.error("No filtered trip data found!");
       return;
     }
 
-    // Excel sheet বানানো (auto header = object keys)
-    const worksheet = XLSX.utils.json_to_sheet(filteredData);
+    // 🔹 Excel-export-ready data
+    const excelData = filteredData.map((item) => {
+      const newItem = {};
+      Object.keys(item).forEach((key) => {
+        // number string → number
+        if (!isNaN(item[key]) && item[key] !== "" && item[key] !== null) {
+          newItem[key] = Number(item[key]);
+        } else {
+          newItem[key] = item[key];
+        }
+      });
+      return newItem;
+    });
+
+    // 🔹 Total row calculation
+    const totalRow = {};
+    const numericKeys = Object.keys(excelData[0]).filter((key) =>
+      excelData.some((item) => typeof item[key] === "number")
+    );
+    numericKeys.forEach((key) => {
+      totalRow[key] = excelData.reduce(
+        (sum, row) => sum + (row[key] || 0),
+        0
+      );
+    });
+    totalRow["customer"] = "TOTAL"; // যেকোনো text field এ total label
+
+    // final data with total row
+    excelData.push(totalRow);
+
+    // 🔹 Excel sheet generate
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Filtered Trips");
 
-    // Excel buffer তৈরি
     const excelBuffer = XLSX.write(workbook, {
       bookType: "xlsx",
       type: "array",
     });
 
-    // File save
-    const data = new Blob([excelBuffer], { type: "application/octet-stream" });
-    saveAs(data, "filtered_trip_report.xlsx");
+    saveAs(new Blob([excelBuffer]), "filtered_trip_report.xlsx");
     toast.success("Filtered trip data downloaded successfully!");
   } catch (error) {
     console.error("Excel export error:", error);
     toast.error("Failed to download Excel file!");
   }
 };
+
 
 
   // pdf

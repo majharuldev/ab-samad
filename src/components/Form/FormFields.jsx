@@ -35,33 +35,24 @@ export const SelectField = ({
         name={name}
         control={control}
         rules={{ required: required ? `${label || name} is required` : false }}
-        // render={({ field: { onChange, value, ref } }) => {
-        //   const SelectComponent = isCreatable ? CreatableSelect : Select;
 
-        //   // Handle the value properly for both existing options and new values
-        //   const getValue = () => {
-        //     if (!value) return null;
+        render={({ field: { onChange, value, ref } }) => {
+          const SelectComponent = isCreatable ? CreatableSelect : Select;
 
-        //     // Check if the value exists in the options
-        //     const foundOption = options.find((opt) => opt.value === value);
-        //     if (foundOption) return foundOption;
-
-        //     // If value doesn't exist in options but we have a value, 
-        //     // create a temporary option for display (for newly created values)
-        //     return { value, label: value };
-        //   };
-          render={({ field: { onChange, value, ref } }) => {
-             const SelectComponent = isCreatable ? CreatableSelect : Select; 
-          //  Corrected getValue() for both single & multiple mode
+          // Correct getValue for existing + creatable
           const getValue = () => {
             if (!value) return isMulti ? [] : null;
 
             if (isMulti) {
-              // if value is array -> map matched options
-              return options.filter((opt) => value.includes(opt.value));
+              return value.map((val) => {
+                return (
+                  options.find((opt) => opt.value === val) || { value: val, label: val }
+                );
+              });
             } else {
-              // single value
-              return options.find((opt) => opt.value === value) || null;
+              return (
+                options.find((opt) => opt.value === value) || { value, label: value }
+              );
             }
           };
 
@@ -275,64 +266,3 @@ const TextAreaField = ({
 
 export default TextAreaField;
 
-
-
-// export const InputField = ({
-//   name,
-//   label,
-//   type,
-//   value,
-//   placeholder = "",
-//   defaultValue,
-//   required = false,
-//   inputRef,
-//   icon,
-//   readOnly = false,
-//    hidden = false,
-// }) => {
-//   const {
-//     register,
-//     formState: { errors },
-//   } = useFormContext();
-
-//   const error = errors[name]?.message;
-//   const { ref, ...rest } = register(name, {
-//     required: required ? `${label || name} is required` : false,
-//   });
-
-//   return (
-//     <div className={`mb-4 ${hidden ? "hidden" : ""}`}>
-//       {label && !hidden && (
-//         <label
-//           htmlFor={name}
-//           className="block text-sm font-medium text-gray-700"
-//         >
-//           {label} {required && <span className="text-red-500">*</span>}
-//         </label>
-//       )}
-
-//       <div className="relative">
-//         <input
-//           id={name}
-//           type={type}
-//           lang="en-GB"
-//           placeholder={placeholder || `Enter ${label || name}`}
-//           defaultValue={defaultValue}
-//           value={value}
-//           readOnly={readOnly}
-//           {...rest}
-//           ref={(el) => {
-//             ref(el);
-//             if (inputRef) inputRef(el);
-//           }}
-//           className={`remove-date-icon mt-1 w-full text-sm border border-gray-300 px-3 py-2 rounded outline-none ${
-//             icon ? "pr-10" : ""
-//           } ${readOnly ? "bg-gray-200" : "bg-white"}`}
-//         />
-//         {icon && icon}
-//       </div>
-
-//       {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
-//     </div>
-//   );
-// };

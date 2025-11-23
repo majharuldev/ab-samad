@@ -27,7 +27,13 @@ const AdvanceSalaryForm = () => {
           api.get(`/user/${userId}`),
         ]);
 
-        if (empRes.data?.data) setEmployees(empRes.data.data);
+        if (empRes.data?.success) {
+        //  active employee filter
+        const activeEmployees = empRes.data.data.filter(
+          (employee) => employee.status?.toLowerCase() === "active"
+        );
+        setEmployees(activeEmployees);
+      }
         if (userRes.data?.name) setUserName(userRes.data.name);
       } catch (err) {
         console.error("Error fetching data:", err);

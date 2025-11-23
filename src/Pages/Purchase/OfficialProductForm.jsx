@@ -439,7 +439,7 @@ const OfficialProductForm = () => {
 
                 <button
                   type="button"
-                  onClick={() => append({ item_name: "", quantity: 0, unit_price: 0, total: 0 })}
+                  onClick={() => append({ item_name: "", quantity: "", unit_price: "", total: 0 })}
                   className="bg-primary text-white px-3 py-1 rounded-md hover:bg-primary/80"
                 >
                   + Add Item

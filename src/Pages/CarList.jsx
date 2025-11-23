@@ -71,73 +71,49 @@ const CarList = () => {
 
 // loading page
   if (loading) return <p className="text-center mt-16">Loading vehicle...</p>;
-  const csvData = vehicles.map((dt, index) => ({
-    index: index + 1,
-    driver_name: dt.driver_name,
-    vehicle_name: dt.vehicle_name,
-    category: dt.category,
-    size: dt.size,
-    registration_zone: dt.registration_zone,
-    registration_serial: dt.registration_serial,
-    registration_number: dt.registration_number,
+
+const exportExcel = (vehicles) => {
+  if (!vehicles || vehicles.length === 0) {
+    alert("No vehicle data found!");
+    return;
+  }
+
+  //  Excel-ready mapping
+  const excelData = filteredCarList.map((dt, index) => ({
+    SL: index + 1,
+    Driver: dt.driver_name,
+    Vehicle: dt.vehicle_name,
+    Category: dt.vehicle_category,
+    Size: dt.vehicle_size,
+    Registration_Zone: dt.reg_zone,
+    Registration_Serial: dt.reg_serial,
+    Registration_Number: dt.reg_no,
+    Status: dt.status,
+    Insurance_Date: dt.insurance_date !== "null" ? dt.insurance_date : "",
+    Reg_Date: dt.reg_date,
+    Tax_Date: dt.tax_date,
+    Route_Per_Date: dt.route_per_date,
+    Fitness_Date: dt.fitness_date,
+    Fuel_Capacity: dt.fuel_capcity ? Number(dt.fuel_capcity) : 0,
   }));
-  // export
-  const exportExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(csvData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "vehicles Data");
-    const excelBuffer = XLSX.write(workbook, {
-      bookType: "xlsx",
-      type: "array",
-    });
-    const data = new Blob([excelBuffer], { type: "application/octet-stream" });
-    saveAs(data, "vehicles_data.xlsx");
-  };
-  const exportPDF = () => {
-    const doc = new jsPDF("landscape");
-    const tableColumn = [
-      "#",
-      "Driver Name",
-      "Vehicle Name",
-      "Vehicle Category",
-      "Vehicle Size",
-      "Vehicle No",
-      "Status",
-    ];
-    const tableRows = filteredCarList.map((v, index) => [
-      indexOfFirstItem + index + 1,
-      v.driver_name,
-      v.vehicle_name,
-      v.vehicle_category,
-      v.vehicle_size,
-      `${v.reg_zone} ${v.reg_serial} ${v.reg_no}`,
-      v.status,
-    ]);
 
-    autoTable(doc, {
-      head: [tableColumn],
-      body: tableRows,
-      startY: 20,
-      styles: {
-        fontSize: 10,
-        cellPadding: 3,
-      },
-      headStyles: {
-        fillColor: [17, 55, 91],
-        textColor: [255, 255, 255],
-        halign: "left",
-      },
-      bodyStyles: {
-        textColor: [17, 55, 91],
-      },
-      alternateRowStyles: {
-        fillColor: [240, 240, 240],
-      },
-      theme: "grid",
-    });
-
-    doc.save("vehicles_data.pdf");
+  // Total row (Fuel Capacity-এর জন্য)
+  const totalRow = {
+    SL: "TOTAL",
+    Fuel_Capacity: excelData.reduce((sum, row) => sum + (row.Fuel_Capacity || 0), 0),
   };
+  excelData.push(totalRow);
+
+  //  Excel create & download
+  const worksheet = XLSX.utils.json_to_sheet(excelData);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Vehicles Data");
+
+  const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+  const data = new Blob([excelBuffer], { type: "application/octet-stream" });
+  saveAs(data, "vehicles_data.xlsx");
+};
+
 
   const printTable = () => {
   const tableHeader = `

@@ -44,17 +44,20 @@ const AllUsers = () => {
   const handleDelete = async (id) => {
     try {
       const response = await api.delete(
-        `/users/${id}`,
+        `/user/${id}`,
         {
           method: "DELETE",
         }
       );
 
-      if (!response.data.user.success) {
+      if (!response.data.success) {
         throw new Error("Failed to delete user");
       }
-      // Remove car from local list
-      setUsers((prev) => prev.filter((driver) => driver.id !== id));
+      // local state update
+    setUsers((prev) => prev.filter((user) => user.id !== id));
+
+    // reset current page if needed
+    setCurrentPage(1);
       toast.success("User successfully deleted.", {
         position: "top-right",
         autoClose: 3000,
@@ -140,6 +143,7 @@ const AllUsers = () => {
     doc.save("user_data.pdf");
   };
 
+  // print table
   const printTable = () => {
     // hide specific column
     const actionColumns = document.querySelectorAll(".action_column");
