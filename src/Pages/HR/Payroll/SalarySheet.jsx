@@ -555,7 +555,7 @@ const handleConfirmStatus = async () => {
                      
                         <button
                           onClick={() => openConfirmModal(row.id)}
-                          className="bg-yellow-500 text-white px-2 py-1 rounded shadow-md hover:bg-yellow-600"
+                          className={`${row?.status==="Paid" ? "bg-primary" : "bg-yellow-500"} text-white px-2 py-1 rounded shadow-md hover:bg-yellow-600`}
                         >
                           {row?.status === "Paid" ? "Paid" : "Unpaid"}
                         </button>

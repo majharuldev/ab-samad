@@ -374,6 +374,7 @@ const printTable = () => {
               <th className="p-2">Purpose</th>
               <th className="p-2">Amount</th>
               <th className="p-2">Remarks</th>
+              <th className="p-2">Status</th>
               <th className="p-2">Action</th>
             </tr>
           </thead>
@@ -387,6 +388,7 @@ const printTable = () => {
                   <td className="p-2">{item.purpose}</td>
                   <td className="p-2">{item.amount} ৳</td>
                   <td className="p-2">{item.remarks}</td>
+                  <td className="p-2">{item.status}</td>
                   <td className="p-2 flex gap-2">
                     <Link to={`/tramessy/HR/update-advance-requisition/${item.id}`}>
                       <button className=" text-primary px-2 py-1 rounded hover:bg-primary hover:text-white transition bg-white shadow">
