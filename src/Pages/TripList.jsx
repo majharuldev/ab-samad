@@ -1131,7 +1131,7 @@ const TripList = () => {
                               onClick={(e) => e.stopPropagation()}
                             >
                               <div className="py-1">
-                                {(dt.status === "Pending" || dt.status === "Rejected") && (<Link to={`/tramessy/UpdateTripForm/${dt.id}`} onClick={() => setOpenDropdown(null)}>
+                                {((isAdmin || dt.status !== "Approved") ) && (<Link to={`/tramessy/UpdateTripForm/${dt.id}`} onClick={() => setOpenDropdown(null)}>
                                   <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                     <FaPen className="mr-2 text-[12px]" />
                                     Edit
