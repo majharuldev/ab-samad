@@ -9,8 +9,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import BtnSubmit from "../components/Button/BtnSubmit";
 import { InputField, SelectField } from "../components/Form/FormFields";
 import api from "../../utils/axiosConfig";
+import { useTranslation } from "react-i18next";
 
 const HelperForm = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate()
   const { id } = useParams();
   const isEditMode = Boolean(id);
@@ -33,7 +35,7 @@ const HelperForm = () => {
           });
         } catch (error) {
           console.error("Error fetching helper data:", error);
-          toast.error("Failed to load helper data");
+          toast.error(t("Failed to load helper data"));
         }
       };
       fetchHelperData();
@@ -60,19 +62,19 @@ const HelperForm = () => {
 
       if (resData.success) {
         toast.success(
-          `Helper ${isEditMode ? 'updated' : 'saved'} successfully`, 
+          isEditMode ? t("helperUpdated") : t("helperSaved"),
           { position: "top-right" }
         );
         if (!isEditMode) reset();
         navigate("/tramessy/HelperList")
       } else {
-        toast.error("Server issue: " + (resData.message || "Unknown issue"));
+        toast.error(t("Server issue:") + (resData.message || t("Unknown issue")));
       }
     } catch (error) {
       console.error(error);
       const errorMessage =
-        error.response?.data?.message || error.message || "Unknown error";
-      toast.error("Server issue: " + errorMessage);
+        error.response?.data?.message || error.message || t("Unknown error");
+      toast.error(t("Server issue:") + errorMessage);
     }
   };
 
@@ -81,19 +83,19 @@ const HelperForm = () => {
       <Toaster />
       <div className="mx-auto p-6 border-t-2 border-primary rounded-md shadow">
         <h3 className="pb-4 text-primary font-semibold ">
-        {isEditMode ? "Update Helper" : "Create Helper"}
+        {isEditMode ? t("Update Helper") : t("Create Helper")}
       </h3>
         <FormProvider {...methods}>
           <form onSubmit={handleSubmit(onSubmit)}>
             {/* Name & Contact */}
             <div className="md:flex justify-between gap-3">
               <div className="w-full">
-                <InputField name="helper_name" label="Helper Name" required />
+                <InputField name="helper_name" label={`${t("Helper")} ${t("Name")}`} required />
               </div>
               <div className="mt-2 md:mt-0 w-full">
                 <InputField
                   name="phone"
-                  label="Helper Mobile"
+                  label={`${t("Helper")} ${t("Mobile")}`}
                   type="number"
                   required
                 />
@@ -103,12 +105,12 @@ const HelperForm = () => {
             {/* Address & Salary */}
             <div className="md:flex justify-between gap-3">
               <div className="w-full">
-                <InputField name="address" label="Address" required />
+                <InputField name="address" label={t("Address")} required />
               </div>
               <div className="mt-2 md:mt-0 w-full">
                 <SelectField
                 name="salary"
-                label="Vehicle Category"
+                label={`${t("Vehicle")} ${t("Category")}`}
                 required={id? false:true}
                 options={[
                   // { value: "", label: "Select Vehicle category..." },
@@ -129,11 +131,11 @@ const HelperForm = () => {
               <div className="w-full relative">
                 <SelectField
                   name="status"
-                  label="Status"
+                  label={t("Status")}
                   required
                   options={[
-                    { value: "Active", label: "Active" },
-                    { value: "Inactive", label: "Inactive" },
+                    { value: "Active", label: t("Active") },
+                    { value: "Inactive", label: t("Inactive") },
                   ]}
                 />
               </div>
@@ -142,7 +144,7 @@ const HelperForm = () => {
 
             <div className="mt-6 text-left">
               <BtnSubmit>
-                {isEditMode ? "Update Helper" : "Create Helper"}
+                {isEditMode ? t("Update Helper") : t("Create Helper")}
               </BtnSubmit>
             </div>
           </form>

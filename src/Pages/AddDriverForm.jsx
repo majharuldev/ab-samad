@@ -1,16 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import "react-datepicker/dist/react-datepicker.css";
-import { IoMdClose } from "react-icons/io";
 import { FiCalendar } from "react-icons/fi";
-import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import BtnSubmit from "../components/Button/BtnSubmit";
 import { InputField, SelectField } from "../components/Form/FormFields";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../utils/axiosConfig";
+import { useTranslation } from "react-i18next";
 
 const AddDriverForm = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams();
   const methods = useForm();
@@ -34,7 +34,7 @@ const AddDriverForm = () => {
           }
         } catch (error) {
           console.error(error);
-          toast.error("Failed to load driver data");
+          // toast.error("Failed to load driver data");
         }
       };
       fetchDriver();
@@ -63,7 +63,7 @@ const AddDriverForm = () => {
       }
 
       toast.success(
-        !id ? "Driver added successfully" : "Driver updated successfully",
+        !id ? t("Driver added successfully") : t("Driver updated successfully"),
         { position: "top-right" }
       );
 
@@ -72,8 +72,8 @@ const AddDriverForm = () => {
     } catch (error) {
       console.error(error);
       const errorMessage =
-        error.response?.data?.message || error.message || "Unknown error";
-      toast.error("Server issue: " + errorMessage);
+        error.response?.data?.message || error.message || t("Unknown error");
+      toast.error(t("Server issue:") + errorMessage);
     }
   };
   return (
@@ -81,19 +81,19 @@ const AddDriverForm = () => {
       <Toaster />
       <div className="mx-auto p-6 rounded-md shadow border-t-2 border-primary">
         <h3 className=" pb-4 text-primary font-semibold ">
-          {!id ? "Create Driver" : "Update Driver"}
+          {!id ? t("Create Driver") : t("Update Driver")}
         </h3>
         <FormProvider {...methods} className="">
           <form onSubmit={handleSubmit(onSubmit)} className="">
             {/* Name & Contact */}
             <div className="md:flex justify-between gap-3">
               <div className="w-full">
-                <InputField name="driver_name" label="Driver Name" required />
+                <InputField name="driver_name" label={`${t("Driver")} ${t("Name")}`} required />
               </div>
               <div className="mt-2 md:mt-0 w-full">
                 <InputField
                   name="driver_mobile"
-                  label="Driver Mobile"
+                  label={`${t("Driver")} ${t("Mobile")}`}
                   type="number"
                   required={!id}
                 />
@@ -103,12 +103,12 @@ const AddDriverForm = () => {
             {/* NID & Emergency Contact */}
             <div className="md:flex justify-between gap-3">
               <div className="w-full">
-                <InputField name="address" label="Address" required={!id} />
+                <InputField name="address" label={t("Address")} required={!id} />
               </div>
               <div className="mt-2 md:mt-0 w-full">
                 <InputField
                   name="emergency_contact"
-                  label="Emergency Contact"
+                  label={t("Emergency Contact")}
                   type="number"
                 />
               </div>
@@ -119,13 +119,13 @@ const AddDriverForm = () => {
               <div className="w-full">
                 <InputField
                   name="nid"
-                  label="NID Number"
+                  label={`${t("NID Number")}`}
                   type="number"
                   required={!id}
                 />
               </div>
               <div className="mt-2 md:mt-0 w-full">
-                <InputField name="lincense" label="License No" required={!id} />
+                <InputField name="lincense" label={t("License No")} required={!id} />
               </div>
             </div>
 
@@ -134,7 +134,7 @@ const AddDriverForm = () => {
               <div className="w-full">
                 <InputField
                   name="expire_date"
-                  label="License Expiry Date"
+                  label={t("License Expired Date")}
                   type="date"
                   required={!id}
                   inputRef={(e) => {
@@ -152,7 +152,7 @@ const AddDriverForm = () => {
                 />
               </div>
               <div className="mt-2 md:mt-0 w-full relative">
-                <InputField name="note" label="Note" />
+                <InputField name="note" label={t("Note")} />
               </div>
             </div>
 
@@ -161,31 +161,31 @@ const AddDriverForm = () => {
               <div className="w-full relative">
                 <SelectField
                 name="salary"
-                label="Vehicle Category"
+                label={`${t("Vehicle")} ${t("Category")}`}
                 required={id? false:true}
                 options={[
                   // { value: "", label: "Select Vehicle category..." },
-                  { value: "pickup", label: "Pickup" },
-                  { value: "covered_van", label: "Covered Van" },
-                  { value: "open_truck", label: "Open Truck" },
-                  { value: "trailer", label: "Trailer" },
-                  { value: "freezer_van", label: "Freezer Van" },
-                  { value: "Oil Tanker", label: "Oil Tanker" },
+                  { value: "pickup", label: t("Pickup") },
+                  { value: "covered_van", label: t("Covered Van") },
+                  { value: "open_truck", label: t("Open Truck") },
+                  { value: "trailer", label: t("Trailer") },
+                  { value: "freezer_van", label: t("Freezer Van") },
+                  { value: "Oil Tanker", label: t("Oil Tanker") },
                 ]}
            
               />
               </div>
               <div className="mt-2 md:mt-0 w-full relative">
-                <InputField name="opening_balance" label="Opening Balance" />
+                <InputField name="opening_balance" label={t("Opening Balance")} />
               </div>
               <div className="w-full relative">
                 <SelectField
                   name="status"
-                  label="Status"
+                  label={t("Status")}
                   required={!id}
                   options={[
-                    { value: "Active", label: "Active" },
-                    { value: "Inactive", label: "Inactive" },
+                    { value: "Active", label: t("Active") },
+                    { value: "Inactive", label: t("Inactive") },
                   ]}
                 />
               </div>

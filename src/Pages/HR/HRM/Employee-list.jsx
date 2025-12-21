@@ -12,12 +12,14 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import toNumber from "../../../hooks/toNumber";
 import logo from "../../../../src/assets/AJ_Logo.png"
+import { useTranslation } from "react-i18next";
 
 const EmployeeList = () => {
   const [employee, setEmployee] = useState([]);
   const [loading, setLoading] = useState(true);
   const [viewModal, setViewModal] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const {t} = useTranslation();
 
   const handleView = (employee) => {
     setSelectedEmployee(employee);
@@ -57,7 +59,7 @@ const EmployeeList = () => {
       if (response.status === 200) {
         // UI update
         setEmployee((prev) => prev.filter((item) => item.id !== id));
-        toast.success("Employee deleted successfully", {
+        toast.success(t("Employee deleted successfully"), {
           position: "top-right",
           autoClose: 3000,
         });
@@ -65,11 +67,11 @@ const EmployeeList = () => {
         setIsOpen(false);
         setSelectedEmployeeId(null);
       } else {
-        throw new Error("Delete request failed");
+        throw new Error(t("Delete request failed"));
       }
     } catch (error) {
       console.error("Delete error:", error);
-      toast.error("There was a problem deleting!", {
+      toast.error(t("There was a problem deleting!"), {
         position: "top-right",
         autoClose: 3000,
       });
@@ -83,7 +85,7 @@ const EmployeeList = () => {
     return dt.email?.toLowerCase().includes(term) ||
       dt.mobile?.toLowerCase().includes(term);
   });
-  if (loading) return <p className="text-center mt-16">Loading employee...</p>;
+  if (loading) return <p className="text-center mt-16">{t("Employee")} {t("Loading")}...</p>;
   // pagination
   const itemsPerPage = 10;
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -117,7 +119,7 @@ const EmployeeList = () => {
       Conveance: toNumber(dt.conv),
       Medical: toNumber(dt.medical),
       Status: dt.status,
-      CreateedBy: dt.created_by
+      CreatedBy: dt.created_by
     }));
 
     const ws = XLSX.utils.json_to_sheet(data);
@@ -140,13 +142,13 @@ const EmployeeList = () => {
     const tableHeader = `
     <thead>
       <tr>
-        <th>SL.</th>
-        <th>FullName</th>
-        <th>Email</th>
-        <th>JoinDate</th>
-        <th>Designation</th>
-        <th>Mobile</th>
-        <th>Status</th>
+        <th>${t("SL.")}</th>
+        <th>${t("Full Name")}</th>
+        <th>${t("Email")}</th>
+        <th>${t("Join Date")}</th>
+        <th>${t("Designation")}</th>
+        <th>${t("Mobile")}</th>
+        <th>${t("Status")}</th>
       </tr>
     </thead>
   `;
@@ -214,7 +216,7 @@ const EmployeeList = () => {
     <body>
       <div class="print-container">
         <div class="content">
-          <h3 style="text-align:center;">Employee List</h3>
+          <h3 style="text-align:center;">${t("Employee")} ${t("Information")}</h3>
           ${printContent}
         </div>
 
@@ -235,23 +237,23 @@ const EmployeeList = () => {
         <div className="md:flex items-center justify-between mb-6">
           <h1 className="text-xl font-bold text-gray-800 flex items-center gap-3">
             <FaUserSecret className="text-gray-800 text-2xl" />
-            Employee Information
+            {t("Employee")} {t("Information")}
           </h1>
           <div className="mt-3 md:mt-0 flex gap-2">
             <Link to="/tramessy/HR/HRM/AddEmployee">
               <button className="bg-gradient-to-r from-primary to-[#115e15] text-white px-4 py-1 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer">
-                <FaPlus /> Employee
+                <FaPlus /> {t("Employee")}
               </button>
             </Link>
           </div>
         </div>
         <div className="md:flex justify-between items-center">
-          <div className="flex gap-1 md:gap-3 text-gray-700 font-semibold rounded-md">
+          <div className="flex gap-1 md:gap-3 text-gray-700 font-medium rounded-md">
             <button
               onClick={exportExcel}
               className="py-1 px-5 hover:bg-primary bg-white hover:text-white rounded shadow transition-all duration-300 cursor-pointer"
             >
-              Excel
+              {t("Excel")}
             </button>
             {/* <button
               onClick={exportPDF}
@@ -263,7 +265,7 @@ const EmployeeList = () => {
               onClick={printTable}
               className="py-1 px-5 hover:bg-primary bg-white hover:text-white rounded shadow transition-all duration-300 cursor-pointer"
             >
-              Print
+              {t("Print")}
             </button>
           </div>
           {/* search */}
@@ -276,7 +278,7 @@ const EmployeeList = () => {
                 setSearchTerm(e.target.value);
                 setCurrentPage(1);
               }}
-              placeholder="Search Employee..."
+              placeholder={`${t("Employee")} ${t("search")}...`}
               className="border border-gray-300 rounded-md outline-none text-xs py-2 ps-2 pr-5"
             />
             {/*  Clear button */}
@@ -297,15 +299,15 @@ const EmployeeList = () => {
           <table className="min-w-full text-sm text-left">
             <thead className="bg-gray-200 text-primary capitalize text-xs">
               <tr>
-                <th className="px-2 py-4">SL.</th>
-                <th className="px-2 py-4">Image</th>
-                <th className="px-2 py-4">FullName</th>
-                <th className="px-2 py-4">Email</th>
-                <th className="px-2 py-4">JoinDate</th>
-                <th className="px-2 py-4">Designation</th>
-                <th className="px-2 py-4">Mobile</th>
-                <th className="px-2 py-4">Status</th>
-                <th className="px-2 py-4">Action</th>
+                <th className="px-2 py-4">{t("SL.")}</th>
+                <th className="px-2 py-4">{t("Image")}</th>
+                <th className="px-2 py-4">{t("Full Name")}</th>
+                <th className="px-2 py-4">{t("Email")}</th>
+                <th className="px-2 py-4">{t("Join Date")}</th>
+                <th className="px-2 py-4">{t("Designation")}</th>
+                <th className="px-2 py-4">{t("Mobile")}</th>
+                <th className="px-2 py-4">{t("Status")}</th>
+                <th className="px-2 py-4">{t("Action")}</th>
               </tr>
             </thead>
             <tbody className="text-gray-700 ">
@@ -313,7 +315,7 @@ const EmployeeList = () => {
                 currentEmployee.length === 0 ? (
                   <tr>
                     <td colSpan="8" className="text-center p-4 text-gray-500">
-                      No Employee found
+                      {t("No Employee found")}
                     </td>
                   </tr>)
                   : (currentEmployee?.map((dt, index) => {
@@ -396,20 +398,20 @@ const EmployeeList = () => {
                 <FaTrashAlt />
               </div>
               <p className="text-center text-gray-700 font-medium mb-6">
-                Do you want to delete the employee?
+                {t("Do you want to delete the employee?")}
               </p>
               <div className="flex justify-center space-x-4">
                 <button
                   onClick={toggleModal}
                   className="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-primary hover:text-white cursor-pointer"
                 >
-                  No
+                  {t("No")}
                 </button>
                 <button
                   onClick={() => handleDelete(selectedEmployeeId)}
                   className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 cursor-pointer"
                 >
-                  Yes
+                  {t("Yes")}
                 </button>
               </div>
             </div>
@@ -429,7 +431,7 @@ const EmployeeList = () => {
             </button>
 
             <h2 className="text-xl font-bold text-center text-primary mb-4">
-              Employee Details
+              {t("Employee Details")}
             </h2>
 
             <div className="flex items-center gap-4 mb-4">
@@ -444,31 +446,31 @@ const EmployeeList = () => {
                 className="w-24 h-24 rounded-full border"
               />
               <div>
-                <p><span className="font-semibold">Name:</span> {selectedEmployee.employee_name}</p>
-                <p><span className="font-semibold">Email:</span> {selectedEmployee.email}</p>
-                <p><span className="font-semibold">Mobile:</span> {selectedEmployee.mobile}</p>
-                <p><span className="font-semibold">Designation:</span> {selectedEmployee.designation}</p>
-                <p><span className="font-semibold">Join Date:</span> {tableFormatDate(selectedEmployee.join_date)}</p>
+                <p><span className="font-semibold">{t("Name")}:</span> {selectedEmployee.employee_name}</p>
+                <p><span className="font-semibold">{t("Email")}:</span> {selectedEmployee.email}</p>
+                <p><span className="font-semibold">{t("Mobile")}:</span> {selectedEmployee.mobile}</p>
+                <p><span className="font-semibold">{t("Designation")}:</span> {selectedEmployee.designation}</p>
+                <p><span className="font-semibold">{t("Join Date")}:</span> {tableFormatDate(selectedEmployee.join_date)}</p>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               {/* <p><span className="font-semibold">Branch:</span> {selectedEmployee.branch_name}</p> */}
-              <p><span className="font-semibold">Gender:</span> {selectedEmployee.gender}</p>
-              <p><span className="font-semibold">Blood Group:</span> {selectedEmployee.blood_group}</p>
-              <p><span className="font-semibold">NID:</span> {selectedEmployee.nid}</p>
-              <p><span className="font-semibold">Basic Salary:</span> {selectedEmployee.basic || "N/A"}</p>
-              <p><span className="font-semibold">House Rent:</span> {selectedEmployee.house_rent || "N/A"}</p>
-              <p><span className="font-semibold">Conveyance:</span> {selectedEmployee.conv || "N/A"}</p>
-              <p><span className="font-semibold">Medical:</span> {selectedEmployee.medical || "N/A"}</p>
-              <p><span className="font-semibold">Allowance:</span> {selectedEmployee.allowan || "N/A"}</p>
-              <p><span className="font-semibold">Status:</span> {selectedEmployee.status}</p>
-              <p><span className="font-semibold">Created By:</span> {selectedEmployee.created_by || "N/A"}</p>
-              <p><span className="font-semibold">Created At:</span> {new Date(selectedEmployee.created_at).toLocaleString()}</p>
-              <p><span className="font-semibold">Updated At:</span> {new Date(selectedEmployee.updated_at).toLocaleString()}</p>
+              <p><span className="font-semibold">{t("Gender")}:</span> {selectedEmployee.gender}</p>
+              <p><span className="font-semibold">{t("Blood Group")}:</span> {selectedEmployee.blood_group}</p>
+              <p><span className="font-semibold">{t("NID")}:</span> {selectedEmployee.nid}</p>
+              <p><span className="font-semibold">{t("Basic Salary")}:</span> {selectedEmployee.basic || "N/A"}</p>
+              <p><span className="font-semibold">{t("House Rent")}:</span> {selectedEmployee.house_rent || "N/A"}</p>
+              <p><span className="font-semibold">{t("Conveyance")}:</span> {selectedEmployee.conv || "N/A"}</p>
+              <p><span className="font-semibold">{t("Medical")}:</span> {selectedEmployee.medical || "N/A"}</p>
+              <p><span className="font-semibold">{t("Allowance")}:</span> {selectedEmployee.allowan || "N/A"}</p>
+              <p><span className="font-semibold">{t("Status")}:</span> {selectedEmployee.status}</p>
+              <p><span className="font-semibold">{t("Created By")}:</span> {selectedEmployee.created_by || "N/A"}</p>
+              <p><span className="font-semibold">{t("Created At")}:</span> {new Date(selectedEmployee.created_at).toLocaleString()}</p>
+              <p><span className="font-semibold">{t("Updated At")}:</span> {new Date(selectedEmployee.updated_at).toLocaleString()}</p>
             </div>
 
-            <p className="mt-4"><span className="font-semibold">Address:</span> {selectedEmployee.address}</p>
+            <p className="mt-4"><span className="font-semibold">{t("Address")}:</span> {selectedEmployee.address}</p>
           </div>
         </div>
       )}

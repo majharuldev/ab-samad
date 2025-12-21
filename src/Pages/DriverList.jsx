@@ -11,8 +11,10 @@ import { saveAs } from "file-saver";
 import { GrFormNext, GrFormPrevious } from "react-icons/gr";
 import Pagination from "../components/Shared/Pagination";
 import api from "../../utils/axiosConfig";
-import { tableFormatDate } from "../hooks/formatDate";
+import { formatDate, tableFormatDate } from "../hooks/formatDate";
+import { useTranslation } from "react-i18next";
 const CarList = () => {
+  const {t} = useTranslation();
   const [drivers, setDrivers] = useState([]);
   const [loading, setLoading] = useState(true);
   // delete modal
@@ -39,7 +41,7 @@ const CarList = () => {
       });
   }, []);
 
-  if (loading) return <p className="text-center mt-16">Loading drivers...</p>;
+  if (loading) return <p className="text-center mt-16">{t("Driver")} {t("Loading")}...</p>;
 
   // delete by id
   const handleDelete = async (id) => {
@@ -48,7 +50,7 @@ const CarList = () => {
 
     // Remove driver from local list
     setDrivers((prev) => prev.filter((driver) => driver.id !== id));
-    toast.success("Driver deleted successfully", {
+    toast.success(t("Driver deleted successfully"), {
       position: "top-right",
       autoClose: 3000,
     });
@@ -56,8 +58,8 @@ const CarList = () => {
     setIsOpen(false);
     setSelectedDriverId(null);
   } catch (error) {
-    console.error("Delete error:", error.response || error);
-    toast.error("There was a problem deleting!", {
+    console.error(t("Delete error:"), error.response || error);
+    toast.error(t("There was a problem deleting!"), {
       position: "top-right",
       autoClose: 3000,
     });
@@ -102,6 +104,7 @@ const CarList = () => {
     const data = new Blob([excelBuffer], { type: "application/octet-stream" });
     saveAs(data, "drivers_data.xlsx");
   };
+
   const exportDriversToPDF = () => {
     const doc = new jsPDF("landscape");
 
@@ -152,20 +155,20 @@ const CarList = () => {
     doc.save("drivers_data.pdf");
   };
  
+  // print functionality
  const printDriversTable = () => {
   const WinPrint = window.open("", "", "width=900,height=650");
 
   const printContent = `
-    <h2>Driver Info</h2>
     <table>
       <thead>
         <tr>
-          <th>Name</th>
-          <th>Mobile</th>
-          <th>Address</th>
-          <th>Emergency Contact</th>
-          <th>License</th>
-          <th>License Expire Date</th>
+          <th>${t("Name")}</th>
+          <th>${t("Mobile")}</th>
+          <th>${t("Address")}</th>
+          <th>${t("Emergency Contact")}</th>
+          <th>${t("License")}</th>
+          <th>${t("License Expired Date")}</th>
         </tr>
       </thead>
       <tbody>
@@ -176,7 +179,7 @@ const CarList = () => {
             <td>${d.address || ""}</td>
             <td>${d.emergency_contact || ""}</td>
             <td>${d.lincense || ""}</td>
-            <td>${d.expire_date || ""}</td>
+            <td>${formatDate(d.expire_date) || ""}</td>
           </tr>
         `).join('')}
       </tbody>
@@ -209,12 +212,7 @@ const CarList = () => {
     </head>
 
     <body>
-      <div class="print-header">
-        <h2>M/S A J ENTERPRISE</h2>
-        <div>Razzak Plaza, 11th Floor, Room J-12<br/>Moghbazar, Dhaka-1217</div>
-      </div>
-
-      <h3 style="text-align:center;">Driver List</h3>
+      <h3 style="text-align:center;">${t("Driver")} ${t("list")}</h3>
 
       ${printContent}
     </body>
@@ -257,12 +255,12 @@ const CarList = () => {
         <div className="md:flex items-center justify-between mb-6">
           <h1 className="text-xl font-bold text-gray-800 flex items-center gap-3">
             <FaTruck className="text-gray-800 text-2xl" />
-            Driver Information
+            {t("Driver")} {t("Information")}
           </h1>
           <div className="mt-3 md:mt-0 flex gap-2">
             <Link to="/tramessy/AddDriverForm">
               <button className="bg-gradient-to-r from-primary to-[#115e15] text-white px-4 py-1 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer">
-                <FaPlus /> Add Driver
+                <FaPlus /> {t("Add Driver")}
               </button>
             </Link>
           </div>
@@ -270,12 +268,12 @@ const CarList = () => {
 
         {/* Export */}
         <div className="md:flex justify-between mb-4">
-          <div className="flex gap-1 text-gray-700 md:gap-3 flex-wrap">
+          <div className="flex gap-1 text-gray-700 font-medium md:gap-3 flex-wrap">
             <button
               onClick={exportDriversToExcel}
-              className="py-1 px-5 bg-white shadow font-semibold rounded-md hover:bg-primary hover:text-white transition-all cursor-pointer"
+              className="py-1 px-5 bg-white shadow rounded-md hover:bg-primary hover:text-white transition-all cursor-pointer"
             >
-              Excel
+              {t("Excel")}
             </button>
 
             {/* <button
@@ -287,9 +285,9 @@ const CarList = () => {
 
             <button
               onClick={printDriversTable}
-              className="py-1 px-5 bg-white shadow font-semibold rounded-md hover:bg-primary hover:text-white transition-all cursor-pointer"
+              className="py-1 px-5 bg-white shadow rounded-md hover:bg-primary hover:text-white transition-all cursor-pointer"
             >
-              Print
+              {t("Print")}
             </button>
           </div>
           <div className="mt-3 md:mt-0">
@@ -301,7 +299,7 @@ const CarList = () => {
                 setSearchTerm(e.target.value);
                 setCurrentPage(1);
               }}
-              placeholder="Search..."
+              placeholder={`${t("search")}...`}
               className="border border-gray-300 rounded-md outline-none text-xs py-2 ps-2 pr-5"
             />
             {/*  Clear button */}
@@ -324,22 +322,22 @@ const CarList = () => {
           <table className="min-w-full text-sm text-left">
             <thead className="bg-gray-200 text-primary capitalize text-xs">
               <tr>
-                <th className="px-2 py-4">SL.</th>
-                <th className="px-2 py-4">Name</th>
-                <th className="px-2 py-4">Mobile</th>
-                <th className="px-2 py-4 w-40 ">Address</th>
-                <th className="p-2">Vehicle Category</th>
-                <th className="px-2 py-4">License</th>
-                <th className="px-2 py-4">Expired</th>
-                <th className="px-2 py-4">Status</th>
-                <th className="px-2 py-4 action_column">Action</th>
+                <th className="px-2 py-4">{t("SL.")}</th>
+                <th className="px-2 py-4">{t("Name")}</th>
+                <th className="px-2 py-4">{t("Mobile")}</th>
+                <th className="px-2 py-4 w-40 ">{t("Address")}</th>
+                <th className="p-2">{t("Vehicle")} {t("Category")}</th>
+                <th className="px-2 py-4">{t("License")}</th>
+                <th className="px-2 py-4">{t("Expired")}</th>
+                <th className="px-2 py-4">{t("Status")}</th>
+                <th className="px-2 py-4 action_column">{t("Action")}</th>
               </tr>
             </thead>
             <tbody className="text-gray-700 ">
               { currentDrivers.length === 0 ? (
                 <tr>
                   <td colSpan="8" className="text-center p-4 text-gray-500">
-                    No Driver found
+                    {t("No Driver found")}
                   </td>
                   </tr>)
               :(currentDrivers?.map((driver, index) => (
@@ -418,20 +416,20 @@ const CarList = () => {
                 <FaTrashAlt />
               </div>
               <p className="text-center text-gray-700 font-medium mb-6">
-                Are you sure you want to delete this driver?
+                {t("Are you sure you want to delete this driver?")}
               </p>
               <div className="flex justify-center space-x-4">
                 <button
                   onClick={toggleModal}
                   className="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-primary hover:text-white cursor-pointer"
                 >
-                  No
+                  {t("No")}
                 </button>
                 <button
                   onClick={() => handleDelete(selectedDriverId)}
                   className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 cursor-pointer"
                 >
-                  Yes
+                  {t("Yes")}
                 </button>
               </div>
             </div>
@@ -444,54 +442,54 @@ const CarList = () => {
         <div className="fixed inset-0 w-full h-full flex items-center justify-center bg-[#000000ad] z-50 overflow-auto scroll-hidden">
           <div className="w-4xl p-5 bg-gray-100 rounded-xl mt-10">
             <h3 className="text-primary font-semibold text-base">
-              Driver Information
+              {t("Driver")} {t("Information")}
             </h3>
             <div className="mt-5">
               <ul className="flex border border-gray-300">
                 <li className="w-[428px] flex text-gray-700 font-semibold text-sm px-3 py-2 border-r border-gray-300">
-                  <p className="w-48">Name:</p>{" "}
+                  <p className="w-48">{t("Name")}:</p>{" "}
                   <p>{selectedDriver.driver_name||"N/A"}</p>
                 </li>
                 <li className="w-[428px] flex text-gray-700 font-semibold text-sm px-3 py-2">
-                  <p className="w-48">Mobile:</p>{" "}
+                  <p className="w-48">{t("Mobile")}:</p>{" "}
                   <p>{selectedDriver.driver_mobile||"N/A"}</p>
                 </li>
               </ul>
               <ul className="flex border-b border-r border-l border-gray-300">
                 <li className="w-[428px] flex text-gray-700 font-semibold text-sm px-3 py-2 border-r border-gray-300">
-                  <p className="w-48">Emergency Contact:</p>{" "}
+                  <p className="w-48">{t("Emergency Contact")}:</p>{" "}
                   <p>{selectedDriver.emergency_contact?selectedDriver.emergency_contact:"N/A"}</p>
                 </li>
                 <li className="w-[428px] flex text-gray-700 font-semibold text-sm px-3 py-2">
-                  <p className="w-48">Address:</p>{" "}
+                  <p className="w-48">{t("Address")}:</p>{" "}
                   <p>{selectedDriver.address||"N/A"}</p>
                 </li>
               </ul>
               <ul className="flex border-b border-r border-l border-gray-300">
                 <li className="w-[428px] flex text-gray-700 font-semibold text-sm px-3 py-2 border-r border-gray-300">
-                  <p className="w-48">NID:</p> <p>{selectedDriver.nid||"N/A"}</p>
+                  <p className="w-48">{t("NID")}:</p> <p>{selectedDriver.nid||"N/A"}</p>
                 </li>
                 <li className="w-[428px] flex text-gray-700 font-semibold text-sm px-3 py-2">
-                  <p className="w-48">License:</p>{" "}
+                  <p className="w-48">{t("License")}:</p>{" "}
                   <p>{selectedDriver.lincense||"N/A"}</p>
                 </li>
               </ul>
               <ul className="flex border-b border-r border-l border-gray-300">
                 <li className="w-[428px] flex text-gray-700 font-semibold text-sm px-3 py-2 border-r border-gray-300">
-                  <p className="w-48">License Expiry:</p>{" "}
+                  <p className="w-48">{t("License Expiry")}:</p>{" "}
                   <p>{tableFormatDate(selectedDriver.expire_date||"N/A")}</p>
                 </li>
                 <li className="w-[428px] flex text-gray-700 font-semibold text-sm px-3 py-2">
-                  <p className="w-48">Note:</p>{" "}
+                  <p className="w-48">{t("Note")}:</p>{" "}
                   <p>{selectedDriver.note || "N/A"}</p>
                 </li>
               </ul>
               <ul className="flex border-b border-r border-l border-gray-300">
                 <li className="w-[428px] flex text-gray-700 font-semibold text-sm px-3 py-2 border-r border-gray-300">
-                  <p className="w-48">Opening Balance:</p> <p>{selectedDriver.opening_balance? selectedDriver.opening_balance: 0}</p>
+                  <p className="w-48">{t("Opening Balance")}:</p> <p>{selectedDriver.opening_balance? selectedDriver.opening_balance: 0}</p>
                 </li>
                 <li className="w-[428px] flex text-gray-700 font-semibold text-sm px-3 py-2 border-r border-gray-300">
-                  <p className="w-48">Status:</p> <p>{selectedDriver.status||"N/A"}</p>
+                  <p className="w-48">{t("Status")}:</p> <p>{selectedDriver.status||"N/A"}</p>
                 </li>
               </ul>
               <div className="flex justify-end mt-10">
@@ -499,7 +497,7 @@ const CarList = () => {
                   onClick={() => setViewModalOpen(false)}
                   className="text-white bg-primary py-1 px-2 rounded-md cursor-pointer hover:bg-primary/80"
                 >
-                  Close
+                  {t("Close")}
                 </button>
               </div>
             </div>

@@ -184,7 +184,7 @@ const printTable = () => {
       <div class="print-container">
 
         <div class="content">
-          <h3 style="text-align:center;">Vendor List</h3>
+          <h3 style="text-align:center;">{t("Vendor")} {t("ïnfo")}</h3>
           ${tableHTML}
         </div>
 

@@ -13,7 +13,9 @@ import { GrFormNext, GrFormPrevious } from "react-icons/gr";
 import Pagination from "../components/Shared/Pagination";
 import api from "../../utils/axiosConfig";
 import toNumber from "../hooks/toNumber";
+import { useTranslation } from "react-i18next";
 const HelperList = () => {
+  const { t } = useTranslation();
   const [helper, setHelper] = useState([]);
   const [loading, setLoading] = useState(true);
   // delete modal
@@ -51,7 +53,7 @@ const HelperList = () => {
 
     // Remove driver from local list
     setHelper((prev) => prev.filter((driver) => driver.id !== id));
-    toast.success("Helper deleted successfully", {
+    toast.success(t("Helper deleted successfully"), {
       position: "top-right",
       autoClose: 3000,
     });
@@ -59,8 +61,8 @@ const HelperList = () => {
     setIsOpen(false);
     setSelectedHelperId(null);
   } catch (error) {
-    console.error("Delete error:", error.response || error);
-    toast.error("There was a problem deleting!", {
+    console.error(t("Delete error:"), error.response || error);
+    toast.error(t("There was a problem deleting!"), {
       position: "top-right",
       autoClose: 3000,
     });
@@ -91,6 +93,7 @@ const HelperList = () => {
       Mobile: Helper.phone,
       Address: Helper.address,
       // Emergency: toNumber(Helper.salary),
+      "Vehicle Category": Helper.vehicle_category,
       Status: Helper.status,
     }));
 
@@ -155,10 +158,11 @@ const HelperList = () => {
   const tableHeader = `
     <thead>
       <tr>
-        <th>SL.</th>
-        <th>Name</th>
-        <th>Mobile</th>
-        <th>Address</th>
+        <th>${t("SL.")}</th>
+        <th>${t("Name")}</th>
+        <th>${t("Mobile")}</th>
+        <th>${t("Address")}</th>
+        <th>${t("Vehicle")}${("Category")}</th>
       </tr>
     </thead>
   `;
@@ -169,6 +173,7 @@ const HelperList = () => {
       <td>${helper.helper_name || ""}</td>
       <td>${helper.phone || ""}</td>
       <td>${helper.address || ""}</td>
+      <td>${helper.vehicle_category || ""}</td>
     </tr>
   `).join("");
 
@@ -183,7 +188,7 @@ const HelperList = () => {
   WinPrint.document.write(`
     <html>
       <head>
-        <title>Helper List</title>
+        <title>-</title>
         <style>
           table { width: 100%; border-collapse: collapse; font-family: Arial; }
           th, td { border: 1px solid #000; padding: 8px; text-align: left; }
@@ -198,7 +203,7 @@ const HelperList = () => {
         </style>
       </head>
       <body>
-        <h3>Helper List</h3>
+        <h3>${t("Helper")} ${t("list")}</h3>
         ${printContent}
       </body>
     </html>
@@ -240,12 +245,12 @@ const HelperList = () => {
         <div className="md:flex items-center justify-between mb-6">
           <h1 className="text-xl font-bold text-gray-800 flex items-center gap-3">
             <FaTruck className="text-gray-800 text-2xl" />
-            Helper Information
+            {t("Helper")} {t("Information")}
           </h1>
           <div className="mt-3 md:mt-0 flex gap-2">
             <Link to="/tramessy/AddHelper">
               <button className="bg-gradient-to-r from-primary to-[#115e15] text-white px-4 py-1 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer">
-                <FaPlus /> Add Helper
+                <FaPlus /> {t("Add Helper")}
               </button>
             </Link>
           </div>
@@ -256,9 +261,9 @@ const HelperList = () => {
           <div className="flex gap-1 md:gap-3 flex-wrap">
             <button
               onClick={exportHelpersToExcel}
-              className="py-2 px-5 bg-white shadow text-gray-700 font-semibold rounded hover:bg-primary hover:text-white transition-all cursor-pointer"
+              className="py-2 px-5 bg-white shadow text-gray-700  rounded hover:bg-primary hover:text-white transition-all cursor-pointer"
             >
-              Excel
+              {t("Excel")}
             </button>
 
             {/* <button
@@ -270,9 +275,9 @@ const HelperList = () => {
 
             <button
               onClick={printHelpersTable}
-              className="py-2 px-5 bg-white shadow text-gray-700 font-semibold rounded hover:bg-primary hover:text-white transition-all cursor-pointer"
+              className="py-2 px-5 bg-white shadow text-gray-700  rounded hover:bg-primary hover:text-white transition-all cursor-pointer"
             >
-              Print
+              {t("Print")}
             </button>
           </div>
           <div className="mt-3 md:mt-0">
@@ -284,7 +289,7 @@ const HelperList = () => {
                 setSearchTerm(e.target.value);
                 setCurrentPage(1);
               }}
-              placeholder="Search..."
+              placeholder={`${t("search")}...`}
               className="border border-gray-300 rounded-md outline-none text-xs py-2 ps-2 pr-5"
             />
             {/*  Clear button */}
@@ -307,20 +312,20 @@ const HelperList = () => {
           <table className="min-w-full text-sm text-left">
             <thead className="bg-gray-200 text-primary capitalize text-xs">
               <tr>
-                <th className="p-2">SL.</th>
-                <th className="p-2">Name</th>
-                <th className="p-2">Mobile</th>
-                <th className="p-2">Address</th>
-                <th className="p-2">Vehicle Category</th>
-                <th className="p-2">Status</th>
-                <th className="p-2 action_column">Action</th>
+                <th className="p-2">{t("SL.")}</th>
+                <th className="p-2">{t("Name")}</th>
+                <th className="p-2">{t("Mobile")}</th>
+                <th className="p-2">{t("Address")}</th>
+                <th className="p-2">{t("Vehicle")} {t("Category")}</th>
+                <th className="p-2">{t("Status")}</th>
+                <th className="p-2 action_column">{t("Action")}</th>
               </tr>
             </thead>
             <tbody className="text-gray-700">
               { currentHelpers.length === 0 ? (
                 <tr>
                   <td colSpan="8" className="text-center p-4 text-gray-500">
-                    No Halper found
+                    {t("No Helper found")}
                   </td>
                   </tr>)
               :(currentHelpers?.map((helper, index) => (
@@ -396,20 +401,20 @@ const HelperList = () => {
                 <FaTrashAlt />
               </div>
               <p className="text-center text-gray-700 font-medium mb-6">
-                Are you sure you want to delete this Helper?
+                {t("Are you sure you want to delete this Helper?")}
               </p>
               <div className="flex justify-center space-x-4">
                 <button
                   onClick={toggleModal}
                   className="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-primary hover:text-white cursor-pointer"
                 >
-                  No
+                  {t("No")}
                 </button>
                 <button
                   onClick={() => handleDelete(selectedHelperId)}
                   className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 cursor-pointer"
                 >
-                  Yes
+                  {t("Yes")}
                 </button>
               </div>
             </div>

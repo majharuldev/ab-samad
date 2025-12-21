@@ -15,8 +15,10 @@ import autoTable from "jspdf-autotable";
 import { tableFormatDate } from "../../../hooks/formatDate";
 import api from "../../../../utils/axiosConfig";
 import toNumber from "../../../hooks/toNumber";
+import { useTranslation } from "react-i18next";
 
 const Office = () => {
+  const { t } = useTranslation();
   const [office, setOffice] = useState([]);
   const [loading, setLoading] = useState(true);
   // delete modal
@@ -50,7 +52,7 @@ const Office = () => {
 
     // Remove driver from local list
     setOffice((prev) => prev.filter((driver) => driver.id !== id));
-    toast.success("Office deleted successfully", {
+    toast.success(t("Office deleted successfully"), {
       position: "top-right",
       autoClose: 3000,
     });
@@ -58,14 +60,14 @@ const Office = () => {
     setIsOpen(false);
     setSelectedOfficeId(null);
   } catch (error) {
-    console.error("Delete error:", error.response || error);
-    toast.error("There was a problem deleting!", {
+    console.error(t("Delete error:"), error.response || error);
+    toast.error(t("There was a problem deleting!"), {
       position: "top-right",
       autoClose: 3000,
     });
   }
 };
-  if (loading) return <p className="text-center mt-16">Loading office...</p>;
+  if (loading) return <p className="text-center mt-16">{t("Office")} {t("Loading")}...</p>;
   // search
   const filteredOfficeList = office.filter((dt) => {
     const term = searchTerm.toLowerCase();
@@ -146,7 +148,7 @@ const printOfficeTable = () => {
   WinPrint.document.write(`
     <html>
       <head>
-        <title>Office List</title>
+        <title>-</title>
         <style>
           body { font-family: Arial, sans-serif; padding: 20px; }
           h3 { text-align: center; margin-bottom: 20px; }
@@ -163,7 +165,7 @@ const printOfficeTable = () => {
         </style>
       </head>
       <body>
-        <h3>Office List</h3>
+        <h3>${t("Office")} ${t("list")}</h3>
         ${printContent}
       </body>
     </html>
@@ -182,12 +184,12 @@ const printOfficeTable = () => {
         <div className="md:flex items-center justify-between mb-6">
           <h1 className="text-xl font-bold text-gary-800 flex items-center gap-3">
             <RiHomeOfficeLine className="text-gary-800 text-2xl" />
-            Office
+            {t("Office")}
           </h1>
           <div className="mt-3 md:mt-0 flex gap-2">
             <Link to="/tramessy/HR/HRM/OfficeForm">
               <button className="bg-gradient-to-r from-primary to-[#115e15] text-white px-4 py-1 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer">
-                <FaPlus /> Office
+                <FaPlus /> {t("Office")}
               </button>
             </Link>
           </div>
@@ -196,9 +198,9 @@ const printOfficeTable = () => {
           <div className="flex gap-1 md:gap-3 text-gray-700 flex-wrap">
             <button
               onClick={exportOfficeToExcel}
-              className="py-1 px-5 bg-white shadow font-semibold rounded hover:bg-primary hover:text-white transition-all cursor-pointer"
+              className="py-1 px-5 bg-white shadow  rounded hover:bg-primary hover:text-white transition-all cursor-pointer"
             >
-              Excel
+              {t("Excel")}
             </button>
 
             {/* <button
@@ -210,9 +212,9 @@ const printOfficeTable = () => {
 
             <button
               onClick={printOfficeTable}
-              className="py-1 px-5 bg-white shadow font-semibold rounded hover:bg-primary hover:text-white transition-all cursor-pointer"
+              className="py-1 px-5 bg-white shadow  rounded hover:bg-primary hover:text-white transition-all cursor-pointer"
             >
-              Print
+              {t("Print")}
             </button>
           </div>
           {/* search */}
@@ -225,7 +227,7 @@ const printOfficeTable = () => {
                 setSearchTerm(e.target.value);
                 setCurrentPage(1);
               }}
-              placeholder="Search Office..."
+              placeholder={`${t("Office")} ${t("search")}...`}
               className="border border-gray-300 rounded-md outline-none text-xs py-2 ps-2 pr-5"
             />
             {/*  Clear button */}
@@ -246,20 +248,20 @@ const printOfficeTable = () => {
           <table className="min-w-full text-sm text-left">
             <thead className="bg-gray-200 text-primary  capitalize text-xs">
               <tr>
-                <th className="p-2">SL.</th>
-                <th className="p-2">Date</th>
-                <th className="p-2">Branch</th>
-                <th className="p-2">Address</th>
-                 <th className="p-2">Opening Balance</th>
+                <th className="p-2">{t("SL.")}</th>
+                <th className="p-2">{t("Date")}</th>
+                <th className="p-2">{t("Branch")}</th>
+                <th className="p-2">{t("Address")}</th>
+                 <th className="p-2">{t("Opening Balance")}</th>
                 {/* <th className="p-2">Factory/CompanyName</th> */}
-                <th className="p-2">Action</th>
+                <th className="p-2">{t("Action")}</th>
               </tr>
             </thead>
             <tbody className="text-gray-700">
               { currentVehicles.length === 0 ? (
                 <tr>
                   <td colSpan="8" className="text-center p-4 text-gray-500">
-                    No office found
+                    {t("No office found")}
                   </td>
                   </tr>)
               :(currentVehicles?.map((dt, index) => (
@@ -324,20 +326,20 @@ const printOfficeTable = () => {
                 <FaTrashAlt />
               </div>
               <p className="text-center text-gray-700 font-medium mb-6">
-                Are you sure you want to delete this office?
+                {t("Are you sure you want to delete this office?")}
               </p>
               <div className="flex justify-center space-x-4">
                 <button
                   onClick={toggleModal}
                   className="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-primary hover:text-white cursor-pointer"
                 >
-                  No
+                  {t("No")}
                 </button>
                 <button
                   onClick={() => handleDelete(selectedOfficeId)}
                   className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 cursor-pointer"
                 >
-                  Yes
+                  {t("Yes")}
                 </button>
               </div>
             </div>

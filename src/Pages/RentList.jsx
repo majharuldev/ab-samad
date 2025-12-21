@@ -181,7 +181,7 @@ const RentList = () => {
     <body>
       <div class="print-container">
         <div class="content">
-          <h3 style="text-align:center;">Vendor Vehicle List</h3>
+          <h3 style="text-align:center;">${t("Vendor")} ${t("Vehicle")} ${t("info")}</h3>
           ${printContent}
         </div>
 
