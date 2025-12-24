@@ -15,8 +15,10 @@ import api from "../../../utils/axiosConfig";
 import { IoMdClose } from "react-icons/io";
 import { useWatch } from "react-hook-form";
 import toNumber from "../../hooks/toNumber";
+import { useTranslation } from "react-i18next";
 
 const PurchaseList = () => {
+  const {t} = useTranslation();
   const [purchase, setPurchase] = useState([]);
   const [loading, setLoading] = useState(true);
   // Date filter state
@@ -101,11 +103,11 @@ const PurchaseList = () => {
         setselectedPurchase(response.data.data);
         setViewModalOpen(true);
       } else {
-        toast.error("Purchase Information could not be loaded.");
+        toast.error(t("Purchase Information could not be loaded"));
       }
     } catch (error) {
       console.error("View error:", error);
-      toast.error("Purchase Information could not be loaded.");
+      toast.error(t("Purchase Information could not be loaded"));
     }
   };
   // delete by id
@@ -115,7 +117,7 @@ const PurchaseList = () => {
 
       // Remove driver from local list
       setPurchase((prev) => prev.filter((account) => account.id !== id));
-      toast.success("Advance Salary deleted successfully", {
+      toast.success(t("Official Product deleted successfully"), {
         position: "top-right",
         autoClose: 3000,
       });
@@ -123,8 +125,8 @@ const PurchaseList = () => {
       setIsOpen(false);
       setSelectedOfficialProductId(null);
     } catch (error) {
-      console.error("Delete error:", error.response || error);
-      toast.error("There was a problem deleting!", {
+      console.error(t("Delete error:"), error.response || error);
+      toast.error(t("There was a problem deleting!"), {
         position: "top-right",
         autoClose: 3000,
       });
@@ -201,18 +203,18 @@ const PurchaseList = () => {
     const tableHeader = `
     <thead>
       <tr>
-        <th>SL</th>
-        <th>Date</th>
-        <th>Product ID</th>
-        <th>Supplier</th>
-        <th>Branch</th>
-        <th>Category</th>
-        <th>Item</th>
-        <th>Qty</th>
-        <th>Unit Price</th>
-        <th>Total</th>
-        <th>Service Charge</th>
-        <th>Purchase Amount</th>
+        <th>${t("SL.")}</th>
+        <th>${t("Date")}</th>
+        <th>${t("Product ID")}</th>
+        <th>${t("Supplier")}</th>
+        <th>${t("Branch")}</th>
+        <th>${t("Category")}</th>
+        <th>${t("Item")}</th>
+        <th>${t("Qty")}</th>
+        <th>${t("Unit Price")}</th>
+        <th>${t("Total")}</th>
+        <th>${t("Service Charge")}</th>
+        <th>${t("Purchase Amount")}</th>
       </tr>
     </thead>
   `
@@ -269,7 +271,7 @@ const PurchaseList = () => {
     printWindow.document.write(`
     <html>
       <head>
-        <title>Purchase List</title>
+        <title>-</title>
         <style>
           body { font-family: Arial, sans-serif; margin: 20px; }
           h2 { color: #11375B; text-align: center; font-size: 22px; margin-bottom: 10px; }
@@ -293,7 +295,7 @@ const PurchaseList = () => {
         </style>
       </head>
       <body>
-        <h2>Purchase List</h2>
+        <h2>${t("Purchase")} ${t("list")}</h2>
         ${printContent}
         <div class="footer">
           Printed on: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}
@@ -312,30 +314,30 @@ const PurchaseList = () => {
         <div className="md:flex items-center justify-between mb-6">
           <h1 className="text-xl font-bold text-gray-800 flex items-center gap-3">
             <FaUserSecret className="text-gray-800 text-2xl" />
-            Official Products List
+            {t("Official Products")} {t("list")}
           </h1>
           <div className="mt-3 md:mt-0 flex gap-2">
             <button
               onClick={() => setShowFilter((prev) => !prev)}
               className="border border-primary text-primary px-4 py-1 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer"
             >
-              <FaFilter /> Filter
+              <FaFilter /> {t("Filter")}
             </button>
             <Link to="/tramessy/Purchase/add-officialProduct">
               <button className="bg-gradient-to-r from-primary to-[#115e15] text-white px-4 py-1 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer">
-                <FaPlus />Official Product
+                <FaPlus />{t("Official Products")}
               </button>
             </Link>
           </div>
         </div>
         {/* export */}
         <div className="md:flex justify-between items-center">
-          <div className="flex gap-1 md:gap-3 text-gray-700 font-semibold rounded-md">
+          <div className="flex gap-1 md:gap-3 text-gray-700 font-medium rounded-md">
             <button
               onClick={exportExcel}
               className="py-1 px-5 shadow hover:bg-primary bg-white hover:text-white rounded transition-all duration-300 cursor-pointer"
             >
-              Excel
+              {t("Excel")}
             </button>
             {/* <button
               onClick={exportPDF}
@@ -347,7 +349,7 @@ const PurchaseList = () => {
               onClick={printTable}
               className="py-1 px-5 shadow hover:bg-primary bg-white hover:text-white rounded transition-all duration-300 cursor-pointer"
             >
-              Print
+              {t("Print")}
             </button>
           </div>
           {/* search */}
@@ -360,7 +362,7 @@ const PurchaseList = () => {
                 setSearchTerm(e.target.value);
                 setCurrentPage(1);
               }}
-              placeholder="Search by Product ..."
+              placeholder={`${t("search")}...`}
               className="lg:w-60 border border-gray-300 rounded-md outline-none text-xs py-2 ps-2 pr-5"
             />
             {/*  Clear button */}
@@ -422,7 +424,7 @@ const PurchaseList = () => {
                 }}
                 className="bg-gradient-to-r from-primary to-[#0a6807] text-white px-2 py-1.5 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer"
               >
-                <FaFilter /> Clear
+                <FaFilter /> {t("Clear")}
               </button>
             </div>
           </div>
@@ -431,26 +433,26 @@ const PurchaseList = () => {
           <table className="min-w-full text-sm text-left">
             <thead className="bg-gray-200 text-primary capitalize text-xs">
               <tr>
-                <th className="p-2">SL.</th>
-                <th className="p-2">Date</th>
-                <th className="p-2">Product ID</th>
-                <th className="p-2">Supplier Name</th>
+                <th className="p-2">{t("SL.")}</th>
+                <th className="p-2">{t("Date")}</th>
+                <th className="p-2">{t("Product ID")}</th>
+                <th className="p-2">{t("Supplier Name")}</th>
 
-                <th className="p-2">Category</th>
-                <th className="p-2">Item Name</th>
-                <th className="p-2">Quantity</th>
-                <th className="p-2">Unit Price</th>
-                <th className="p-2">Service Charge</th>
-                <th className="p-2">Total</th>
+                <th className="p-2">{t("Category")}</th>
+                <th className="p-2">{t("Item Name")}</th>
+                <th className="p-2">{t("Quantity")}</th>
+                <th className="p-2">{t("Unit Price")}</th>
+                <th className="p-2">{t("Service Charge")}</th>
+                <th className="p-2">{t("Total")}</th>
                 {/* <th className="p-2">Bill Image</th> */}
-                <th className="p-2">Action</th>
+                <th className="p-2">{t("Action")}</th>
               </tr>
             </thead>
             <tbody className="text-gray-700">
               {currentPurchase.length === 0 ? (
                 <tr>
                   <td colSpan="10" className="text-center p-4 text-gray-500">
-                    No purchase found
+                    {t("No purchase data found")}
                   </td>
                 </tr>)
                 : (currentPurchase?.map((dt, index) => (
@@ -535,7 +537,7 @@ const PurchaseList = () => {
             {/* Header */}
             <div className="sticky top-0 bg-white z-10 flex justify-between items-center p-5">
               <h2 className="text-2xl font-semibold text-gray-800">
-                Purchase Details
+                {t("Purchase Details")}
               </h2>
               <button
                 onClick={() => setViewModalOpen(false)}
@@ -562,16 +564,16 @@ const PurchaseList = () => {
               {/* Basic Information */}
               <section>
                 <h3 className="text-lg font-semibold text-primary border-b pb-2 mb-4">
-                  Basic Information
+                  {t("Basic")} {t("Information")}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm md:text-base">
-                  <p><span className="font-medium text-gray-600">Date:</span> {tableFormatDate(selectedPurchase.date)}</p>
-                  <p><span className="font-medium text-gray-600">Supplier Name:</span> {selectedPurchase.supplier_name}</p>
-                  <p><span className="font-medium text-gray-600">Category:</span> {selectedPurchase.category}</p>
-                  <p><span className="font-medium text-gray-600">Purchase Amount:</span> {selectedPurchase.purchase_amount}</p>
-                  <p><span className="font-medium text-gray-600">Service Charge:</span> {selectedPurchase.service_charge || "N/A"}</p>
-                  <p><span className="font-medium text-gray-600">Remarks:</span> {selectedPurchase.remarks}</p>
-                  <p><span className="font-medium text-gray-600">Status:</span>
+                  <p><span className="font-medium text-gray-600">{t("Date")}:</span> {tableFormatDate(selectedPurchase.date)}</p>
+                  <p><span className="font-medium text-gray-600">{t("Supplier")} {t("Name")}:</span> {selectedPurchase.supplier_name}</p>
+                  <p><span className="font-medium text-gray-600">{t("Category")}:</span> {selectedPurchase.category}</p>
+                  <p><span className="font-medium text-gray-600">{t("Purchase Amount")}:</span> {selectedPurchase.purchase_amount}</p>
+                  <p><span className="font-medium text-gray-600">{t("Service Charge")}:</span> {selectedPurchase.service_charge || "N/A"}</p>
+                  <p><span className="font-medium text-gray-600">{t("Remarks")}:</span> {selectedPurchase.remarks}</p>
+                  <p><span className="font-medium text-gray-600">{t("Status")}:</span>
                     <span className={`ml-2 px-3 py-1 rounded-full text-sm font-medium ${selectedPurchase.status === "pending"
                         ? "bg-yellow-100 text-yellow-700"
                         : selectedPurchase.status === "completed"
@@ -581,34 +583,34 @@ const PurchaseList = () => {
                       {selectedPurchase.status}
                     </span>
                   </p>
-                  <p><span className="font-medium text-gray-600">Priority:</span> {selectedPurchase.priority}</p>
+                  <p><span className="font-medium text-gray-600">{t("Priority")}:</span> {selectedPurchase.priority}</p>
                 </div>
               </section>
 
               {/* Vehicle Information */}
               <section>
                 <h3 className="text-lg font-semibold text-primary border-b pb-2 mb-4">
-                  Vehicle Information
+                  {t("Vehicle")} {t("Information")}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm md:text-base">
-                  <p><span className="font-medium text-gray-600">Driver Name:</span> {selectedPurchase.driver_name}</p>
-                  <p><span className="font-medium text-gray-600">Branch Name:</span> {selectedPurchase.branch_name}</p>
-                  <p><span className="font-medium text-gray-600">Vehicle No:</span> {selectedPurchase.vehicle_no}</p>
-                  <p><span className="font-medium text-gray-600">Vehicle Category:</span> {selectedPurchase.vehicle_category}</p>
+                  <p><span className="font-medium text-gray-600">{t("Driver")} {t("Name")}:</span> {selectedPurchase.driver_name}</p>
+                  <p><span className="font-medium text-gray-600">{t("Branch")} {t("Name")}:</span> {selectedPurchase.branch_name}</p>
+                  <p><span className="font-medium text-gray-600">{t("Vehicle No")}:</span> {selectedPurchase.vehicle_no}</p>
+                  <p><span className="font-medium text-gray-600">{t("Vehicle")} {t("Category")}:</span> {selectedPurchase.vehicle_category}</p>
                 </div>
               </section>
 
               {/* Creator Info */}
               <section>
                 <h3 className="text-lg font-semibold text-primary border-b pb-2 mb-4">
-                  System Info
+                  {t("System")} {t("info")}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm md:text-base">
-                  <p><span className="font-medium text-gray-600">Created By:</span> {selectedPurchase.created_by}</p>
+                  <p><span className="font-medium text-gray-600">{t("Created By")}:</span> {selectedPurchase.created_by}</p>
                   <div className="flex flex-col items-start ">
-                    <span className="font-medium mb-2">Bill Image:</span>
+                    <span className="font-medium mb-2">{t("Bill Documents")}:</span>
                     <img
-                      src={`https://ajenterprise.tramessy.com/backend/uploads/purchase/${selectedPurchase.image}`}
+                      src={`https://soinik.tramessy.com/backend/uploads/purchase/${selectedPurchase.image}`}
                       alt="Bill"
                       className="w-32 h-32 object-cover rounded-lg border"
                     />
@@ -620,16 +622,16 @@ const PurchaseList = () => {
               {(
                 <section>
                   <h3 className="text-lg font-semibold text-primary border-b pb-2 mb-4">
-                    Purchased Items
+                    {t("Purchased Items")}
                   </h3>
                   <div className="overflow-x-auto">
                     <table className="w-full border border-gray-200 rounded-lg overflow-hidden text-sm md:text-base">
                       <thead className="bg-gray-100 text-gray-700">
                         <tr>
-                          <th className="p-3 text-left">Item Name</th>
-                          <th className="p-3 text-center">Quantity</th>
-                          <th className="p-3 text-center">Unit Price</th>
-                          <th className="p-3 text-center">Total</th>
+                          <th className="p-3 text-left">{t("Item Name")}</th>
+                          <th className="p-3 text-center">{t("Quantity")}</th>
+                          <th className="p-3 text-center">{t("Unit Price")}</th>
+                          <th className="p-3 text-center">{t("Total")}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -655,7 +657,7 @@ const PurchaseList = () => {
                 onClick={() => setViewModalOpen(false)}
                 className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary/90 transition-all font-medium"
               >
-                Close
+                {t("Close")}
               </button>
             </div>
           </div>
@@ -677,20 +679,20 @@ const PurchaseList = () => {
                 <FaTrashAlt />
               </div>
               <p className="text-center text-gray-700 font-medium mb-6">
-                Are you sure you want to delete this Customer?
+                {t("Are you sure you want to delete?")}
               </p>
               <div className="flex justify-center space-x-4">
                 <button
                   onClick={toggleModal}
                   className="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-primary hover:text-white cursor-pointer"
                 >
-                  No
+                  {t("No")}
                 </button>
                 <button
                   onClick={() => handleDelete(selectedOfficialProductId)}
                   className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 cursor-pointer"
                 >
-                  Yes
+                  {t("Yes")}
                 </button>
               </div>
             </div>

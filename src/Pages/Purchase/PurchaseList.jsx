@@ -494,7 +494,7 @@ const PurchaseList = () => {
                 </option>
               ))}
             </select>
-            <div className="">
+            <div className="w-md">
               <button
                 onClick={() => {
                   setStartDate("");
@@ -719,7 +719,7 @@ const PurchaseList = () => {
 
               <section>
   <h3 className="text-lg font-semibold text-primary border-b pb-2 mb-4">
-    {t("System")} {t("Info")}
+    {t("System")} {t("info")}
   </h3>
   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm md:text-base">
     <p>
@@ -727,7 +727,7 @@ const PurchaseList = () => {
       {selectedPurchase.created_by}
     </p>
     <div className="flex flex-col items-start">
-      <span className="font-medium mb-2">{t("Bill Document")}:</span>
+      <span className="font-medium mb-2">{t("Bill Documents")}:</span>
       {selectedPurchase.image ? (
         <div>
           {/* Check if file is PDF or Image */}
@@ -776,7 +776,7 @@ const PurchaseList = () => {
             download
             className="block mt-2 text-blue-600 hover:text-blue-800 text-sm"
           >
-            {("Download")} {("File")}
+            {t("Download")} {t("File")}
           </a>
         </div>
       ) : (
@@ -790,16 +790,16 @@ const PurchaseList = () => {
               {(
                 <section>
                   <h3 className="text-lg font-semibold text-primary border-b pb-2 mb-4">
-                    Purchased Items
+                    {t("Purchased Items")}
                   </h3>
                   <div className="overflow-x-auto">
                     <table className="w-full border border-gray-200 rounded-lg overflow-hidden text-sm md:text-base">
                       <thead className="bg-gray-100 text-gray-700">
                         <tr>
-                          <th className="p-3 text-left">Item Name</th>
-                          <th className="p-3 text-center">Quantity</th>
-                          <th className="p-3 text-center">Unit Price</th>
-                          <th className="p-3 text-center">Total</th>
+                          <th className="p-3 text-left">{t("Item Name")}</th>
+                          <th className="p-3 text-center">{t("Quantity")}</th>
+                          <th className="p-3 text-center">{t("Unit Price")}</th>
+                          <th className="p-3 text-center">{t("Total")}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -825,7 +825,7 @@ const PurchaseList = () => {
                 onClick={() => setViewModalOpen(false)}
                 className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary/90 transition-all font-medium"
               >
-                Close
+                {t("Close")}
               </button>
             </div>
           </div>
@@ -847,20 +847,20 @@ const PurchaseList = () => {
                 <FaTrashAlt />
               </div>
               <p className="text-center text-gray-700 font-medium mb-6">
-                Are you sure you want to delete this Customer?
+                {t("Are you sure you want to delete?")}
               </p>
               <div className="flex justify-center space-x-4">
                 <button
                   onClick={toggleModal}
                   className="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-primary hover:text-white cursor-pointer"
                 >
-                  No
+                  {t("No")}
                 </button>
                 <button
                   onClick={() => handleDelete(selectedOfficialProductId)}
                   className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 cursor-pointer"
                 >
-                  Yes
+                  {t("Yes")}
                 </button>
               </div>
             </div>

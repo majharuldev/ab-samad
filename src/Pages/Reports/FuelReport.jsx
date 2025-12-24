@@ -9,10 +9,12 @@ import autoTable from "jspdf-autotable";
 import api from "../../../utils/axiosConfig";
 import DatePicker from "react-datepicker";
 import toNumber from "../../hooks/toNumber";
+import { useTranslation } from "react-i18next";
 // Extend dayjs with isBetween plugin
 dayjs.extend(isBetween);
 
 export default function FuelReport() {
+  const { t } = useTranslation();
   const [tripData, setTripData] = useState([]);
   const [report, setReport] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -294,38 +296,38 @@ export default function FuelReport() {
         {/* Header */}
         <div className="md:flex items-center justify-between mb-6">
           <h1 className="text-xl font-bold text-gray-800 flex items-center gap-3">
-            Fuel Cost Report from Trips
+            {t("Fuel Cost")} {t("Report")} 
           </h1>
           <div className="mt-3 md:mt-0 flex gap-2">
             <button
               onClick={() => setShowFilter(prev => !prev)}
               className="border border-primary text-primary px-4 py-1 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer"
             >
-              <FaFilter /> Filter
+              <FaFilter /> {t("Filter")}
             </button>
           </div>
         </div>
 
         {/* Export and Search */}
         <div className="md:flex justify-between items-center">
-          <div className="flex gap-1 md:gap-3 text-gray-700 font-semibold rounded-md">
+          <div className="flex gap-1 md:gap-3 text-gray-700 font-medium rounded-md">
             <button
               onClick={handleExcelExport}
               className="py-1 px-5 hover:bg-primary bg-white hover:text-white rounded shadow transition-all duration-300 cursor-pointer flex items-center gap-2"
             >
-              <FaFileExcel /> Excel
+              <FaFileExcel /> {t("Excel")}
             </button>
             <button
               onClick={handlePdfExport}
               className="py-1 px-5 hover:bg-primary bg-white hover:text-white rounded shadow transition-all duration-300 cursor-pointer flex items-center gap-2"
             >
-              <FaFilePdf /> PDF
+              <FaFilePdf /> {t("PDF")}
             </button>
             <button
               onClick={handlePrint}
               className="py-1 px-5 hover:bg-primary bg-white hover:text-white rounded shadow transition-all duration-300 cursor-pointer flex items-center gap-2"
             >
-              Print
+              {t("Print")}
             </button>
           </div>
 
@@ -335,7 +337,7 @@ export default function FuelReport() {
             </div>
             <input
               type="text"
-              placeholder="Search..."
+              placeholder={`${t("search")}...`}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="border border-gray-300 rounded-md outline-none text-sm py-2 pl-10 pr-5 w-full md:w-64"
@@ -391,19 +393,19 @@ export default function FuelReport() {
                 onChange={(e) => setSelectedVehicle(e.target.value)}
                 className=" w-full text-sm border border-gray-300 px-3 py-2 rounded bg-white outline-none"
               >
-                <option value="">All Vehicles</option>
+                <option value="">{t("All")} {t("Vehicle")}</option>
                 {getAvailableVehicles().map(vehicle => (
                   <option key={vehicle} value={vehicle}>{vehicle}</option>
                 ))}
               </select>
             </div>
 
-            <div className="flex items-end">
+            <div className="w-lg flex items-end">
               <button
                 onClick={clearFilters}
                 className="bg-primary text-white px-4 py-2 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer"
               >
-                <FiFilter />Clear
+                <FiFilter />{t("Clear")}
               </button>
             </div>
           </div>
@@ -422,14 +424,14 @@ export default function FuelReport() {
             <table className="min-w-full text-sm text-left">
               <thead className="bg-gray-200 text-primary capitalize text-xs">
                 <tr>
-                  <th className="p-3">Date</th>
+                  <th className="p-3">{t("Date")}</th>
                   {/* <th className="p-3">Ref ID</th> */}
-                  <th className="p-3">Vehicle</th>
-                  <th className="p-3">Driver</th>
-                  <th className="p-3">Customer</th>
-                  <th className="p-3">Route</th>
-                  <th className="p-3">Fuel Cost</th>
-                  <th className="p-3">Total Rent</th>
+                  <th className="p-3">{t("Vehicle")}</th>
+                  <th className="p-3">{t("Driver")}</th>
+                  <th className="p-3">{t("Customer")}</th>
+                  <th className="p-3">{t("Route")}</th>
+                  <th className="p-3">{t("Fuel Cost")}</th>
+                  <th className="p-3">{t("Total Rent")}</th>
                   {/* <th className="p-3">Fuel %</th> */}
                 </tr>
               </thead>

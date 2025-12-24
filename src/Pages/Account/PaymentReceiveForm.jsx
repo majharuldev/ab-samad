@@ -10,8 +10,10 @@ import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../../utils/axiosConfig";
 import { format } from "date-fns";
+import { useTranslation } from "react-i18next";
 
 const PaymentReceiveForm = () => {
+  const {t} = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const dateRef = useRef(null);
@@ -137,7 +139,7 @@ const PaymentReceiveForm = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>{t("Loading")}...</div>;
   }
 
   return (
@@ -145,7 +147,7 @@ const PaymentReceiveForm = () => {
       <Toaster />
       <div className="mx-auto p-6  rounded-md shadow-md border-t-2 border-primary">
         <h3 className="pb-4 text-primary font-semibold ">
-        {isEditing ? "Edit Payment Receive" : "Payment Receive Form"}
+        {isEditing ? t("Update Payment Receive") : t("Payment Receive Form")}
       </h3>
       <FormProvider {...methods} className="">
         <form
@@ -157,7 +159,7 @@ const PaymentReceiveForm = () => {
               <div className="w-full">
                 <InputField
                   name="date"
-                  label="Date"
+                  label={t("Date")}
                   type="date"
                   required={!isEditing}
                   inputRef={(e) => {
@@ -177,7 +179,7 @@ const PaymentReceiveForm = () => {
               <div className="w-full">
                 <SelectField
                   name="customer_name"
-                  label="Customer Name"
+                  label={`${t("Customer")} ${t("Name")}`}
                   required={!isEditing}
                   options={customerOptions}
                   control={control}
@@ -186,7 +188,7 @@ const PaymentReceiveForm = () => {
               <div className="w-full">
                 <SelectField
                   name="branch_name"
-                  label="Branch Name"
+                  label={`${t("Branch")} ${t("Name")}`}
                   required={!isEditing}
                   options={branchOptions}
                   control={control}
@@ -195,12 +197,12 @@ const PaymentReceiveForm = () => {
             </div>
             <div className="mt-5 md:mt-1 md:flex justify-between gap-3">
               <div className="w-full">
-                <InputField name="bill_ref" label="Bill Ref" required={!isEditing} />
+                <InputField name="bill_ref" label={t("Bill Ref")} required={!isEditing} />
               </div>
               <div className="w-full">
                 <InputField
                   name="amount"
-                  label="Amount"
+                  label={t("Amount")}
                   type="number"
                  required={!isEditing}
                 />
@@ -208,37 +210,37 @@ const PaymentReceiveForm = () => {
               <div className="w-full">
                 <SelectField
                   name="cash_type"
-                  label="Cash Type"
+                  label={t("Cash Type")}
                   required={!isEditing}
                   options={[
-                    { value: "Cash", label: "Cash" },
-                    { value: "Bank", label: "Bank" },
-                    { value: "Card", label: "Card" },
+                    { value: "Cash", label: t("Cash") },
+                    { value: "Bank", label: t("Bank") },
+                    { value: "Card", label: t("Card") },
                   ]}
                 />
               </div>
             </div>
             <div className="mt-5 md:mt-1 md:flex justify-between gap-3">
               <div className="w-full">
-                <InputField name="remarks" label="Note" required={!isEditing} />
+                <InputField name="remarks" label={t("Note")} required={!isEditing} />
               </div>
               <div className="w-full">
-                <InputField name="created_by" label="Created By" required={!isEditing} />
+                <InputField name="created_by" label={t("Created By")} required={!isEditing} />
               </div>
               <div className="w-full">
                 <SelectField
                   name="status"
-                  label="Status"
+                  label={t("Status")}
                   required={!isEditing}
                   options={[
-                    { value: "Active", label: "Active" },
-                    { value: "Inactive", label: "Inactive" },
+                    { value: "Active", label: t("Active") },
+                    { value: "Inactive", label: t("Inactive") },
                   ]}
                 />
               </div>
             </div>
             <div className="text-left p-5">
-              <BtnSubmit>{isEditing ? "Update" : "Submit"}</BtnSubmit>
+              <BtnSubmit>{isEditing ? t("Update") : t("Submit")}</BtnSubmit>
             </div>
           </div>
         </form>

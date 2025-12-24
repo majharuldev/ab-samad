@@ -14,8 +14,10 @@ import { tableFormatDate } from "../../hooks/formatDate";
 import { IoMdClose } from "react-icons/io";
 import toast from "react-hot-toast";
 import toNumber from "../../hooks/toNumber";
+import { useTranslation } from "react-i18next";
 
 const CashDispatch = () => {
+  const { t } = useTranslation();
   const [account, setAccount] = useState([]);
   const [loading, setLoading] = useState(true);
   const [startDate, setStartDate] = useState("");
@@ -307,7 +309,7 @@ const exportExcel = async () => {
         <div className="md:flex items-center justify-between mb-6">
           <h1 className="text-xl font-bold text-gray-800 flex items-center gap-3">
             <HiCurrencyBangladeshi className="text-gray-800 text-2xl" />
-            Fund Transfer
+            {t("Fund Transfer")}
           </h1>
           <div className="mt-3 md:mt-0 flex gap-2">
             <div className="md:mt-0 flex gap-2">
@@ -315,12 +317,12 @@ const exportExcel = async () => {
                 onClick={() => setShowFilter((prev) => !prev)}
                 className="border border-primary text-primary px-4 py-1 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer"
               >
-                <FaFilter /> Filter
+                <FaFilter /> {t("Filter")}
               </button>
             </div>
             <Link to="/tramessy/account/CashDispatchForm">
               <button className="bg-gradient-to-r from-primary to-[#115e15] text-white px-4 py-1 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer">
-                <FaPlus /> Dispatch
+                <FaPlus /> {t("Dispatch")}
               </button>
             </Link>
           </div>
@@ -331,14 +333,14 @@ const exportExcel = async () => {
             onClick={exportExcel}
             className="py-1 px-5 bg-white shadow rounded hover:bg-primary hover:text-white flex items-center gap-2"
           >
-            <FaFileExcel /> Excel
+            <FaFileExcel /> {t("Excel")}
           </button>
           <button
             onClick={handlePrint}
             className="flex items-center gap-2 py-1 px-4 hover:bg-primary bg-white shadow hover:text-white rounded-md transition-all duration-300 cursor-pointer"
           >
             <FaPrint className="" />
-            Print
+            {t("Print")}
           </button>
          </div>
           {/* search */}
@@ -350,7 +352,7 @@ const exportExcel = async () => {
               onChange={(e) => {
                 setSearchTerm(e.target.value);
               }}
-              placeholder="Search list..."
+              placeholder={`${t("search")}...`}
               className="lg:w-60 border border-gray-300 rounded-md outline-none text-xs py-2 ps-2 pr-5"
             />
             {/*  Clear button */}
@@ -407,7 +409,7 @@ const exportExcel = async () => {
                 }}
                 className="bg-gradient-to-r from-primary to-primary text-white px-4 py-1.5 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer"
               >
-                <FiFilter /> Clear
+                <FiFilter /> {t("Clear")}
               </button>
             </div>
           </div>
@@ -417,22 +419,22 @@ const exportExcel = async () => {
           <table ref={printRef} className="min-w-full text-sm text-left">
             <thead className="bg-gray-200 text-primary capitalize text-xs">
               <tr>
-                <th className="px-2 py-4">SL</th>
-                <th className="px-2 py-4">Date</th>
-                <th className="px-2 py-4">Branch</th>
-                <th className="px-2 py-4">PersonName</th>
-                <th className="px-2 py-4">Type</th>
-                <th className="px-2 py-4">Amount</th>
-                <th className="px-2 py-4">Bank Name</th>
+                <th className="px-2 py-4">{t("SL.")}</th>
+                <th className="px-2 py-4">{t("Date")}</th>
+                <th className="px-2 py-4">{t("Branch")}</th>
+                <th className="px-2 py-4">{t("Person Name")}</th>
+                <th className="px-2 py-4">{t("Type")}</th>
+                <th className="px-2 py-4">{t("Amount")}</th>
+                <th className="px-2 py-4">{t("Bank Name")}</th>
                 {/* <th className="p-2">Ref</th> */}
-                <th className="p-2">Action</th>
+                <th className="p-2">{t("Action")}</th>
               </tr>
             </thead>
             <tbody className="text-gray-700">
               {currentCash.length === 0 ? (
                 <tr>
                   <td colSpan="8" className="text-center p-4 text-gray-500">
-                    No cash found
+                    {t("No cash found")}
                   </td>
                 </tr>
               )
@@ -477,7 +479,7 @@ const exportExcel = async () => {
             {currentCash.length > 0 && (
               <tfoot className="bg-gray-100 font-bold">
                 <tr>
-                  <td colSpan="5" className="p-2 text-right">Total:</td>
+                  <td colSpan="5" className="p-2 text-right">{t("Total")}:</td>
                   <td className="p-2">{totalAmount}</td>
                   <td colSpan="2"></td>
                 </tr>
@@ -510,20 +512,20 @@ const exportExcel = async () => {
                 <FaTrashAlt />
               </div>
               <p className="text-center text-gray-700 font-medium mb-6">
-                Are you sure you want to delete this Customer?
+                {t("Are you sure you want to delete?")}
               </p>
               <div className="flex justify-center space-x-4">
                 <button
                   onClick={toggleModal}
                   className="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-primary hover:text-white cursor-pointer"
                 >
-                  No
+                  {t("No")}
                 </button>
                 <button
                   onClick={() => handleDelete(selectedFundTransferId)}
                   className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 cursor-pointer"
                 >
-                  Yes
+                  {t("Yes")}
                 </button>
               </div>
             </div>

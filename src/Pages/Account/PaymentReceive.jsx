@@ -13,8 +13,10 @@ import toast from "react-hot-toast";
 import { IoMdClose } from "react-icons/io";
 import toNumber from "../../hooks/toNumber";
 import * as XLSX from "xlsx";
+import { useTranslation } from "react-i18next";
 
 const PaymentReceive = () => {
+  const { t } = useTranslation();
   const [payment, setPayment] = useState([]);
   const [loading, setLoading] = useState(true);
   const [startDate, setStartDate] = useState("");
@@ -287,7 +289,7 @@ const exportToExcel = () => {
       <div className="w-[22rem] md:w-full overflow-hidden overflow-x-auto max-w-7xl mx-auto bg-white/80 backdrop-blur-md shadow-xl rounded-md p-2 py-10 md:p-4 border border-gray-200">
         <div className="md:flex items-center justify-between mb-6">
           <h1 className="text-xl font-extrabold text-gray-800 flex items-center gap-3">
-            Payment Receive
+            {t("Payment")} {t("Receive")}
           </h1>
           <div className="mt-3 md:mt-0 flex gap-2">
             <div className=" md:mt-0 flex gap-2">
@@ -295,12 +297,12 @@ const exportToExcel = () => {
                 onClick={() => setShowFilter((prev) => !prev)}
                 className="border border-primary text-primary px-4 py-1 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer"
               >
-                <FaFilter /> Filter
+                <FaFilter /> {t("Filter")}
               </button>
             </div>
             <Link to="/tramessy/account/PaymentReceiveForm">
               <button className="bg-gradient-to-r from-primary to-[#115e15] text-white px-4 py-1 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer">
-                <FaPlus /> Recieve
+                <FaPlus /> {t("Receive")}
               </button>
             </Link>
           </div>
@@ -312,14 +314,14 @@ const exportToExcel = () => {
               className="flex items-center gap-2 py-1 px-5 hover:bg-primary bg-white shadow hover:text-white rounded-md transition-all duration-300 cursor-pointer"
             >
               <FaFileExcel className="" />
-              Excel
+              {t("Excel")}
             </button>
             <button
               onClick={handlePrint}
               className="flex items-center gap-2 py-1 px-4 hover:bg-primary bg-white shadow hover:text-white rounded-md transition-all duration-300 cursor-pointer"
             >
               <FaPrint className="" />
-              Print
+              {t("Print")}
             </button>
           </div>
           {/* search */}
@@ -392,17 +394,17 @@ const exportToExcel = () => {
           <table className="min-w-full text-sm text-left">
             <thead className="bg-gray-200 text-primary capitalize text-sm">
               <tr>
-                <th className="p-2">SL.</th>
-                <th className="p-2">Date</th>
-                <th className="p-2">CustomerName</th>
-                <th className="p-2">BranchName</th>
-                <th className="p-2">BillRef</th>
-                <th className="p-2">Amount</th>
-                <th className="p-2">CashType</th>
-                <th className="p-2">Note</th>
-                <th className="p-2">CreatedBy</th>
-                <th className="p-2">Status</th>
-                <th className="p-2">Action</th>
+                <th className="p-2">{t("SL.")}</th>
+                <th className="p-2">{t("Date")}</th>
+                <th className="p-2">{t("Customer")} {t("Name")}</th>
+                <th className="p-2">{t("Branch")} {t("Name")}</th>
+                <th className="p-2">{t("Bill Ref")}</th>
+                <th className="p-2">{t("Amount")}</th>
+                <th className="p-2">{t("Cash Type")}</th>
+                <th className="p-2">{t("Note")}</th>
+                <th className="p-2">{t("Created By")}</th>
+                <th className="p-2">{t("Status")}</th>
+                <th className="p-2">{t("Action")}</th>
               </tr>
             </thead>
             <tbody className="text-gray-700">

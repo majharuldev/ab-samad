@@ -8,8 +8,10 @@ import { FiCalendar } from "react-icons/fi"
 import { useParams, useNavigate } from "react-router-dom"
 import api from "../../../utils/axiosConfig"
 import { format } from "date-fns"
+import { useTranslation } from "react-i18next"
 
 const CashDispatchForm = () => {
+  const {t} = useTranslation();
   const { id } = useParams()
   const navigate = useNavigate()
   const [branch, setBranch] = useState([])
@@ -139,7 +141,7 @@ const formatDate = (date) => {
   }
 
   if (loading) {
-    return <div>Loading...</div>
+    return <div>{t("Loading")}...</div>
   }
 
   return (
@@ -147,7 +149,7 @@ const formatDate = (date) => {
       <Toaster position="top-center" reverseOrder={false} />
      <div className="mx-auto p-6  rounded-md shadow-md border-t-2 border-primary">
        <h3 className="pb-4 text-primary font-semibold ">
-        {isEditing ? "Edit Fund Transfer" : "Create Fund Transfer"}
+        {isEditing ? t("Update Fund Transfer") : t("Create Fund Transfer")}
       </h3>
       <FormProvider {...methods} className="">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 mx-auto  ">
@@ -157,7 +159,7 @@ const formatDate = (date) => {
               <div className="w-full">
                 <InputField
                   name="date"
-                  label="Date"
+                  label={t("Date")}
                   type="date"
                   required={!isEditing}
                   inputRef={(e) => {
@@ -177,7 +179,7 @@ const formatDate = (date) => {
               <div className="w-full">
                 <SelectField
                   name="branch_name"
-                  label="Branch Name"
+                  label={`${t("Branch")} ${t("Name")}`}
                   required={!isEditing}
                   options={branchOptions}
                   control={control}
@@ -188,7 +190,7 @@ const formatDate = (date) => {
               <div className="w-full">
                 <SelectField
                   name="person_name"
-                  label="Person Name"
+                  label={t("Person Name")}
                   required={!isEditing}
                   options={employeeOptions}
                   control={control}
@@ -197,30 +199,30 @@ const formatDate = (date) => {
               <div className="w-full">
                 <SelectField
                   name="type"
-                  label="Cash Type"
+                  label={t("Cash Type")}
                   required={!isEditing}
                   options={[
-                    { value: "Cash", label: "Cash" },
-                    { value: "Bank", label: "Bank" },
-                    { value: "Card", label: "Card" },
+                    { value: "Cash", label: t("Cash") },
+                    { value: "Bank", label: t("Bank") },
+                    { value: "Card", label: t("Card") },
                   ]}
                 />
               </div>
               <div className="w-full">
-                <InputField name="amount" label="Amount" type="number" required={!isEditing} />
+                <InputField name="amount" label={t("Amount")} type="number" required={!isEditing} />
               </div>
             </div>
             <div className="mt-5 md:mt-1 md:flex justify-between gap-3">
               <div className="w-full">
-                <InputField name="bank_name" label="Bank Name" required={!isEditing} />
+                <InputField name="bank_name" label={t("Bank Name")} required={!isEditing} />
               </div>
               <div className="w-full">
-                <InputField name="purpose" label="Purpose" required={!isEditing} />
+                <InputField name="purpose" label={t("Purpose")} required={!isEditing} />
               </div>
             </div>
             {/* Submit Button */}
             <div className="text-left p-5">
-              <BtnSubmit>{isEditing ? "Update" : "Submit"}</BtnSubmit>
+              <BtnSubmit>{isEditing ? t("Update") : t("Submit")}</BtnSubmit>
             </div>
           </div>
         </form>

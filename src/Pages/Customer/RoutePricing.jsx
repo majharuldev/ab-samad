@@ -11,8 +11,10 @@ import "jspdf-autotable";
 import autoTable from "jspdf-autotable";
 import Pagination from "../../components/Shared/Pagination";
 import api from "../../../utils/axiosConfig";
+import { useTranslation } from "react-i18next";
 
 const RoutePricing = () => {
+  const {t} = useTranslation();
   const [routePricing, setRoutePricing] = useState([]);
   const [loading, setLoading] = useState(true);
   const [customers, setCustomers] = useState([]);
@@ -90,7 +92,7 @@ const RoutePricing = () => {
 
       // Remove driver from local list
       setRoutePricing((prev) => prev.filter((customer) => customer.id !== id));
-      toast.success("Customer deleted successfully", {
+      toast.success(t("Customer rate deleted successfully"), {
         position: "top-right",
         autoClose: 3000,
       });
@@ -98,8 +100,8 @@ const RoutePricing = () => {
       setIsOpen(false);
       setSelectedRateId(null);
     } catch (error) {
-      console.error("Delete error:", error.response || error);
-      toast.error("There was a problem deleting!", {
+      console.error(t("Delete error:"), error.response || error);
+      toast.error(t("There was a problem deleting!"), {
         position: "top-right",
         autoClose: 3000,
       });
@@ -110,10 +112,10 @@ const RoutePricing = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!formData.load_point || !formData.unload_point || !formData.rate) {
-      toast.error("Please fill in all fields");
-      return;
-    }
+    // if (!formData.load_point || !formData.unload_point || !formData.rate) {
+    //   toast.error(t("Please fill in all fields"));
+    //   return;
+    // }
 
     const apiCall = editId
       ? api.put(`/rate/${editId}`, formData)
@@ -121,7 +123,7 @@ const RoutePricing = () => {
 
     apiCall
       .then(res => {
-        toast.success(editId ? "Route pricing updated!" : "Route pricing added!");
+        toast.success(editId ? (t("Route Pricing updated successfully")) : t("Route Pricing added successfully"));
         closeModal();
         fetchRoutePricingData();
       })
@@ -214,7 +216,7 @@ const RoutePricing = () => {
     printWindow.document.write(`
     <html>
       <head>
-        <title>Route Pricing</title>
+        <title>-</title>
         <style>
           body { font-family: Arial, sans-serif; margin: 20px; }
           h2 { color: #11375B; text-align: center; font-size: 22px; margin-bottom: 10px; }
@@ -234,17 +236,17 @@ const RoutePricing = () => {
         </style>
       </head>
       <body>
-        <h2>Route Pricing Report</h2>
+        <h2>${t("Route Pricing")} </h2>
         <table>
           <thead>
             <tr>
-              <th>SL</th>
-              <th>Customer</th>
-              <th>Vehicle Category</th>
-              <th>Size</th>
-              <th>Load Point</th>
-              <th>Unload Point</th>
-              <th>Rate</th>
+              <th>${t("SL.")}</th>
+              <th>${t("Customer")}</th>
+              <th>${t("Vehicle")} ${t("Category")}</th>
+              <th>${t("Size")}</th>
+              <th>${t("Load Point")}</th>
+              <th>${t("Unload Point")}</th>
+              <th>${t("Rate")}</th>
             </tr>
           </thead>
           <tbody>
@@ -274,7 +276,7 @@ const RoutePricing = () => {
   );
 
 
-  if (loading) return <p className="text-center mt-16">Loading...</p>;
+  if (loading) return <p className="text-center mt-16">{t("Loading")}...</p>;
 
   // Pagination
   const itemsPerPage = 10;
@@ -292,23 +294,23 @@ const RoutePricing = () => {
         <div className="md:flex items-center justify-between mb-6">
           <h1 className="text-xl font-bold text-gray-800 flex items-center gap-3">
             <FaUsers className="text-gray-800 text-2xl" />
-            Customer Route Pricing
+            {t("Customer")} {t("Route Pricing")}
           </h1>
           <button
             onClick={() => setIsModalOpen(true)}
             className="mt-3 bg-primary text-white px-4 py-1 rounded-md shadow-md flex items-center gap-2 hover:scale-105 transition-transform"
           >
-            <FaPlus /> Add Pricing
+            <FaPlus /> {t("Add")}
           </button>
         </div>
         {/* Filter and Search */}
         <div className="md:flex justify-between items-center mb-5">
-          <div className="flex gap-1 md:gap-3 text-gray-700 font-semibold rounded-md">
+          <div className="flex gap-1 md:gap-3 text-gray-700 font-medium rounded-md">
             <button
               onClick={exportTripsToExcel}
               className="py-1 px-5 hover:bg-primary shadow bg-white hover:text-white rounded-md transition-all duration-300 cursor-pointer"
             >
-              Excel
+              {t("Excel")}
             </button>
             {/* <button
               onClick={exportTripsToPDF}
@@ -320,7 +322,7 @@ const RoutePricing = () => {
               onClick={printTripsTable}
               className="py-1 px-5 hover:bg-primary shadow bg-white hover:text-white rounded-md transition-all duration-300 cursor-pointer"
             >
-              Print
+              {t("Print")}
             </button>
           </div>
           {/* search */}
@@ -334,7 +336,7 @@ const RoutePricing = () => {
                   setSearchTerm(e.target.value);
                   setCurrentPage(1);
                 }}
-                placeholder="Search..."
+                placeholder={`${t("search")}...`}
                 className="lg:w-60 border border-gray-300 rounded-md outline-none text-xs py-2 ps-2 pr-7 w-full"
               />
 
@@ -360,22 +362,22 @@ const RoutePricing = () => {
           <table className="min-w-full text-sm text-left">
             <thead className="bg-gray-200 text-primary">
               <tr>
-                <th className="p-2">SL.</th>
-                <th className="p-2">Customer</th>
-                <th className="p-2">Vehicle Category</th>
-                <th className="p-2">Size</th>
-                <th className="p-2">Load Point</th>
-                <th className="p-2">Unload Point</th>
-                <th className="p-2">Rate</th>
+                <th className="p-2">{t("SL.")}</th>
+                <th className="p-2">{t("Customer")}</th>
+                <th className="p-2">{t("Vehicle")} {t("Category")}</th>
+                <th className="p-2">{t("Size")}</th>
+                <th className="p-2">{t("Load Point")}</th>
+                <th className="p-2">{t("Unload Point")}</th>
+                <th className="p-2">{t("Rate")}</th>
                 {/* <th className="p-2">Vat</th> */}
-                <th className="p-2">Action</th>
+                <th className="p-2">{t("Action")}</th>
               </tr>
             </thead>
             <tbody className=" text-gray-700">
               {currentCustomer.length === 0 ? (
                 <tr>
                   <td colSpan="10" className="text-center p-4 text-gray-500">
-                    No customer found
+                    {t("No customer rate found")}
                   </td>
                 </tr>
               ) : currentCustomer.map((dt, index) => (
@@ -423,17 +425,17 @@ const RoutePricing = () => {
       {/* Add/Edit Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <div className="relative bg-white rounded-lg shadow-lg p-6 w-full max-w-lg border border-gray-300">
+          <div className="relative bg-white rounded-lg shadow-lg p-6 w-full max-w-xl border border-gray-300">
             <button onClick={closeModal} className="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
               <IoMdClose className="text-2xl" />
             </button>
             <h2 className="text-xl font-bold text-[#11375B] mb-6 text-center">
-              {editId ? "Update Route Pricing" : "Add Route Pricing"}
+              {editId ? t("Update Route Pricing") : t("Add Route Pricing")}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="flex gap-2">
                 <div className="w-full">
-                  <label className="block text-gray-700 text-sm font-medium mb-1">Customer</label>
+                  <label className="block text-gray-700 text-sm font-medium mb-1">{t("Customer")}</label>
                   <CreatableSelect
                     options={customers.map(c => ({ value: c.customer_name, label: c.customer_name }))}
                     value={formData.customer_name ? { value: formData.customer_name, label: formData.customer_name } : null}
@@ -445,7 +447,7 @@ const RoutePricing = () => {
                 </div>
                 <div className="relative w-full">
                   <label className="block text-gray-700 text-sm font-medium mb-1">
-                    Vehicle Category
+                    {t("Vehicle")} {t("Category")}
                   </label>
                   <select
                     name="vehicle_category"
@@ -456,36 +458,37 @@ const RoutePricing = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                     required
                   >
-                    <option value="">Select Vehicle Category...</option>
-                    <option value="pickup">Pickup</option>
-                    <option value="covered_van">Covered Van</option>
-                    <option value="open_truck">Open Truck</option>
-                    <option value="trailer">Trailer</option>
-                    <option value="freezer_van">Freezer Van</option>
+                    <option value="">{t("Vehicle")} {t("Category")} {t("Select")}...</option>
+                    <option value="pickup">{t("Pickup")}</option>
+                    <option value="covered_van">{t("Covered Van")}</option>
+                    <option value="open_truck">{t("Open Truck")}</option>
+                    <option value="trailer">{t("Trailer")}</option>
+                    <option value="freezer_van">{t("Freezer Van")}</option>
+                    <option value="oil_tanker">{t("Oil Tanker")}</option>
                   </select>
                 </div>
               </div>
               <div className="flex gap-2">
                 <div className="w-full">
-                  <label className="block text-gray-700 text-sm font-medium mb-1">Load Point</label>
+                  <label className="block text-gray-700 text-sm font-medium mb-1">{t("Load Point")}</label>
                   <CreatableSelect
                     options={customers.map(c => ({ value: c.customer_name, label: c.customer_name }))}
                     value={formData.load_point ? { value: formData.load_point, label: formData.load_point } : null}
                     onChange={selected => setFormData(prev => ({ ...prev, load_point: selected?.value || "" }))}
                     isClearable
-                    placeholder="Select or type load"
+                    placeholder={t("Select or type load")}
                     className="focus:!ring-2 focus:!ring-primary"
                   />
                 </div>
 
                 <div className="w-full">
-                  <label className="block text-gray-700 text-sm font-medium mb-1">Unload Point</label>
+                  <label className="block text-gray-700 text-sm font-medium mb-1">{t("Unload Point")}</label>
                   <CreatableSelect
                     options={unloadpoints.map(c => ({ value: c.name, label: c.name }))}
                     value={formData.unload_point ? { value: formData.unload_point, label: formData.unload_point } : null}
                     onChange={selected => setFormData(prev => ({ ...prev, unload_point: selected?.value || "" }))}
                     isClearable
-                    placeholder="Select or type unload"
+                    placeholder={t("Select or type unload")}
                     className="focus:!ring-2 focus:!ring-primary"
                   />
                 </div>
@@ -493,7 +496,7 @@ const RoutePricing = () => {
 
               <div className="flex gap-2">
                 <div className="w-full">
-                  <label className="block text-gray-700 text-sm font-medium mb-1">Vehicle Size</label>
+                  <label className="block text-gray-700 text-sm font-medium mb-1">{t("Vehicle")} {t("Size")}</label>
                   <input
                     type="text"
                     name="vehicle_size"
@@ -504,14 +507,14 @@ const RoutePricing = () => {
                   />
                 </div>
                 <div className="w-full">
-                  <label className="block text-gray-700 text-sm font-medium mb-1">Rate</label>
+                  <label className="block text-gray-700 text-sm font-medium mb-1">{t("Rate")}</label>
                   <input
                     type="number"
                     name="rate"
                     value={formData.rate}
                     onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                    placeholder="Enter price"
+                    placeholder={t("Enter price")}
                   />
                 </div>
               </div>
@@ -529,10 +532,10 @@ const RoutePricing = () => {
 
               <div className="flex justify-end gap-3">
                 <button type="button" onClick={closeModal} className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
-                  Cancel
+                  {t("Cancel")}
                 </button>
                 <button type="submit" className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/80">
-                  {editId ? "Update Pricing" : "Add Pricing"}
+                  {editId ? t("Update Pricing") : t("Add Pricing")}
                 </button>
               </div>
             </form>
@@ -554,20 +557,20 @@ const RoutePricing = () => {
                 <FaTrashAlt />
               </div>
               <p className="text-center text-gray-700 font-medium mb-6">
-                Are you sure you want to delete this Customer?
+                {t("Are you sure you want to delete?")}
               </p>
               <div className="flex justify-center space-x-4">
                 <button
                   onClick={toggleModal}
                   className="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-primary hover:text-white cursor-pointer"
                 >
-                  No
+                  {t("No")}
                 </button>
                 <button
                   onClick={() => handleDelete(selectedRateId)}
                   className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 cursor-pointer"
                 >
-                  Yes
+                  {t("Yes")}
                 </button>
               </div>
             </div>

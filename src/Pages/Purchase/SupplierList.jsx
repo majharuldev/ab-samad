@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { FaEye, FaPen, FaTrashAlt } from "react-icons/fa";
@@ -11,8 +10,10 @@ import api from "../../../utils/axiosConfig";
 import { tableFormatDate } from "../../hooks/formatDate";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import { useTranslation } from "react-i18next";
 
 const SupplierList = () => {
+  const {t} = useTranslation();
   const [supply, setSupply] = useState([]);
   const [loading, setLoading] = useState(true);
   // search state
@@ -59,7 +60,7 @@ const SupplierList = () => {
 
     // Remove driver from local list
     setSupply((prev) => prev.filter((driver) => driver.id !== id));
-    toast.success("Supplier deleted successfully", {
+    toast.success(t("Supplier deleted successfully"), {
       position: "top-right",
       autoClose: 3000,
     });
@@ -68,7 +69,7 @@ const SupplierList = () => {
     setSelectedSupplyId(null);
   } catch (error) {
     console.error("Delete error:", error.response || error);
-    toast.error("There was a problem deleting!", {
+    toast.error(t("There was a problem deleting!"), {
       position: "top-right",
       autoClose: 3000,
     });
@@ -84,11 +85,11 @@ const SupplierList = () => {
         setSelectedSupply(response.data.data);
         setViewModalOpen(true);
       } else {
-        toast.error("Driver information could not be loaded.");
+        toast.error(t("Driver information could not be loaded"));
       }
     } catch (error) {
       console.error("View error:", error);
-      toast.error("There was a problem retrieving driver information.");
+      toast.error(t("There was a problem retrieving driver information"));
     }
   };
 
@@ -127,21 +128,21 @@ const SupplierList = () => {
     // print
     const printTable = () => {
   if (!filteredSupply || filteredSupply.length === 0) {
-    toast.error("No data to print!");
+    toast.error(t("No data to print!"));
     return;
   }
 
   const tableHeader = `
     <thead>
       <tr>
-        <th>SL</th>
-        <th>Date</th>
-        <th>Supplier</th>
-        <th>Business Category</th>
-        <th>Phone</th>
-        <th>Address</th>
-        <th>Opening Balance</th>
-        <th>Status</th>
+        <th>${t("SL.")}</th>
+        <th>${t("Date")}</th>
+        <th>${t("Supplier")}</th>
+        <th>${t("Business Category")}</th>
+        <th>${t("Phone")}</th>
+        <th>${t("Address")}</th>
+        <th>${t("Opening Balance")}</th>
+        <th>${t("Status")}</th>
       </tr>
     </thead>
   `;
@@ -168,7 +169,7 @@ const SupplierList = () => {
   WinPrint.document.write(`
     <html>
       <head>
-        <title>Supplier List</title>
+        <title>${t("Supplier")} ${t("list")}</title>
         <style>
           @media print {
             thead { display: table-header-group; }
@@ -229,7 +230,7 @@ const SupplierList = () => {
   const currentSupplier = filteredSupply.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(filteredSupply.length / itemsPerPage);
 
-  if (loading) return <p className="text-center mt-16">Loading data...</p>;
+  if (loading) return <p className="text-center mt-16">{t("Loading")}...</p>;
   return (
     <div className="p-2">
       <Toaster />
@@ -237,29 +238,29 @@ const SupplierList = () => {
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-xl font-bold text-gray-800 flex items-center gap-3">
             <MdShop className="text-gray-800 text-2xl" />
-            Supplier List
+            {t("Supplier")} {t("list")}
           </h1>
           <div className="mt-3 md:mt-0 flex gap-2">
             <Link to="/tramessy/Purchase/AddSupply">
               <button className="bg-gradient-to-r from-primary to-[#115e15] text-white px-4 py-1 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer">
-                <FaPlus /> Supplier
+                <FaPlus /> {t("Supplier")}
               </button>
             </Link>
           </div>
         </div>
         <div className="flex justify-between">
-            <div className="flex gap-1 md:gap-3 text-gray-700 font-semibold rounded-md">
+            <div className="flex gap-1 md:gap-3 text-gray-700 font-medium rounded-md">
             <button
               onClick={exportExcel}
               className="py-1 px-5 hover:bg-primary bg-white hover:text-white rounded shadow transition-all duration-300 cursor-pointer"
             >
-              Excel
+              {t("Excel")}
             </button>
             <button
               onClick={printTable}
               className="py-1 px-5 hover:bg-primary bg-white hover:text-white rounded shadow transition-all duration-300 cursor-pointer"
             >
-              Print
+              {t("Print")}
             </button>
           </div>
           {/* search */}
@@ -272,7 +273,7 @@ const SupplierList = () => {
                 setSearchTerm(e.target.value);
                 setCurrentPage(1);
               }}
-              placeholder="Search by  ..."
+              placeholder={`${t("search")}  ...`}
               className="lg:w-60 border border-gray-300 rounded-md outline-none text-xs py-2 ps-2 pr-5"
             />
             {/*  Clear button */}
@@ -293,22 +294,22 @@ const SupplierList = () => {
           <table className="min-w-full text-sm text-left">
             <thead className="bg-gray-200 text-primary capitalize text-xs">
               <tr>
-                <th className="p-2">SL.</th>
-                <th className="p-2">Date</th>
-                <th className="p-2">Supplier</th>
-                <th className="p-2">Business Category</th>
-                <th className="p-2">Phone</th>
-                <th className="p-2">Address</th>
-                <th className="p-2">Opening Balance</th>
-                <th className="p-2">Status</th>
-                <th className="p-2">Action</th>
+                <th className="p-2">{t("SL.")}</th>
+                <th className="p-2">{t("Date")}</th>
+                <th className="p-2">{t("Supplier")}</th>
+                <th className="p-2">{t("Business Category")}</th>
+                <th className="p-2">{t("Phone")}</th>
+                <th className="p-2">{t("Address")}</th>
+                <th className="p-2">{t("Opening Balance")}</th>
+                <th className="p-2">{t("Status")}</th>
+                <th className="p-2">{t("Action")}</th>
               </tr>
             </thead>
             <tbody className="text-gray-700">
               {currentSupplier.length === 0 ? (
                 <tr>
                   <td colSpan="8" className="text-center p-4 text-gray-500">
-                    No supplier found
+                    {t("No supplier found")}
                   </td>
                 </tr>)
                 : (currentSupplier?.map((dt, index) => (
@@ -381,20 +382,20 @@ const SupplierList = () => {
                 <FaTrashAlt />
               </div>
               <p className="text-center text-gray-700 font-medium mb-6">
-                Are you sure you want to delete this supplier?
+                {t("Are you sure you want to delete?")}
               </p>
               <div className="flex justify-center space-x-4">
                 <button
                   onClick={toggleModal}
                   className="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-primary hover:text-white cursor-pointer"
                 >
-                  No
+                  {t("No")}
                 </button>
                 <button
                   onClick={() => handleDelete(selectedSupplyId)}
                   className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 cursor-pointer"
                 >
-                  Yes
+                  {t("Yes")}
                 </button>
               </div>
             </div>
@@ -406,30 +407,30 @@ const SupplierList = () => {
         <div className="fixed inset-0 w-full h-full flex items-center justify-center bg-[#000000ad] z-50">
           <div className="w-4xl p-5 bg-gray-100 rounded-xl mt-10">
             <h3 className="text-primary font-semibold text-base">
-              Supply Information
+              {t("Supplier")} {t("Information")}
             </h3>
             <div className="mt-5">
               <ul className="flex border border-gray-300">
                 <li className="w-[428px] flex text-gray-700 font-semibold text-sm px-3 py-2 border-r border-gray-300">
-                  <p className="w-48">Supplier Name:</p>{" "}
+                  <p className="w-48">{t("Supplier")} {t("Name")}:</p>{" "}
                   <p>{selectedSupply?.supplier_name}</p>
                 </li>
                 <li className="w-[428px] flex text-gray-700 font-semibold text-sm px-3 py-2">
-                  <p className="w-48">Phone:</p> <p>{selectedSupply.phone}</p>
+                  <p className="w-48">{t("Mobile")}:</p> <p>{selectedSupply.phone}</p>
                 </li>
               </ul>
               <ul className="flex border-b border-r border-l border-gray-300">
                 <li className="w-[428px] flex text-gray-700 font-semibold text-sm px-3 py-2 border-r border-gray-300">
-                  <p className="w-48">Address:</p>{" "}
+                  <p className="w-48">{t("Address")}:</p>{" "}
                   <p>{selectedSupply.address}</p>
                 </li>
                 <li className="w-[428px] flex text-gray-700 font-semibold text-sm px-3 py-2">
-                  <p className="w-48">Status:</p> <p>{selectedSupply.status}</p>
+                  <p className="w-48">{t("Status")}:</p> <p>{selectedSupply.status}</p>
                 </li>
               </ul>
               <ul className="flex border-b border-r border-l border-gray-300">
                 <li className="w-[428px] flex text-gray-700 font-semibold text-sm px-3 py-2 border-r border-gray-300">
-                  <p className="w-48">Business Category:</p>{" "}
+                  <p className="w-48">{t("Business Category")}:</p>{" "}
                   <p>{selectedSupply.business_category}</p>
                 </li>
 
@@ -439,7 +440,7 @@ const SupplierList = () => {
                   onClick={() => setViewModalOpen(false)}
                   className="text-white bg-primary py-1 px-2 rounded-md cursor-pointer hover:bg-secondary"
                 >
-                  Close
+                  {t("Close")}
                 </button>
               </div>
             </div>

@@ -10,8 +10,10 @@ import api from "../../../utils/axiosConfig"
 import DatePicker from "react-datepicker"
 import { tableFormatDate } from "../../hooks/formatDate"
 import toNumber from "../../hooks/toNumber"
+import { useTranslation } from "react-i18next"
 
 export default function VehicleProfitReport() {
+  const {t} = useTranslation();
   const [tripData, setTripData] = useState([])
   const [purchaseData, setPurchaseData] = useState([])
   const [stockOutData, setStockOutData] = useState([])
@@ -38,10 +40,10 @@ export default function VehicleProfitReport() {
       // const stockOutResult =  stockOutResponse.data
 
       // শুধু Approved trip নাও
-      const approvedTrips = tripResult.filter(
-        (trip) => trip.status === "Approved"
-      )
-      setTripData(approvedTrips)
+      // const approvedTrips = tripResult.filter(
+      //   (trip) => trip.status === "Approved"
+      // )
+      setTripData(tripResult)
 
       if (purchaseResult.status === "Success") {
         setPurchaseData(purchaseResult.data)
@@ -448,15 +450,15 @@ const normalizeDate = (dateStr) => {
         <table>
           <thead>
             <tr>
-              <th>Date</th>
-              <th>Vehicle No</th>
-              <th>Trips</th>
-              <th>Trip Rent</th>
-              <th>Trip Cost</th>
-              <th>Parts Cost</th>
-              <th>Fuel Cost</th>
-              <th>Engine Oil</th>
-              <th>Gross Profit</th>
+              <th>${t("Date")}</th>
+              <th>${t("Vehicle No")}</th>
+              <th>${t("Trips")}</th>
+              <th>${t("TripRent")}</th>
+              <th>${t("TripCost")}</th>
+              <th>${t("Parts Cost")}</th>
+              <th>${t("Fuel Cost")}</th>
+              <th>${t("Engine Oil")}</th>
+              <th>${t("Gross Profit")}</th>
             </tr>
           </thead>
           <tbody>
@@ -481,14 +483,14 @@ const normalizeDate = (dateStr) => {
         {/* Header and filter section remains the same */}
         <div className="md:flex items-center justify-between mb-6">
           <h1 className="text-xl font-bold text-gray-800 flex items-center gap-3">
-            Vehicle Performance Report
+            {t("Vehicle")} {t("Performance Report")}
           </h1>
           <div className="mt-3 md:mt-0 flex gap-2">
             <button
               onClick={() => setShowFilter((prev) => !prev)}
               className="text-primary border border-primary px-4 py-1 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer"
             >
-              <FiFilter /> Filter
+              <FiFilter />{t("Filter")}
             </button>
             {/* <button
               onClick={fetchData}
@@ -500,12 +502,12 @@ const normalizeDate = (dateStr) => {
           </div>
         </div>
 
-        <div className="flex gap-1 md:gap-3 text-gray-700 font-semibold rounded-md">
+        <div className="flex gap-1 md:gap-3 text-gray-700 font-medium rounded-md">
           <button
             onClick={exportToExcel}
             className="py-1 px-5 hover:bg-primary bg-white hover:text-white rounded shadow transition-all duration-300 cursor-pointer"
           >
-            Excel
+            {t("Excel")}
           </button>
           {/* <button
             onClick={exportToPDF}
@@ -517,7 +519,7 @@ const normalizeDate = (dateStr) => {
             onClick={printTable}
             className="py-1 px-5 hover:bg-primary bg-white hover:text-white rounded shadow transition-all duration-300 cursor-pointer"
           >
-            Print
+            {t("Print")}
           </button>
         </div>
 
@@ -562,7 +564,7 @@ const normalizeDate = (dateStr) => {
                   onChange={(e) => setSelectedVehicle(e.target.value)}
                   className="w-full text-sm border border-gray-300 px-3 py-2 rounded bg-white outline-none"
                 >
-                  <option value="">All Vehicles</option>
+                  <option value="">{t("All")} {t("Vehicle")}</option>
                   {getUniqueVehicles().map((vehicle) => (
                     <option key={vehicle} value={vehicle}>
                       {vehicle}
@@ -576,7 +578,7 @@ const normalizeDate = (dateStr) => {
                     onClick={clearAllFilters}
                     className="bg-primary text-white px-4 py-2 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer"
                   >
-                    <FiFilter /> Clear
+                    <FiFilter /> {t("Clear")}
                   </button>
                 </div>
               </div>
@@ -588,15 +590,15 @@ const normalizeDate = (dateStr) => {
           <table className="min-w-full text-sm text-left">
             <thead className="bg-gray-200 text-primary capitalize text-xs">
               <tr>
-                <th className="px-4 py-3">Date</th>
-                <th className="px-4 py-3">Vehicle No</th>
-                <th className="px-4 py-3">Trips</th>
-                <th className="px-4 py-3">Trip Rent</th>
-                <th className="px-4 py-3">Trip Cost</th>
-                <th className="px-4 py-3">Parts Cost</th>
-                <th className="px-4 py-3">Fuel Cost</th>
-                <th className="px-4 py-3">Engine Oil</th>
-                <th className="px-4 py-3">Gross Profit</th>
+                <th className="px-4 py-3">{t("Date")}</th>
+                <th className="px-4 py-3">{t("Vehicle No")}</th>
+                <th className="px-4 py-3">{t("Trips")}</th>
+                <th className="px-4 py-3">{t("TripRent")}</th>
+                <th className="px-4 py-3">{t("TripCost")}</th>
+                <th className="px-4 py-3">{t("Parts Cost")}</th>
+                <th className="px-4 py-3">{t("Fuel Cost")}</th>
+                <th className="px-4 py-3">{t("Engine Oil")}</th>
+                <th className="px-4 py-3">{t("Gross Profit")}</th>
               </tr>
             </thead>
             <tbody className="text-gray-700">
@@ -617,7 +619,7 @@ const normalizeDate = (dateStr) => {
                           d="M9.75 9.75L14.25 14.25M9.75 14.25L14.25 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                         />
                       </svg>
-                      No daily profit data found for the selected filters.
+                      {t("No daily profit data found for the selected filters")}.
                     </div>
                   </td>
                 </tr>
@@ -659,7 +661,7 @@ const normalizeDate = (dateStr) => {
             {currentData.length > 0 && (
               <tfoot className="bg-gray-100 font-bold">
                 <tr>
-                  <td colSpan="2" className="text-right px-4 py-3">Total:</td>
+                  <td colSpan="2" className="text-right px-4 py-3">{t("Total")}:</td>
                   <td className="px-4 py-3">{totalTrip}</td>
                   <td className="px-4 py-3">{totalRevenue.toLocaleString()}</td>
                   <td className="px-4 py-3">{totalTripCost.toLocaleString()}</td>

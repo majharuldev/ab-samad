@@ -8,8 +8,11 @@ import { IoMdClose } from "react-icons/io";
 import { Link } from "react-router-dom";
 import Pagination from "../../components/Shared/Pagination";
 import api from "../../../utils/axiosConfig";
+import { useTranslation } from "react-i18next";
+import * as XLSX from "xlsx";
 
 const Customer = () => {
+  const {t} = useTranslation();
   const [customer, setCustomer] = useState([]);
   const [loading, setLoading] = useState(true);
   // delete modal
@@ -52,7 +55,7 @@ const Customer = () => {
 
     // Remove driver from local list
     setCustomer((prev) => prev.filter((customer) => customer.id !== id));
-    toast.success("Customer deleted successfully", {
+    toast.success(t("Customer deleted successfully"), {
       position: "top-right",
       autoClose: 3000,
     });
@@ -60,20 +63,127 @@ const Customer = () => {
     setIsOpen(false);
     setSelectedCustomerId(null);
   } catch (error) {
-    console.error("Delete error:", error.response || error);
-    toast.error("There was a problem deleting!", {
+    console.error(t("Delete error:"), error.response || error);
+    toast.error(t("There was a problem deleting!"), {
       position: "top-right",
       autoClose: 3000,
     });
   }
 };
-  if (loading) return <p className="text-center mt-16">Loading customer...</p>;
+  if (loading) return <p className="text-center mt-16">{t("Loading")}...</p>;
   // pagination
   const itemsPerPage = 10;
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentCustomer = filteredCustomers.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage);
+
+  // excel export
+  const exportExcel = () => {
+  if (filteredCustomers.length === 0) {
+    toast.error(t("No data to export"));
+    return;
+  }
+
+  const excelData = filteredCustomers.map((c, index) => ({
+    SL: index + 1,
+    "Customer Name": c.customer_name,
+    Mobile: c.mobile,
+    Email: c.email,
+    Address: c.address,
+    "Rate Status": c.rate,
+    "Opening Balance": c.opening_balance,
+    Status: c.status,
+  }));
+
+  const worksheet = XLSX.utils.json_to_sheet(excelData);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Customers");
+
+  XLSX.writeFile(workbook, "Customer_List.xlsx");
+};
+
+// print table
+const printTable = () => {
+  if (filteredCustomers.length === 0) {
+    toast.error(t("No data to print"));
+    return;
+  }
+
+  const rows = filteredCustomers
+    .map(
+      (c, index) => `
+      <tr>
+        <td>${index + 1}</td>
+        <td>${c.customer_name || ""}</td>
+        <td>${c.mobile || ""}</td>
+        <td>${c.email || ""}</td>
+        <td>${c.address || ""}</td>
+        <td>${c.rate || ""}</td>
+        <td>${c.opening_balance || ""}</td>
+        <td>${c.status || ""}</td>
+      </tr>
+    `
+    )
+    .join("");
+
+  const printWindow = window.open("", "", "width=900,height=650");
+
+  printWindow.document.write(`
+    <html>
+      <head>
+        <title>-</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+          }
+          th, td {
+            border: 1px solid #000;
+            padding: 6px;
+          }
+          th {
+            background: #f0f0f0;
+          }
+          h2 {
+            text-align: center;
+            margin-bottom: 20px;
+          }
+        </style>
+      </head>
+      <body>
+        <h2>${t("Customer")} ${t("list")}</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>${t("SL.")}</th>
+              <th>${t("Customer")} ${t("Name")}</th>
+              <th>${t("Mobile")}</th>
+              <th>${t("Email")}</th>
+              <th>${t("Address")}</th>
+              <th>${t("Rate status")}</th>
+              <th>${t("Opening Balance")}</th>
+              <th>${t("Status")}</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows}
+          </tbody>
+        </table>
+      </body>
+    </html>
+  `);
+
+  printWindow.document.close();
+  printWindow.focus();
+  printWindow.print();
+  printWindow.close();
+};
 
   return (
     <main className=" p-2">
@@ -83,18 +193,32 @@ const Customer = () => {
         <div className="md:flex items-center justify-between mb-6">
           <h1 className="text-xl font-bold text-gray-800 flex items-center gap-3">
             <FaUsers className="text-gray-800 text-2xl" />
-            All Customer information
+            {t("All")} {t("Customer")} {t("Information")}
           </h1>
           <div className="mt-3 md:mt-0 flex gap-2">
             <Link to="/tramessy/AddCustomer">
               <button className="bg-gradient-to-r from-primary to-[#115e15] text-white px-4 py-1 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer">
-                <FaPlus /> Add 
+                <FaPlus /> {t("Add")}
               </button>
             </Link>
           </div>
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-between">
+          <div className="flex gap-1 md:gap-3 text-gray-700 font-medium rounded-md">
+            <button
+              onClick={exportExcel}
+              className="py-1 px-5 hover:bg-primary shadow bg-white hover:text-white rounded-md transition-all duration-300 cursor-pointer"
+            >
+              {t("Excel")}
+            </button>
+            <button
+              onClick={printTable}
+              className="py-1 px-5 hover:bg-primary shadow bg-white hover:text-white rounded-md transition-all duration-300 cursor-pointer"
+            >
+              {t("Print")}
+            </button>
+          </div>
           {/* search */}
           <div className="mt-3 md:mt-0 ">
             {/* <span className="text-primary font-semibold pr-3">Search: </span> */}
@@ -105,7 +229,7 @@ const Customer = () => {
                 setSearchTerm(e.target.value);
                 setCurrentPage(1);
               }}
-              placeholder="Search by  ..."
+              placeholder={`${t("search")}...`}
               className="lg:w-60 border border-gray-300 rounded-md outline-none text-xs py-2 ps-2 pr-5"
             />
              {/*  Clear button */}
@@ -128,22 +252,22 @@ const Customer = () => {
           <table className="min-w-full text-sm text-left">
             <thead className="bg-gray-200 text-primary capitalize text-xs">
               <tr>
-                <th className="p-2">SL.</th>
-                <th className="p-2">Name</th>
-                <th className="p-2">Mobile</th>
-                <th className="p-2">Email</th>
-                <th className="p-2">Address</th>
-                <th className="p-2">Rate Status</th>
-                <th className="p-2">Opening Balance</th>
-                <th className="p-2">Status</th>
-                <th className="p-2 action_column">Action</th>
+                <th className="p-2">{t("SL.")}</th>
+                <th className="p-2">{t("Customer Name")}</th>
+                <th className="p-2">{t("Mobile")}</th>
+                <th className="p-2">{t("Email")}</th>
+                <th className="p-2">{t("Address")}</th>
+                <th className="p-2">{t("Rate status")}</th>
+                <th className="p-2">{t("Opening Balance")}</th>
+                <th className="p-2">{t("Status")}</th>
+                <th className="p-2 action_column">{t("Action")}</th>
               </tr>
             </thead>
             <tbody className="text-gray-700 ">
               { currentCustomer.length === 0 ?(
                 <tr>
                   <td colSpan="8" className="text-center p-4 text-gray-500">
-                    No customer found
+                    {t("No customer found")}
                   </td>
                   </tr>
               )
@@ -214,20 +338,20 @@ const Customer = () => {
                 <FaTrashAlt />
               </div>
               <p className="text-center text-gray-700 font-medium mb-6">
-                Are you sure you want to delete this Customer?
+                {t("Are you sure you want to delete?")}
               </p>
               <div className="flex justify-center space-x-4">
                 <button
                   onClick={toggleModal}
                   className="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-primary hover:text-white cursor-pointer"
                 >
-                  No
+                  {t("No")}
                 </button>
                 <button
                   onClick={() => handleDelete(selectedCustomerId)}
                   className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 cursor-pointer"
                 >
-                  Yes
+                  {t("Yes")}
                 </button>
               </div>
             </div>

@@ -9,8 +9,10 @@ import { tableFormatDate } from "../../hooks/formatDate";
 import { IoMdClose } from "react-icons/io";
 import toast from "react-hot-toast";
 import * as XLSX from "xlsx";
+import { useTranslation } from "react-i18next";
 
 const VendorPayment = () => {
+  const {t} = useTranslation();
   const [payment, setPayment] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -220,12 +222,12 @@ const exportToExcel = () => {
         <div className="md:flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2 ">
             <MdOutlineAirplaneTicket className="text-gray-800 text-2xl" />
-            Vendor Payment
+            {t("Vendor")} {t("Payment")}
           </h2>
           <div className="mt-3 md:mt-0 flex gap-2">
             <Link to="/tramessy/account/add-vendor-payment">
               <button className="bg-primary text-white px-4 py-1 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer">
-                <FaPlus /> Add
+                <FaPlus /> {t("Add")}
               </button>
             </Link>
           </div>
@@ -237,14 +239,14 @@ const exportToExcel = () => {
               className="flex items-center gap-2 py-1 px-5 hover:bg-primary bg-white shadow hover:text-white rounded-md transition-all duration-300 cursor-pointer"
             >
               <FaFileExcel className="" />
-              Excel
+              {t("Excel")}
             </button>
             <button
               onClick={handlePrint}
               className="flex items-center gap-2 py-1 px-4 hover:bg-primary bg-white shadow hover:text-white rounded-md transition-all duration-300 cursor-pointer"
             >
               <FaPrint className="" />
-              Print
+              {t("Print")}
             </button>
           </div>
 
@@ -257,7 +259,7 @@ const exportToExcel = () => {
               onChange={(e) => {
                 setSearchTerm(e.target.value);
               }}
-              placeholder="Search list..."
+              placeholder={`${t("search")}...`}
               className="lg:w-60 border border-gray-300 rounded-md outline-none text-xs py-2 ps-2 pr-5"
             />
             {/*  Clear button */}
@@ -278,15 +280,15 @@ const exportToExcel = () => {
           <table className="min-w-full text-sm text-left">
             <thead className="bg-gray-200 text-primary capitalize text-xs">
               <tr>
-                <th className="px-2 py-3">SL.</th>
-                <th className="px-2 py-3">Date</th>
-                <th className="px-2 py-3">Vendor Name</th>
-                <th className="px-2 py-3">BillRef</th>
-                <th className="px-2 py-3">Amount</th>
-                <th className="px-2 py-3">Cash Type</th>
+                <th className="px-2 py-3">{t("SL.")}</th>
+                <th className="px-2 py-3">{t("Date")}</th>
+                <th className="px-2 py-3">{t("Vendor")} {t("Name")}</th>
+                <th className="px-2 py-3">{t("Bill Ref")}</th>
+                <th className="px-2 py-3">{t("Amount")}</th>
+                <th className="px-2 py-3">{t("Cash Type")}</th>
                 {/* <th className="px-2 py-3">Created By</th> */}
-                <th className="px-2 py-3">Status</th>
-                <th className="px-2 py-3">Action</th>
+                <th className="px-2 py-3">{t("Status")}</th>
+                <th className="px-2 py-3">{t("Action")}</th>
               </tr>
             </thead>
             <tbody className="text-gray-700">
@@ -308,7 +310,7 @@ const exportToExcel = () => {
                             d="M9.75 9.75L14.25 14.25M9.75 14.25L14.25 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                           />
                         </svg>
-                        No vehicle data found.
+                        {t("No vendor payment data found")}.
                       </div>
                     </td>
                   </tr>
@@ -382,20 +384,20 @@ const exportToExcel = () => {
                 <FaTrashAlt />
               </div>
               <p className="text-center text-gray-700 font-medium mb-6">
-                Are you sure you want to delete this Customer?
+                {t("Are you sure you want to delete?")}
               </p>
               <div className="flex justify-center space-x-4">
                 <button
                   onClick={toggleModal}
                   className="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-primary hover:text-white cursor-pointer"
                 >
-                  No
+                  {t("No")}
                 </button>
                 <button
                   onClick={() => handleDelete(selectedPaymentId)}
                   className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 cursor-pointer"
                 >
-                  Yes
+                  {t("Yes")}
                 </button>
               </div>
             </div>

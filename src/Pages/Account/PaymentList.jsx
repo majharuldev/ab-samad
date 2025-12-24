@@ -19,8 +19,10 @@ import api from "../../../utils/axiosConfig";
 import { tableFormatDate } from "../../hooks/formatDate";
 import DatePicker from "react-datepicker";
 import toNumber from "../../hooks/toNumber";
+import { useTranslation } from "react-i18next";
 
 const PaymentList = () => {
+  const { t } = useTranslation();
   const generateRefId = useRefId();
   const methods = useForm();
   const { handleSubmit, reset } = methods;
@@ -363,7 +365,7 @@ const PaymentList = () => {
   );
   const totalPages = Math.ceil(currentPayments.length / itemsPerPage);
 
-  if (loading) return <p className="text-center mt-16">Loading data...</p>;
+  if (loading) return <p className="text-center mt-16">{t("Loading")} ...</p>;
 
 
   return (
@@ -373,27 +375,27 @@ const PaymentList = () => {
         <div className="md:flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2 ">
             <FaUserSecret className="text-gray-800 text-2xl" />
-            Payment
+            {t("Payment")}
           </h2>
           <div className="mt-3 md:mt-0 flex gap-2">
             <button
               onClick={() => setShowFilter((prev) => !prev)}
               className="border border-primary text-primary px-4 py-1 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer"
             >
-              <FaFilter /> Filter
+              <FaFilter /> {t("Filter")}
             </button>
           </div>
         </div>
         {/* export and search */}
         <div className="md:flex justify-between items-center">
-          <div className="flex flex-wrap md:flex-row gap-1 md:gap-3 text-gray-700 font-semibold rounded-md">
+          <div className="flex flex-wrap md:flex-row gap-1 md:gap-3 text-gray-700 font-medium rounded-md">
 
             <button
               onClick={exportToExcel}
               className="flex items-center gap-2 py-1 px-5 hover:bg-primary bg-white shadow hover:text-white rounded-md transition-all duration-300 cursor-pointer"
             >
               <FaFileExcel className="" />
-              Excel
+              {t("Excel")}
             </button>
 
             {/* <button
@@ -409,7 +411,7 @@ const PaymentList = () => {
               className="flex items-center gap-2 py-1 px-5 hover:bg-primary bg-white shadow hover:text-white rounded-md transition-all duration-300 cursor-pointer"
             >
               <FaPrint className="" />
-              Print
+              {t("Print")}
             </button>
           </div>
           {/* search */}
@@ -421,7 +423,7 @@ const PaymentList = () => {
               onChange={(e) => {
                 setSearchTerm(e.target.value);
               }}
-              placeholder="Search list..."
+              placeholder={`${t("search")}...`}
               className="lg:w-60 border border-gray-300 rounded-md outline-none text-xs py-2 ps-2 pr-5"
             />
             {/*  Clear button */}
@@ -476,7 +478,7 @@ const PaymentList = () => {
                 }}
                 className="bg-primary text-white px-4 py-1 md:py-0 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300  cursor-pointer"
               >
-                <FaFilter /> Clear
+                <FaFilter /> {t("Clear")}
               </button>
             </div>
           </div>
@@ -486,19 +488,19 @@ const PaymentList = () => {
           <table className="min-w-full text-sm text-left">
             <thead className="bg-gray-200 text-primary capitalize text-xs">
               <tr>
-                <th className="px-1 py-4">SL.</th>
-                <th className="px-1 py-4">Date</th>
-                <th className="px-1 py-4">Supplier Name</th>
-                <th className="px-1 py-4">Category</th>
-                <th className="px-1 py-4">Item Name</th>
-                <th className="px-1 py-4">Quantity</th>
-                <th className="px-1 py-4">Unit Price</th>
-                <th className="px-1 py-4">Service Charge</th>
-                <th className="px-1 py-4">Total Amount</th>
-                <th className="px-1 py-4">Pay Amount</th>
-                <th className="px-1 py-4">Due Amount</th>
-                <th className="px-1 py-4">Status</th>
-                <th className="px-1 py-4">Action</th>
+                <th className="px-1 py-4">{t("SL.")}</th>
+                <th className="px-1 py-4">{t("Date")}</th>
+                <th className="px-1 py-4">{t("Supplier")} {t("Name")}</th>
+                <th className="px-1 py-4">{t("Category")}</th>
+                <th className="px-1 py-4">{t("Item Name")}</th>
+                <th className="px-1 py-4">{t("Quantity")}</th>
+                <th className="px-1 py-4">{t("Unit Price")}</th>
+                <th className="px-1 py-4">{t("Service Charge")}</th>
+                <th className="px-1 py-4">{t("Total")} {t("Amount")}</th>
+                <th className="px-1 py-4">{t("Pay Amount")}</th>
+                <th className="px-1 py-4">{t("Due Amount")}</th>
+                <th className="px-1 py-4">{t("Status")}</th>
+                <th className="px-1 py-4">{t("Action")}</th>
               </tr>
             </thead>
             <tbody className="text-gray-700">
@@ -520,7 +522,7 @@ const PaymentList = () => {
                             d="M9.75 9.75L14.25 14.25M9.75 14.25L14.25 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                           />
                         </svg>
-                        No payment data found.
+                        {t("No payment data found")}.
                       </div>
                     </td>
                   </tr>
@@ -628,7 +630,7 @@ const PaymentList = () => {
         <div className="fixed inset-0 z-50  flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
             <h2 className="text-xl font-bold mb-4 text-[#11375B]">
-              Update Payment
+              {t("Update")} {t("Payment")}
             </h2>
             <FormProvider {...methods}>
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -646,9 +648,9 @@ const PaymentList = () => {
                     onClick={() => setShowModal(false)}
                     className="bg-gray-200 px-4 rounded mt-4 hover:bg-primary hover:text-white cursor-pointer transition-all duration-300"
                   >
-                    Cancel
+                    {t("Cancel")}
                   </button>
-                  <BtnSubmit>Submit</BtnSubmit>
+                  <BtnSubmit>{t("Submit")}</BtnSubmit>
                 </div>
               </form>
             </FormProvider>

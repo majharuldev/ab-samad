@@ -11,8 +11,10 @@ import autoTable from "jspdf-autotable";
 import Pagination from "../components/Shared/Pagination";
 import api from "../../utils/axiosConfig";
 import toNumber from "../hooks/toNumber";
+import { useTranslation } from "react-i18next";
 
 const MonthlyStatement = () => {
+  const {t} = useTranslation();
   const [allData, setAllData] = useState([]); // Store all data
   const [filteredData, setFilteredData] = useState([]); // Store filtered data
   const [loading, setLoading] = useState(true);
@@ -31,9 +33,10 @@ const MonthlyStatement = () => {
       ]);
 
       // Only approved trips
-const trips = (tripsRes.data || []).filter(
-  (trip) => trip.status === "Approved"
-);
+// const trips = (tripsRes.data || []).filter(
+//   (trip) => trip.status === "Approved"
+// );
+const trips = (tripsRes.data || [])
       const purchases = purchasesRes.data?.data || [];
       const expenses = expensesRes.data || [];
 
@@ -269,13 +272,13 @@ const trips = (tripsRes.data || []).filter(
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
           <SlCalender className="text-lg" />
-          Monthly Profit/loss Statement
+          {t("Monthly Profit/Loss")} {t("Statement")}
         </h2>
         <button
           onClick={() => setShowFilter(!showFilter)}
           className="border border-primary text-primary px-4 py-1 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer"
         >
-          <FaFilter /> Filter
+          <FaFilter /> {t("Filter")}
         </button>
       </div>
 
@@ -288,7 +291,7 @@ const trips = (tripsRes.data || []).filter(
               onChange={(e) => setSelectedMonth(e.target.value)}
               className="mt-1 w-full text-sm border border-gray-300 px-3 py-2 rounded bg-white outline-none"
             >
-              <option value="">All Months</option>
+              <option value="">{t("All")} {t("Month")}</option>
               {availableMonths.map(month => (
                 <option key={month.value} value={month.value}>
                   {month.label}
@@ -296,7 +299,7 @@ const trips = (tripsRes.data || []).filter(
               ))}
             </select>
           </div>
-          <div className="mt-3 md:mt-0 flex gap-2">
+          <div className="w-sm mt-3 md:mt-0 flex gap-2">
             <button
               onClick={() => {
                 setSelectedMonth("");
@@ -304,7 +307,7 @@ const trips = (tripsRes.data || []).filter(
               }}
               className="bg-primary text-white px-4 py-1 md:py-0 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer"
             >
-              Clear 
+              {t("Clear")}
             </button>
           </div>
         </div>
@@ -315,7 +318,7 @@ const trips = (tripsRes.data || []).filter(
           onClick={exportToExcel}
           className="flex items-center gap-2 py-1 px-5 hover:bg-primary bg-white shadow rounded  hover:text-white transition-all duration-300 cursor-pointer"
         >
-          <FaFileExcel /> Excel
+          <FaFileExcel /> {t("Excel")}
         </button>
         {/* <button
           onClick={exportToPDF}
@@ -327,31 +330,31 @@ const trips = (tripsRes.data || []).filter(
           onClick={handlePrint}
           className="flex items-center gap-2 py-1 px-5 no-print hover:bg-primary bg-white  rounded shadow hover:text-white transition-all duration-300 cursor-pointer"
         >
-          <FaPrint /> Print
+          <FaPrint /> {t("Print")}
         </button>
       </div>
 
       {loading ? (
-        <p className="text-center py-10">Loading data...</p>
+        <p className="text-center py-10">{t("Loading")}...</p>
       ) : currentItems.length === 0 ? (
-        <p className="text-center py-10 text-gray-500">No data available for selected filter</p>
+        <p className="text-center py-10 text-gray-500">{t("No data available for selected filter")}</p>
       ) : (
         <>
           <div className="mt-5 overflow-x-auto rounded-md border border-gray-200 print-table">
             <table className="min-w-full text-sm text-left">
               <thead className="bg-gray-200 text-primary capitalize text-xs">
                 <tr>
-                  <th className="p-2 border">#</th>
-                  <th className="p-2 border">Month</th>
-                  <th className="p-2 border">Own Trip Income</th>
-                  <th className="p-2 border">Vendor Trip Income</th>
-                  <th className="p-2 border">Own Trip Cost</th>
-                  <th className="p-2 border">Vendor Trip Cost</th>
-                  <th className="p-2 border">Purchase Cost</th>
-                  <th className="p-2 border">Salary Expense</th>
-                  <th className="p-2 border">Office Expense</th>
-                  <th className="p-2 border">Total Expense</th>
-                  <th className="p-2 border">Net Profit</th>
+                  <th className="p-2 border">{t("SL.")}</th>
+                  <th className="p-2 border">{t("Month")}</th>
+                  <th className="p-2 border"> {t("Own Trip Income")}</th>
+                  <th className="p-2 border">{t("Vendor Trip Income")}</th>
+                  <th className="p-2 border">{t("Own Trip Cost")}</th>
+                  <th className="p-2 border">{t("Vendor Trip Cost")}</th>
+                  <th className="p-2 border">{t("Purchase Cost")}</th>
+                  <th className="p-2 border">{t("Salary Expense")}</th>
+                  <th className="p-2 border">{t("Office Expense")}</th>
+                  <th className="p-2 border">{t("Total Expense")}</th>
+                  <th className="p-2 border">{t("Net Profit")}</th>
                 </tr>
               </thead>
               <tbody>

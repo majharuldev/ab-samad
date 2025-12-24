@@ -8,8 +8,10 @@ import axios from "axios";
 import useRefId from "../../hooks/useRef";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../../utils/axiosConfig";
+import { useTranslation } from "react-i18next";
 
 const AddCustomer = () => {
+  const {t} = useTranslation();
   const navigate = useNavigate()
   const {id} = useParams();
   const dateRef = useRef(null);
@@ -53,7 +55,7 @@ const AddCustomer = () => {
       }
 
       toast.success(
-        !id ? "Customer added successfully" : "Customer updated successfully",
+        !id ? t("Customer added successfully") : t("Customer updated successfully"),
         { position: "top-right" }
       );
 
@@ -62,8 +64,8 @@ const AddCustomer = () => {
     } catch (error) {
       console.error(error);
       const errorMessage =
-        error.response?.data?.message || error.message || "Unknown error";
-      toast.error("Server issue: " + errorMessage);
+        error.response?.data?.message || error.message || t("Unknown error");
+      toast.error(t("Server issue:") + errorMessage);
     }
   };
 
@@ -73,7 +75,7 @@ const AddCustomer = () => {
       
       <div className="mx-auto p-6 border-t-2 border-primary rounded-md shadow">
         <h3 className="pb-4 text-primary font-semibold rounded-t-md">
-        {!id ? "Create Customer" : "Update Customer"}
+        {!id ? t("Create Customer") : t("Update Customer")}
       </h3>
         <FormProvider {...methods} className="">
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -101,14 +103,14 @@ const AddCustomer = () => {
               <div className="w-full relative">
                 <InputField
                   name="customer_name"
-                  label="Customer Name"
+                  label={`${t("Customer")} ${t("Name")}`}
                   required={!id}
                 />
               </div>
               <div className="mt-3 md:mt-0 w-full relative">
                 <InputField
                   name="mobile"
-                  label="Mobile"
+                  label={t("Mobile")}
                   type="number"
                   required={!id}
                 />
@@ -118,10 +120,10 @@ const AddCustomer = () => {
             <div className="mt-1 md:flex justify-between gap-3">
               
               <div className="mt-3 md:mt-0 w-full relative">
-                <InputField name="email" label="Email" />
+                <InputField name="email" label={t("Email")} />
               </div>
               <div className="w-full relative">
-                <InputField name="address" label="Address" required={!id} />
+                <InputField name="address" label={t("Address")} required={!id} />
               </div>
             </div>
             {/*  */}
@@ -129,18 +131,18 @@ const AddCustomer = () => {
               <div className="w-full">
                 <SelectField
                   name="rate"
-                  label="Rate status"
+                  label={t("Rate status")}
                   required={!id}
                   options={[
-                    { value: "Fixed", label: "Fixed" },
-                    { value: "Unfixed", label: "Unfixed" },
+                    { value: "Fixed", label: t("Fixed") },
+                    { value: "Unfixed", label: t("Unfixed") },
                   ]}
                 />
               </div>
               <div className="w-full relative">
                 <InputField
                   name="opening_balance"
-                  label="Opening Balance"
+                  label={t("Opening Balance")}
                   type="number"
                   required={!id}
                 />
@@ -148,11 +150,11 @@ const AddCustomer = () => {
               <div className="w-full">
                 <SelectField
                   name="status"
-                  label="Status"
+                  label={t("Status")}
                   required={!id}
                   options={[
-                    { value: "Active", label: "Active" },
-                    { value: "Inactive", label: "Inactive" },
+                    { value: "Active", label: t("Active") },
+                    { value: "Inactive", label: t("Inactive") },
                   ]}
                 />
               </div>
@@ -160,7 +162,7 @@ const AddCustomer = () => {
 
             {/* Submit Button */}
             <div className="text-left">
-              <BtnSubmit>Submit</BtnSubmit>
+              <BtnSubmit>{t("Submit")}</BtnSubmit>
             </div>
           </form>
         </FormProvider>

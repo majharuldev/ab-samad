@@ -11,6 +11,7 @@ import api from "../../../utils/axiosConfig";
 import { AuthContext } from "../../providers/AuthProvider";
 import useAdmin from "../../hooks/useAdmin";
 import FormSkeleton from "../../components/Form/FormSkeleton";
+import { t } from "i18next";
 
 const OfficialProductForm = () => {
   const navigate = useNavigate();
@@ -109,7 +110,7 @@ const OfficialProductForm = () => {
           reset(formValues)
 
           if (purchaseData.image) {
-            const imageUrl = `https://ajenterprise.tramessy.com/backend/uploads/purchase/${purchaseData.image}`
+            const imageUrl = `https://soinik.tramessy.com/backend/uploads/purchase/${purchaseData.image}`
             setPreviewImage(imageUrl)
             setExistingImage(purchaseData.image)
           }
@@ -117,7 +118,7 @@ const OfficialProductForm = () => {
           setIsLoading(false)
         } catch (error) {
           console.error("Error fetching purchase data:", error)
-          toast.error("Failed to load purchase data")
+          toast.error(t("Failed to load purchase data"))
           setIsLoading(false)
         }
       }
@@ -290,45 +291,45 @@ const OfficialProductForm = () => {
           });
   
          if (response.data.success) {
-        toast.success(isEditMode ? "Official Products Purchase updated!" : "Official Products Purchase submitted!");
+        toast.success(isEditMode ? t("Official Products Purchase updated!") : t("Official Products Purchase submitted!"));
         //  Only send SMS if it's a new trip and sms_sent = "yes"
-        if (!id && !isAdmin && data.sms_sent === "yes") {
-          const purchase = response.data.data;
-          const purchaseId = purchase.id;
-          const purchaseDate = purchase.date || "";
-          const supplierName = purchase.supplier_name || "";
-          const userName = user.name || "";
-          const purchaseItem = purchase?.item_name || "";
+      //   if (!id && !isAdmin && data.sms_sent === "yes") {
+      //     const purchase = response.data.data;
+      //     const purchaseId = purchase.id;
+      //     const purchaseDate = purchase.date || "";
+      //     const supplierName = purchase.supplier_name || "";
+      //     const userName = user.name || "";
+      //     const purchaseItem = purchase?.item_name || "";
 
-          // Build message content
-          const messageContent = `Dear Sir, A new Official Product created by ${userName}.\nPurchase Id: ${purchaseId}\nPurchase Date: ${purchaseDate}\nSupplier: ${supplierName}\nPurchase Name: ${purchaseItem}`;
+      //     // Build message content
+      //     const messageContent = `Dear Sir, A new Official Product created by ${userName}.\nPurchase Id: ${purchaseId}\nPurchase Date: ${purchaseDate}\nSupplier: ${supplierName}\nPurchase Name: ${purchaseItem}`;
 
-          // SMS Config
-          const adminNumber = "01872121862"; // or multiple separated by commas
-          const API_KEY = "3b82495582b99be5";
-          const SECRET_KEY = "ae771458";
-          const CALLER_ID = "1234";
+      //     // SMS Config
+      //     const adminNumber = "01872121862"; // or multiple separated by commas
+      //     const API_KEY = "3b82495582b99be5";
+      //     const SECRET_KEY = "ae771458";
+      //     const CALLER_ID = "1234";
 
-          // Correct URL (same structure as your given example)
-          const smsUrl = `https://smpp.revesms.com:7790/sendtext?apikey=${API_KEY}&secretkey=${SECRET_KEY}&callerID=${CALLER_ID}&toUser=${adminNumber}&messageContent=${encodeURIComponent(
-        messageContent
-      )}`;
-          try {
-             await axios.post(smsUrl);
-            toast.success("SMS sent to admin!");
-          } catch (smsError) {
-            console.error("SMS sending failed:", smsError);
-            // toast.error("Trip saved, but SMS failed to send.");
-          }
-        }
+      //     // Correct URL (same structure as your given example)
+      //     const smsUrl = `https://smpp.revesms.com:7790/sendtext?apikey=${API_KEY}&secretkey=${SECRET_KEY}&callerID=${CALLER_ID}&toUser=${adminNumber}&messageContent=${encodeURIComponent(
+      //   messageContent
+      // )}`;
+      //     try {
+      //        await axios.post(smsUrl);
+      //       toast.success("SMS sent to admin!");
+      //     } catch (smsError) {
+      //       console.error("SMS sending failed:", smsError);
+      //       // toast.error("Trip saved, but SMS failed to send.");
+      //     }
+      //   }
         navigate("/tramessy/Purchase/official-product");
         reset();
       } else {
-        throw new Error(isEditMode ? "Failed to update Purchase" : "Failed to create Purchase");
+        throw new Error(isEditMode ? t("Failed to update Purchase") : t("Failed to create Purchase"));
       }
       } catch (error) {
         console.error("Error:", error);
-        toast.error(error.response?.data?.message || "Server error");
+        toast.error(error.response?.data?.message || t("Server error"));
       }
     };
 
@@ -338,7 +339,7 @@ const OfficialProductForm = () => {
       <Toaster />
       <div className="mx-auto p-6 border-t-2 border-primary rounded-md shadow">
         <h3 className=" pb-4 text-primary font-semibold ">
-          {isEditMode ? "Update Official Purchase " : "Add Official Purchase"}
+          {isEditMode ? t("Update Official Purchase") : t("Add Official Purchase")}
         </h3>
         <FormProvider {...methods}>
           {isLoading  ? (
@@ -351,9 +352,9 @@ const OfficialProductForm = () => {
           >
             <h5 className="text-2xl font-bold text-center text-[#EF9C07]">
               {selectedCategory === "fuel"
-                ? "Fuel Purchase"
+                ? t("Fuel Purchase")
                 : selectedCategory === "engine_oil" || selectedCategory === "parts"
-                  ? "Maintenance"
+                  ? t("Purchase")
                   : ""}
             </h5>
 
@@ -362,7 +363,7 @@ const OfficialProductForm = () => {
               <div className="w-full">
                 <InputField
                   name="date"
-                  label="Purchase Date"
+                  label={t("Purchase Date")}
                   type="date"
                   required={!isEditMode}
                   inputRef={(e) => {
@@ -382,12 +383,12 @@ const OfficialProductForm = () => {
               <div className="w-full">
                 <SelectField
                   name="category"
-                  label="Category"
+                  label={t("Category")}
                   required={!isEditMode}
                   options={[
-                    { value: "It Product", label: "It Product" },
-                    { value: "Electrical", label: "Electrical" },
-                    { value: "Stationary", label: "Stationary" },
+                    { value: "It Product", label: t("It Product") },
+                    { value: "Electrical", label: t("Electrical") },
+                    { value: "Stationary", label: t("Stationary") },
 
                   ]}
                 />
@@ -395,7 +396,7 @@ const OfficialProductForm = () => {
               <div className="w-full">
                 <SelectField
                   name="branch_name"
-                  label="Branch Name"
+                  label={`${t("Branch")} ${t("Name")}`}
                   required={!isEditMode}
                   options={branchOptions}
                   control={control}
@@ -404,7 +405,7 @@ const OfficialProductForm = () => {
               <div className="w-full">
                 <SelectField
                   name="supplier_name"
-                  label="Supplier Name"
+                  label={`${t("Supplier")} ${t("Name")}`}
                   required={!isEditMode}
                   options={supplyOptions}
                   control={control}
@@ -414,7 +415,7 @@ const OfficialProductForm = () => {
             <div>
               {/*  Dynamic Item Fields */}
               {(<div className="space-y-4">
-                <h4 className="text-lg font-semibold text-primary">Items</h4>
+                <h4 className="text-lg font-semibold text-primary">{t("Items")}</h4>
 
                 {fields.map((field, index) => {
                   const quantity = watch(`items.${index}.quantity`) || 0;
@@ -423,10 +424,10 @@ const OfficialProductForm = () => {
 
                   return (
                     <div key={field.id} className="flex flex-col md:flex-row gap-3 border border-gray-300 p-3 rounded-md relative">
-                      <InputField name={`items.${index}.item_name`} label="Item Name" required={!isEditMode} className="!w-full" />
-                      <InputField name={`items.${index}.quantity`} label="Quantity" type="number" required={!isEditMode} className="!w-full" />
-                      <InputField name={`items.${index}.unit_price`} label="Unit Price" type="number" required={!isEditMode} className="!w-full" />
-                      <InputField name={`items.${index}.total`} label="Total" readOnly value={total} className="!salw-full" />
+                      <InputField name={`items.${index}.item_name`} label={t("Item Name")} required={!isEditMode} className="!w-full" />
+                      <InputField name={`items.${index}.quantity`} label={t("Quantity")} type="number" required={!isEditMode} className="!w-full" />
+                      <InputField name={`items.${index}.unit_price`} label={t("Unit Price")} type="number" required={!isEditMode} className="!w-full" />
+                      <InputField name={`items.${index}.total`} label={t("Total")} readOnly value={total} className="!salw-full" />
 
                       <button
                         type="button"
@@ -444,7 +445,7 @@ const OfficialProductForm = () => {
                   onClick={() => append({ item_name: "", quantity: "", unit_price: "", total: 0 })}
                   className="bg-primary text-white px-3 py-1 rounded-md hover:bg-primary/80"
                 >
-                  + Add Item
+                  + {t("Add Item")}
                 </button>
               </div>)}
             </div>
@@ -453,7 +454,7 @@ const OfficialProductForm = () => {
               <div className="w-full">
                 <InputField
                   name="service_charge"
-                  label="Service Charge"
+                  label={t("Service Charge")}
                   type="number"
                   required={false}
                 />
@@ -461,24 +462,24 @@ const OfficialProductForm = () => {
               <div className="w-full">
                 <InputField
                   name="purchase_amount"
-                  label="Total Purchase Amount"
+                  label={`${t("Total")} ${t("Purchase Amount")}`}
                   readOnly
                  value={watch("purchase_amount") || 0}
                   required={!isEditMode}
                 />
               </div>
               <div className="w-full">
-                <InputField name="remarks" label="Remark" />
+                <InputField name="remarks" label={t("Remarks")} />
               </div>
               <div className="w-full">
-                <InputField name="priority" label="priority" />
+                <InputField name="priority" label={t("Priority")} />
               </div>
             </div>
 
             <div className="md:flex justify-between gap-3">
             <div className="w-full">
               <label className="text-gray-700 text-sm font-semibold">
-                Bill Documents
+                {t("Bill Documents")}
               </label>
               <Controller
                 name="bill_image"
@@ -493,7 +494,7 @@ const OfficialProductForm = () => {
                       htmlFor="bill_image"
                       className="border p-2 rounded w-[50%] block bg-white text-gray-300 text-sm cursor-pointer"
                     >
-                      {previewImage ? "Image selected" : "Choose image"}
+                      {previewImage ? t("Image selected") : t("Choose image")}
                     </label>
                     <input
                       id="bill_image"
@@ -520,7 +521,7 @@ const OfficialProductForm = () => {
                     )}
                     {isEditMode && existingImage && (
                       <span className="text-green-600 text-sm">
-                        Current image: {existingImage}
+                        {t("Current image")}: {existingImage}
                       </span>
                     )}
                   </div>
@@ -556,7 +557,7 @@ const OfficialProductForm = () => {
               />
             </div>
           )}
-            {!isAdmin && <div className="mt-4">
+            {/* {!isAdmin && <div className="mt-4">
               <h3 className="text-secondary font-medium mb-2">SMS Sent</h3>
               <div className="flex gap-6">
                 <label className="flex items-center gap-2">
@@ -576,9 +577,9 @@ const OfficialProductForm = () => {
                   No
                 </label>
               </div>
-            </div>}
+            </div>} */}
 
-            <BtnSubmit>{isEditMode ? "Update Purchase" : "Submit"}</BtnSubmit>
+            <BtnSubmit>{isEditMode ? (t("Update Purchase")) : t("Submit")}</BtnSubmit>
           </form>)}
         </FormProvider>
       </div>

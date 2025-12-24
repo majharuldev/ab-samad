@@ -15,8 +15,10 @@ import api from "../../utils/axiosConfig"
 import { tableFormatDate } from "../hooks/formatDate"
 import DatePicker from "react-datepicker"
 import toNumber from "../hooks/toNumber"
+import { useTranslation } from "react-i18next"
 
 const DailyIncome = () => {
+  const {t} = useTranslation();
   const [trips, setTrips] = useState([])
   const [showFilter, setShowFilter] = useState(false)
   // Date filter state
@@ -81,9 +83,9 @@ const DailyIncome = () => {
     // vehicle filter (dropdown বা input field নিলে সেভাবে handle করতে হবে)
     const matchesVehicle =
       !selectedVehicle || dt.vehicle_no?.toLowerCase() === selectedVehicle.toLowerCase();
-    const isApproved = dt.status === "Approved";
+    // const isApproved = dt.status === "Approved";
 
-    return matchesDate && matchesCustomer && matchesVehicle && isApproved;
+    return matchesDate && matchesCustomer && matchesVehicle;
   });
 
 
@@ -200,20 +202,20 @@ const DailyIncome = () => {
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-xl font-bold text-gray-700 flex items-center gap-3">
             <FaTruck className="text-gray-700 text-2xl" />
-            Income List
+            {t("Income")} {t("list")}
           </h1>
           <div className="mt-3 md:mt-0 flex gap-2">
             <button
               onClick={() => setShowFilter((prev) => !prev)}
               className="text-primary border border-primary px-4 py-1 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer"
             >
-              <FaFilter /> Filter
+              <FaFilter /> {t("Filter")}
             </button>
           </div>
         </div>
         {/* Export & Search */}
         <div className="md:flex justify-between items-center">
-          <div className="flex flex-wrap md:flex-row gap-1 md:gap-3 text-gray-700 font-semibold rounded">
+          <div className="flex flex-wrap md:flex-row gap-1 md:gap-3 text-gray-700 font-medium rounded">
             {/* <CSVLink
               data={csvData}
               headers={headers}
@@ -227,7 +229,7 @@ const DailyIncome = () => {
               className="flex items-center gap-2 py-1 px-5 hover:bg-primary bg-white shadow   hover:text-white rounded transition-all duration-300 cursor-pointer"
             >
               <FaFileExcel className="" />
-              Excel
+              {t("Excel")}
             </button>
             {/* <button
               onClick={exportPDF}
@@ -241,7 +243,7 @@ const DailyIncome = () => {
               className="flex items-center gap-2 py-1 px-5 hover:bg-primary bg-white  shadow hover:text-white rounded transition-all duration-300 cursor-pointer"
             >
               <FaPrint className="" />
-              Print
+              {t("Print")}
             </button>
           </div>
           {/* search */}
@@ -293,9 +295,9 @@ const DailyIncome = () => {
                 setSelectedCustomer(e.target.value)
                 setCurrentPage(1);
               }}
-              className="mt-1 w-full text-gray-500 text-sm border border-gray-300 bg-white p-2 rounded appearance-none outline-none"
+              className=" w-full text-gray-500 text-sm border border-gray-300 bg-white px-2 py-1 rounded appearance-none outline-none"
             >
-              <option value="">Select Customer</option>
+              <option value="">{t("Customer")} {t("Select")}</option>
               {customers.map((c) => (
                 <option key={c.id} value={c.customer_name}>
                   {c.customer_name}
@@ -308,9 +310,9 @@ const DailyIncome = () => {
                 setSelectedVehicle(e.target.value);
                 setCurrentPage(1);
               }}
-              className="mt-1 w-full text-gray-500 text-sm border border-gray-300 bg-white p-2 rounded appearance-none outline-none"
+              className="w-full text-gray-500 text-sm border border-gray-300 bg-white px-2 py-1 rounded appearance-none outline-none"
             >
-              <option value="">Select Vehicle</option>
+              <option value="">{t("Vehicle")} {t("Select")}</option>
               {trips.map((t, i) => (
                 <option key={i} value={t.vehicle_no}>
                   {t.vehicle_no}
@@ -318,7 +320,7 @@ const DailyIncome = () => {
               ))}
             </select>
 
-            <div className="mt-3 md:mt-0 flex gap-2">
+            <div className="w-lg mt-3 md:mt-0 flex gap-2">
               <button
                 onClick={() => {
                   setCurrentPage(1);
@@ -331,7 +333,7 @@ const DailyIncome = () => {
                 }
                 className="bg-primary text-white px-4 py-1 md:py-0 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer"
               >
-                <FaFilter /> Clear
+                <FaFilter /> {t("Clear")}
               </button>
             </div>
           </div>
@@ -341,17 +343,17 @@ const DailyIncome = () => {
           <table className="min-w-full text-sm text-left">
             <thead className="bg-gray-200 text-primary capitalize text-xs">
               <tr>
-                <th className="px-4 py-3">#</th>
-                <th className="px-4 py-3">Date</th>
-                <th className="px-4 py-3">Customer</th>
-                <th className="px-4 py-3">Vehicle</th>
-                <th className="px-4 py-3">Load</th>
-                <th className="px-4 py-3">Unload</th>
+                <th className="px-4 py-3">{t("SL.")}</th>
+                <th className="px-4 py-3">{t("Date")}</th>
+                <th className="px-4 py-3">{t("Customer")}</th>
+                <th className="px-4 py-3">{t("Vehicle")}</th>
+                <th className="px-4 py-3">{t("Load Point")}</th>
+                <th className="px-4 py-3">{t("Unload Point")}</th>
                 {/* <th className="px-4 py-3">Customer</th> */}
-                <th className="px-4 py-3">Trip Price</th>
+                <th className="px-4 py-3">{t("Trip Price")}</th>
                 {/* <th className="px-4 py-3">Fine</th> */}
-                <th className="px-4 py-3">Ongoing Expense</th>
-                <th className="px-4 py-3">Profit</th>
+                <th className="px-4 py-3">{t("Ongoing Expense")}</th>
+                <th className="px-4 py-3">{t("Profit")}</th>
                 {/* <th className="px-4 py-3 action_column">Action</th> */}
               </tr>
             </thead>
@@ -373,15 +375,15 @@ const DailyIncome = () => {
                           d="M9.75 9.75L14.25 14.25M9.75 14.25L14.25 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                         />
                       </svg>
-                      No Income data found.
+                      {t("No Income data found.")}
                     </div>
                   </td>
                 </tr>
               ) : (
                 currentTrips.map((trip, index) => (
                   <tr key={trip.id || index} className="hover:bg-gray-50 transition-all">
-                    <td className="px-4 py-4 font-bold">{indexOfFirstItem + index + 1}</td>
-                    <td className="px-4 py-4">
+                    <td className="px-4 py-4 font-bold border border-gray-300">{indexOfFirstItem + index + 1}</td>
+                    <td className="px-4 py-4 border border-gray-300">
                       {tableFormatDate(trip.start_date)}
                     </td>
                     <td className="px-4 py-4 border border-gray-300">{trip.customer}</td>
@@ -413,7 +415,7 @@ const DailyIncome = () => {
             {currentTrips.length > 0 && (
               <tfoot className="bg-gray-100 font-bold">
                 <tr>
-                  <td colSpan="6" className="text-right px-4 py-3">Total:</td>
+                  <td colSpan="6" className="text-right px-4 py-3">{t("Total")}:</td>
                   <td className="px-4 py-3">{totalRent}</td>
                   <td className="px-4 py-3">{totalExpense}</td>
                   <td className="px-4 py-3">{totalProfit}</td>

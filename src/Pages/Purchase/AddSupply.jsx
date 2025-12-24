@@ -1,137 +1,3 @@
-// import BtnSubmit from "../../components/Button/BtnSubmit";
-// import { FormProvider, useForm } from "react-hook-form";
-// import { InputField, SelectField } from "../../components/Form/FormFields";
-// import { useRef } from "react";
-// import toast, { Toaster } from "react-hot-toast";
-// import axios from "axios";
-// import useRefId from "../../hooks/useRef";
-// import { FiCalendar } from "react-icons/fi";
-// import { useNavigate } from "react-router-dom";
-// import api from "../../../utils/axiosConfig";
-
-// const AddSupply = () => {
-//   const navigate = useNavigate()
-//   const methods = useForm();
-//   const dateRef = useRef(null);
-//   const { handleSubmit, reset, register } = methods;
-//   const generateRefId = useRefId();
-//   const onSubmit = async (data) => {
-//     try {
-//       const formData = new FormData();
-//       for (const key in data) {
-//         formData.append(key, data[key]);
-//       }
-//       formData.append("ref_id", generateRefId());
-//       const response = await api.post(
-//         `/supplier`,
-//         formData
-//       );
-//       const resData = response.data;
-//       if (resData.success) {
-//         toast.success("Supply information saved successfully!", {
-//           position: "top-right",
-//         });
-//         reset();
-//         navigate("/tramessy/Purchase/SupplierList")
-//       } else {
-//         toast.error("Server Error: " + (resData.message || "Unknown issue"));
-//       }
-//     } catch (error) {
-//       console.error(error);
-//       const errorMessage =
-//         error.response?.data?.message || error.message || "Unknown error";
-//       toast.error("Server Error: " + errorMessage);
-//     }
-//   };
-
-//   return (
-//     <div className="mt-5 md:p-2">
-//       <Toaster />
-//      <div className="mx-auto p-6 border-t-2 border-primary rounded-md shadow">
-//        <h3 className="pb-4 text-primary font-semibold ">
-//         Supply Information Setup
-//       </h3>
-//       <FormProvider {...methods} className="">
-//         <form
-//           onSubmit={handleSubmit(onSubmit)}
-//           className="mx-auto space-y-4"
-//         >
-//           {/*  */}
-//           <div className="md:flex justify-between gap-3">
-//             <div className="w-full">
-//               <InputField
-//                 name="date"
-//                 label="Date"
-//                 type="date"
-//                 required
-//                 inputRef={(e) => {
-//                   register("date").ref(e);
-//                   dateRef.current = e;
-//                 }}
-//                 icon={
-//                   <span
-//                     className="py-[11px] absolute right-0 px-3 top-[22px] transform -translate-y-1/2 rounded-r"
-//                     onClick={() => dateRef.current?.showPicker?.()}
-//                   >
-//                     <FiCalendar className="text-gray-700 cursor-pointer" />
-//                   </span>
-//                 }
-//               />
-//             </div>
-//             <div className="w-full">
-//               <InputField name="supplier_name" label="Supplier Name" required />
-//             </div>
-//              <div className="w-full">
-//               <InputField name="business_category" label="Business Category" required />
-//             </div>
-//             <div className="w-full">
-//               <InputField name="phone" label="Phone" type="number" required />
-//             </div>
-//           </div>
-//           {/*  */}
-//           <div className="md:flex justify-between gap-3">
-//             <div className="w-full">
-//               <InputField name="address" label="Address" required />
-//             </div>
-//             <div className="w-full">
-//               <InputField
-//                 name="due_amount"
-//                 label="Opening Balance"
-//                 type="number"
-//                 required
-//               />
-//             </div>
-//             <div className="w-full">
-//               <InputField
-//                 name="contact_person_name"
-//                 label="Contact Person"
-//                 required
-//               />
-//             </div>
-//             <div className="relative w-full">
-//               <SelectField
-//                 name="status"
-//                 label="Status"
-//                 required
-//                 options={[
-//                   { value: "", label: "Select Status..." },
-//                   { value: "Active", label: "Active" },
-//                   { value: "Inactive", label: "Inactive" },
-//                 ]}
-//               />
-//             </div>
-//           </div>
-
-//           <BtnSubmit>Submit</BtnSubmit>
-//         </form>
-//       </FormProvider>
-//      </div>
-//     </div>
-//   );
-// };
-
-// export default AddSupply;
-
 
 import BtnSubmit from "../../components/Button/BtnSubmit";
 import { FormProvider, useForm } from "react-hook-form";
@@ -142,8 +8,11 @@ import { FiCalendar } from "react-icons/fi";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../../utils/axiosConfig";
 import useRefId from "../../hooks/useRef";
+import { useTranslation } from "react-i18next";
+import FormSkeleton from "../../components/Form/FormSkeleton";
 
 const SupplyForm = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams(); // id from params
   const methods = useForm();
@@ -167,7 +36,7 @@ const SupplyForm = () => {
               }
             });
           } else {
-            toast.error("Failed to fetch supplier info!");
+            toast.error(t("Failed to fetch supplier info!"));
           }
         })
         .catch((err) => {
@@ -182,10 +51,10 @@ const SupplyForm = () => {
     try {
       const payload = { ...data };
 
-    // ref_id only generate if not in update mode
-    if (!id) {
-      payload.ref_id = generateRefId();
-    }
+      // ref_id only generate if not in update mode
+      if (!id) {
+        payload.ref_id = generateRefId();
+      }
 
       const response = id
         ? await api.put(`/supplier/${id}`, payload)
@@ -195,20 +64,20 @@ const SupplyForm = () => {
       if (resData.success) {
         toast.success(
           id
-            ? "Supply information updated successfully!"
-            : "Supply information saved successfully!",
+            ? (t("Supplier updated successfully!"))
+            : t("Supplier added successfully!"),
           { position: "top-right" }
         );
         reset();
         navigate("/tramessy/Purchase/SupplierList");
       } else {
-        toast.error("Server Error: " + (resData.message || "Unknown issue"));
+        toast.error(t("Server Error:") + (resData.message || t("Unknown issue")));
       }
     } catch (error) {
       console.error(error);
       const errorMessage =
-        error.response?.data?.message || error.message || "Unknown error";
-      toast.error("Server Error: " + errorMessage);
+        error.response?.data?.message || error.message || t("Unknown error");
+      toast.error(t("Server Error:") + errorMessage);
     }
   };
 
@@ -217,11 +86,13 @@ const SupplyForm = () => {
       <Toaster />
       <div className="mx-auto p-6 border-t-2 border-primary rounded-md shadow">
         <h3 className="pb-4 text-primary font-semibold ">
-          {id ? "Update Supply Information" : "Add Supply Information"}
+          {id ? t("Update Supplier Information") : t("Add Supplier Information")}
         </h3>
 
         {loading ? (
-          <p className="text-center text-gray-500">Loading...</p>
+          <div className="p-4 bg-white rounded-md shadow border-t-2 border-primary">
+            <FormSkeleton />
+          </div>
         ) : (
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(onSubmit)} className="mx-auto space-y-4">
@@ -250,30 +121,30 @@ const SupplyForm = () => {
                 <div className="w-full">
                   <InputField
                     name="supplier_name"
-                    label="Supplier Name"
+                    label={`${t("Supplier")} ${t("Name")}`}
                     required
                   />
                 </div>
                 <div className="w-full">
                   <InputField
                     name="business_category"
-                    label="Business Category"
+                    label={t("Business Category")}
                     required
                   />
                 </div>
                 <div className="w-full">
-                  <InputField name="phone" label="Phone" type="number" required />
+                  <InputField name="phone" label={t("Mobile")} type="number" required />
                 </div>
               </div>
               {/* row 2 */}
               <div className="md:flex justify-between gap-3">
                 <div className="w-full">
-                  <InputField name="address" label="Address" required />
+                  <InputField name="address" label={t("Address")} required />
                 </div>
                 <div className="w-full">
                   <InputField
                     name="opening_balance"
-                    label="Opening Balance"
+                    label={t("Opening Balance")}
                     type="number"
                     required
                   />
@@ -281,25 +152,25 @@ const SupplyForm = () => {
                 <div className="w-full">
                   <InputField
                     name="contact_person_name"
-                    label="Contact Person"
+                    label={t("Contact Person")}
                     required
                   />
                 </div>
                 <div className="relative w-full">
                   <SelectField
                     name="status"
-                    label="Status"
+                    label={t("Status")}
                     required
                     options={[
-                      { value: "", label: "Select Status..." },
-                      { value: "Active", label: "Active" },
-                      { value: "Inactive", label: "Inactive" },
+                      // { value: "", label: "Select Status..." },
+                      { value: "Active", label: t("Active") },
+                      { value: "Inactive", label: t("Inactive") },
                     ]}
                   />
                 </div>
               </div>
 
-              <BtnSubmit>{id ? "Update" : "Submit"}</BtnSubmit>
+              <BtnSubmit>{id ? (t("Update")) : t("Submit")}</BtnSubmit>
             </form>
           </FormProvider>
         )}

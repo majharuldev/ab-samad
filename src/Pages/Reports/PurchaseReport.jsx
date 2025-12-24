@@ -511,8 +511,10 @@ import DatePicker from "react-datepicker";
 import api from "../../../utils/axiosConfig";
 import { tableFormatDate } from "../../hooks/formatDate";
 import { FiFilter } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 
 const PurchaseReport = () => {
+  const {t} = useTranslation();
   const [purchases, setPurchases] = useState([]);
   const [showFilter, setShowFilter] = useState(false);
   const reportRef = useRef();
@@ -733,32 +735,32 @@ const PurchaseReport = () => {
       >
         <div className="md:flex items-center justify-between mb-6">
           <h1 className="text-xl font-bold text-gray-800 flex items-center gap-3">
-            <FaUserSecret className="text-gray-800 text-2xl" /> Purchase Report
+            <FaUserSecret className="text-gray-800 text-2xl" /> {t("Purchase Report")}
           </h1>
           <button
             onClick={() => setShowFilter(prev => !prev)}
             className="mt-3 bg-primary text-white px-4 py-1 rounded-md shadow-lg flex items-center gap-2"
           >
-            <FaFilter /> Filter
+            <FaFilter /> {t("Filter")}
           </button>
         </div>
 
         {/* Summary Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <div className="bg-blue-50 p-4 rounded text-center">
-            <p className="text-sm text-gray-500">Total Purchases</p>
+            <p className="text-sm text-gray-500">{t("Total Purchase")}</p>
             <p className="text-lg font-bold">{filteredPurchases.length}</p>
           </div>
           <div className="bg-green-50 p-4 rounded text-center">
-            <p className="text-sm text-gray-500">Total Amount</p>
+            <p className="text-sm text-gray-500">{t("Total")} {t("Amount")}</p>
             <p className="text-lg font-bold">{totalAmount.toLocaleString()} ৳</p>
           </div>
           <div className="bg-yellow-50 p-4 rounded text-center">
-            <p className="text-sm text-gray-500">Top Supplier</p>
+            <p className="text-sm text-gray-500">{t("Top Suppliers")}</p>
             <p className="text-lg font-bold">{topSupplier}</p>
           </div>
           <div className="bg-purple-50 p-4 rounded text-center">
-            <p className="text-sm text-gray-500">Top Category</p>
+            <p className="text-sm text-gray-500">{t("Top Categories")}</p>
             <p className="text-lg font-bold">{topCategory}</p>
           </div>
         </div>
@@ -796,7 +798,7 @@ const PurchaseReport = () => {
               onChange={e => setSupplierFilter(e.target.value)}
               className="border p-2 rounded"
             >
-              <option value="">All Suppliers</option>
+              <option value="">{t("All")} {t("Supplier")}</option>
               {[...new Set(purchases.map(p => p.supplier_name))].map(s => (
                 <option key={s} value={s}>{s}</option>
               ))}
@@ -806,7 +808,7 @@ const PurchaseReport = () => {
               onChange={e => setCategoryFilter(e.target.value)}
               className="border p-2 rounded"
             >
-              <option value="">All Categories</option>
+              <option value="">{t("All")} {t("Category")}</option>
               {[...new Set(purchases.map(p => p.category))].map(c => (
                 <option key={c} value={c}>{c}</option>
               ))}
@@ -823,7 +825,7 @@ const PurchaseReport = () => {
                 }}
                 className="bg-primary text-white px-4 py-2 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer"
               >
-                <FiFilter />মুছে ফেলা
+                <FiFilter />{t("Clear")}
               </button>
             </div>
           </div>
@@ -836,25 +838,25 @@ const PurchaseReport = () => {
               onClick={exportExcel}
               className="py-1 px-5 bg-white shadow rounded hover:bg-primary hover:text-white flex items-center gap-2"
             >
-              <FaFileExcel /> Excel
+              <FaFileExcel /> {t("Excel")}
             </button>
             <button
               onClick={exportPdf}
               className="py-1 px-5 bg-white shadow rounded hover:bg-primary hover:text-white flex items-center gap-2"
             >
-              <FaFilePdf /> PDF
+              <FaFilePdf /> {t("PDF")}
             </button>
             <button
               onClick={handlePrint}
               className="py-1 px-5 bg-white shadow rounded hover:bg-primary hover:text-white flex items-center gap-2"
             >
-              <FaPrint /> Print
+              <FaPrint /> {t("Print")}
             </button>
           </div>
           <div>
             <input
               type="text"
-              placeholder="Search..."
+              placeholder={`${t("search")}...`}
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
               className="border rounded px-3 py-1"
@@ -875,15 +877,15 @@ const PurchaseReport = () => {
           <table className="min-w-full text-sm text-left">
             <thead className="bg-gray-200 text-primary">
               <tr>
-                <th className="p-2">#</th>
-                <th className="p-2">Date</th>
-                <th className="p-2">Supplier</th>
-                <th className="p-2">Category</th>
-                <th className="p-2">Item</th>
-                <th className="p-2">Qty</th>
-                <th className="p-2">Unit Price</th>
-                <th className="p-2">Service Charge</th>
-                <th className="p-2">Purchase Amount</th>
+                <th className="p-2">{t("SL.")}</th>
+                <th className="p-2">{t("Date")}</th>
+                <th className="p-2">{t("Supplier")}</th>
+                <th className="p-2">{t("Category")}</th>
+                <th className="p-2">{t("Item")}</th>
+                <th className="p-2">{t("Quantity")}</th>
+                <th className="p-2">{t("Unit Price")}</th>
+                <th className="p-2">{t("Service Charge")}</th>
+                <th className="p-2">{t("Purchase Amount")}</th>
               </tr>
             </thead>
             <tbody className="text-gray-700 ">
@@ -909,7 +911,7 @@ const PurchaseReport = () => {
             {currentPurchase.length > 0 && (
               <tfoot className="bg-gray-100 font-bold">
                 <tr>
-                  <td colSpan="5" className="text-right p-2">Total:</td>
+                  <td colSpan="5" className="text-right p-2">{t("Total")}:</td>
                   <td className="p-2">{totalQty}</td>
                   <td className="p-2">{totalUnitPrice}</td>
                   <td className="p-2">{totalServiceCharge}</td>
