@@ -803,7 +803,7 @@ const handleFileChange = (e) => {
   </div>
 )}
 
-            <BtnSubmit>{isEditMode ? "Update Purchase" : "Submit"}</BtnSubmit>
+            <BtnSubmit type="submit">{isEditMode ? "Update Purchase" : "Submit"}</BtnSubmit>
           </form>)}
         </FormProvider>
       </div>

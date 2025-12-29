@@ -39,7 +39,7 @@ const OverViewCard = () => {
         const today = new Date().toISOString().split("T")[0];
         // Only today's approved trips
         const todayApprovedTrips = allTrips.filter(
-          (trip) => trip.start_date === today && trip.status === "Approved"
+          (trip) => trip.start_date === today 
         );
         // Set today's trip count
         setTodayTripCount(todayApprovedTrips.length);
@@ -54,7 +54,7 @@ const OverViewCard = () => {
         const data = response.data;
         const today = new Date().toISOString().split("T")[0];
         const sale = data
-          .filter((item) => item.start_date === today && item.status === "Approved")
+          .filter((item) => item.start_date === today)
           .reduce((sum, trip) => sum + toNumber(trip.total_rent || 0), 0);
 
         setDailySales(sale);
@@ -204,7 +204,7 @@ const OverViewCard = () => {
           </h3>
           <div className="text-gray-700 text-sm space-y-2">
             <div className="flex justify-between font-semibold">
-              <span>{t("receiveAmount")}</span>-
+              <span>{t("Received Amount")}</span>-
               <span>{totalReceiveAmount.toLocaleString()} TK</span>
             </div>
           </div>

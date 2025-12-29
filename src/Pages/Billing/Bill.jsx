@@ -151,65 +151,131 @@ const Bill = () => {
     setCurrentPage(1)
   }
 
-  const numberToWords = (num) => {
-    if (!num || isNaN(num)) return "Zero Taka only"
-
-    const ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"]
-    const teens = [
-      "Ten",
-      "Eleven",
-      "Twelve",
-      "Thirteen",
-      "Fourteen",
-      "Fifteen",
-      "Sixteen",
-      "Seventeen",
-      "Eighteen",
-      "Nineteen",
-    ]
-    const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"]
-
-    const convertHundreds = (n) => {
-      let result = ""
-      if (n >= 100) {
-        result += ones[Math.floor(n / 100)] + " Hundred "
-        n %= 100
-      }
-      if (n >= 20) {
-        result += tens[Math.floor(n / 10)] + " "
-        n %= 10
-      } else if (n >= 10) {
-        result += teens[n - 10] + " "
-        return result
-      }
-      if (n > 0) {
-        result += ones[n] + " "
-      }
-      return result
-    }
-
-    let result = ""
-    const crore = Math.floor(num / 10000000)
-    const lakh = Math.floor((num % 10000000) / 100000)
-    const thousand = Math.floor((num % 100000) / 1000)
-    const remainder = num % 1000
-
-    if (crore > 0) {
-      result += convertHundreds(crore) + "Crore "
-    }
-    if (lakh > 0) {
-      result += convertHundreds(lakh) + "Lakh "
-    }
-    if (thousand > 0) {
-      result += convertHundreds(thousand) + "Thousand "
-    }
-    if (remainder > 0) {
-      result += convertHundreds(remainder)
-    }
-
-    return result.trim() + " Taka only"
+  // number converts function
+const numberToWords = (num) => {
+  if (!num || isNaN(num)) return t("Zero Taka only")
+  
+  const numInt = Math.floor(num)
+  
+  // Helper function to check if translation exists and is not the same as key
+  const getTranslation = (key) => {
+    const translation = t(key)
+    // If translation is same as key, it means translation doesn't exist
+    return translation === key ? null : translation
   }
 
+  // Special handling for 21-99 numbers - only use if translation exists
+  const specialNumbers = {}
+  for (let i = 21; i <= 99; i++) {
+    const key = i.toString()
+    const translation = getTranslation(key)
+    if (translation) {
+      specialNumbers[i] = translation
+    }
+  }
+
+  const ones = ["", t("One"), t("Two"), t("Three"), t("Four"), t("Five"), 
+                t("Six"), t("Seven"), t("Eight"), t("Nine")]
+  
+  const teens = [t("Ten"), t("Eleven"), t("Twelve"), t("Thirteen"), t("Fourteen"), 
+                 t("Fifteen"), t("Sixteen"), t("Seventeen"), t("Eighteen"), t("Nineteen")]
+  
+  const tens = ["", "", t("Twenty"), t("Thirty"), t("Forty"), t("Fifty"), 
+                t("Sixty"), t("Seventy"), t("Eighty"), t("Ninety")]
+
+  const convertTwoDigit = (n) => {
+    if (n === 0) return ""
+    
+    // Check for special number (21-99) only if translation exists
+    if (specialNumbers[n]) {
+      return specialNumbers[n]
+    }
+    
+    if (n < 10) {
+      return ones[n]
+    } else if (n < 20) {
+      return teens[n - 10]
+    } else {
+      const tenDigit = Math.floor(n / 10)
+      const oneDigit = n % 10
+      if (oneDigit === 0) {
+        return tens[tenDigit]
+      } else {
+        // Fallback: if tens[tenDigit] or ones[oneDigit] is same as key, use default
+        const tenWord = tens[tenDigit] === `t(${tenDigit})` ? 
+                       ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"][tenDigit] : 
+                       tens[tenDigit]
+        
+        const oneWord = ones[oneDigit] === `t(${oneDigit})` ? 
+                       ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"][oneDigit] : 
+                       ones[oneDigit]
+        
+        return `${tenWord} ${oneWord}`
+      }
+    }
+  }
+
+  const convertThreeDigit = (n) => {
+    if (n === 0) return ""
+    
+    let result = ""
+    
+    // Handle hundreds
+    if (n >= 100) {
+      const hundredDigit = Math.floor(n / 100)
+      const hundredWord = ones[hundredDigit] === `t(${hundredDigit})` ? 
+                         ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"][hundredDigit] : 
+                         ones[hundredDigit]
+      result += hundredWord + " " + t("Hundred")
+      n %= 100
+      if (n > 0) {
+        result += " "
+      }
+    }
+    
+    // Handle remaining two digits
+    if (n > 0) {
+      result += convertTwoDigit(n)
+    }
+    
+    return result
+  }
+
+  if (numInt === 0) return t("Zero") + " " + t("Taka only")
+  
+  let result = ""
+  let remaining = numInt
+  
+  // Crore (কোটি) - 10000000
+  if (remaining >= 10000000) {
+    const crorePart = Math.floor(remaining / 10000000)
+    result += convertThreeDigit(crorePart) + " " + t("Crore") + " "
+    remaining %= 10000000
+  }
+  
+  // Lakh (লাখ) - 100000
+  if (remaining >= 100000) {
+    const lakhPart = Math.floor(remaining / 100000)
+    result += convertTwoDigit(lakhPart) + " " + t("Lakh") + " "
+    remaining %= 100000
+  }
+  
+  // Thousand (হাজার) - 1000
+  if (remaining >= 1000) {
+    const thousandPart = Math.floor(remaining / 1000)
+    result += convertTwoDigit(thousandPart) + " " + t("Thousand") + " "
+    remaining %= 1000
+  }
+  
+  // Rest (1-999)
+  if (remaining > 0) {
+    result += convertThreeDigit(remaining) + " "
+  }
+
+  return result.trim() + " " + t("Taka only")
+}
+
+// check trip box
   const handleCheckBox = (tripId) => {
     setSelectedRows((prev) => ({
       ...prev,
@@ -253,6 +319,7 @@ const Bill = () => {
 
     // Get customer name from first selected trip
     const customerName = selectedData[0]?.customer || "Customer Name"
+    const customerAddress = selectedData[0]?.c_address || "Dhaka"
 
     // Calculate totals for selected data
     const {
@@ -342,28 +409,28 @@ const Bill = () => {
         <body>
         <div class="bill-info" style="margin-top:3in;">
             <div class="to-section">
-              <div>To</div>
+              <div>${t("To")}</div>
               <div><strong>${customerName}</strong></div>
-              <div>Usuf market, Ashulia, Dhaka</div>
-              <div><strong>Sub: ${billNumber}</strong></div>
+              <div>${customerAddress}</div>
+              <div><strong>${t("Sub")}: ${billNumber}</strong></div>
             </div>
             <div>
-              <div><strong>Date: ${new Date().toLocaleDateString("bn-BD")}</strong></div>
+              <div><strong>${t("Date")}: ${new Date().toLocaleDateString("bn-BD")}</strong></div>
             </div>
           </div>
 
           <table>
             <thead>
               <tr>
-                <th>TripNo</th>
-                <th>Date</th>
-                <th>Driver</th>
-                <th>Customer</th>
-                <th>Truck No</th>
-                <th>Load/Unload</th>
-                <th>Rent</th>
-                <th>Demurrage</th>
-                <th>Total</th>
+                <th>${t("TripNo")}</th>
+                <th>${t("Date")}</th>
+                <th>${t("Driver")}</th>
+                <th>${t("Customer")}</th>
+                <th>${t("Truck No")}</th>
+                <th>${t("Load")}/${t("Unload")}</th>
+                <th>${t("Rent")}</th>
+                <th>${t("Demurrage")}</th>
+                <th>${t("Total")}</th>
               </tr>
             </thead>
             <tbody>
@@ -386,7 +453,7 @@ const Bill = () => {
             </tbody>
             <tfoot>
               <tr>
-                <td colspan="6" class="text-right"><strong>Totals</strong></td>
+                <td colspan="6" class="text-right"><strong>${t("Total")}</strong></td>
                 <td class="text-right"><strong>${printTotalRent}</strong></td>
                 <td class="text-right"><strong>${printTotalDemurrage}</strong></td>
                 <td class="text-right"><strong>${printGrandTotal}</strong></td>

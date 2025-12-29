@@ -77,12 +77,13 @@ const Header = ({ setMobileSidebarOpen }) => {
             <FaMagnifyingGlass />
           </div>
         </div> */}
-        <div>
-          <LanguageSwitcher/>
-        </div>
+        
 
       {/* Admin Dropdown */}
       <div className="relative bg-white p-2 rounded-md flex gap-2 items-center" ref={dropdownRef}>
+        <div>
+          <LanguageSwitcher/>
+        </div>
         <div
           className="flex items-center gap-2 cursor-pointer"
           onClick={() => setIsAdminOpen(!isAdminOpen)}

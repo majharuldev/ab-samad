@@ -96,6 +96,7 @@ export default function AddTripForm() {
         value: c.customer_name,
         label: c.customer_name,
         mobile: c.mobile,
+        address: c.address,
         rate: c.rate,
       })),
     [customer],
@@ -111,6 +112,7 @@ export default function AddTripForm() {
     }
     if (customer) {
       setValue("customer_mobile", customer.mobile || "")
+      setValue("c_address", customer.address || "")
     }
   }, [selectedCustomer, customerOptions, setValue])
 
@@ -612,6 +614,9 @@ export default function AddTripForm() {
                     required={!id}
                     isCreatable={false}
                   />
+                  <div className="w-full hidden">
+                    <InputField name="c_address" label={t("Customer Address")} />
+                  </div>
                   <div className="w-full relative">
                     <SelectField
                       name="branch_name"
