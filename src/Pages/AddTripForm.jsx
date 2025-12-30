@@ -794,7 +794,7 @@ export default function AddTripForm() {
                       <InputField
                         name="helper_name"
                         label={`${t("Helper")} ${t("Name")}`}
-                        required={id ? false : true}
+                        required={ false }
                         // options={helperOptions}
                         control={control}
                       />
