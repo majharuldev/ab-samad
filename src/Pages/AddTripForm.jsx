@@ -203,86 +203,86 @@ export default function AddTripForm() {
     selectedTransport,
   ])
 
-//     useEffect(() => {
-//   const transport = selectedTransport;
+  //     useEffect(() => {
+  //   const transport = selectedTransport;
 
-//   if (transport === "own_transport") {
-//     // Own transport: total_exp already computed from expenses
-//     const rent = Number(watch("total_rent")) || 0;
-//     const dTotal = Number(watch("d_total")) || 0;
+  //   if (transport === "own_transport") {
+  //     // Own transport: total_exp already computed from expenses
+  //     const rent = Number(watch("total_rent")) || 0;
+  //     const dTotal = Number(watch("d_total")) || 0;
 
-//     setValue("trip_rent", rent + dTotal);
-//   }
+  //     setValue("trip_rent", rent + dTotal);
+  //   }
 
-//   if (transport === "vendor_transport") {
-//     // Vendor transport: vehicle_rent = total_exp (vendor rent) + v_d_total (vendor demurrage)
-//     const totalExp = Number(watch("total_exp")) || 0;
-//     const vDemurrage = Number(watch("v_d_total")) || 0;
+  //   if (transport === "vendor_transport") {
+  //     // Vendor transport: vehicle_rent = total_exp (vendor rent) + v_d_total (vendor demurrage)
+  //     const totalExp = Number(watch("total_exp")) || 0;
+  //     const vDemurrage = Number(watch("v_d_total")) || 0;
 
-//     setValue("vehicle_rent", totalExp + vDemurrage);
+  //     setValue("vehicle_rent", totalExp + vDemurrage);
 
-//     // If you also need trip_rent for customer
-//     const rent = Number(watch("total_rent")) || 0;  // customer rent
-//     const dTotal = Number(watch("d_total")) || 0;   // customer demurrage
-//     setValue("trip_rent", rent + dTotal);
-//   }
+  //     // If you also need trip_rent for customer
+  //     const rent = Number(watch("total_rent")) || 0;  // customer rent
+  //     const dTotal = Number(watch("d_total")) || 0;   // customer demurrage
+  //     setValue("trip_rent", rent + dTotal);
+  //   }
 
-//   // Vendor due amount
-//   const vendorRent = Number(watch("vehicle_rent")) || 0;
-//   const vendorAdvance = Number(watch("advance")) || 0;
-//   setValue("due_amount", vendorRent - vendorAdvance);
+  //   // Vendor due amount
+  //   const vendorRent = Number(watch("vehicle_rent")) || 0;
+  //   const vendorAdvance = Number(watch("advance")) || 0;
+  //   setValue("due_amount", vendorRent - vendorAdvance);
 
-// }, [
-//   selectedTransport,
-//   watch("total_exp"),
-//   watch("v_d_total"),
-//   watch("total_rent"),
-//   watch("d_total"),
-//   watch("advance"),
-//   setValue
-// ]);
+  // }, [
+  //   selectedTransport,
+  //   watch("total_exp"),
+  //   watch("v_d_total"),
+  //   watch("total_rent"),
+  //   watch("d_total"),
+  //   watch("advance"),
+  //   setValue
+  // ]);
 
 
   // Watch vendor transport fields
-  
-   useEffect(() => {
-  const transport = selectedTransport;
 
-  if (transport === "own_transport") {
-    // Own transport: total_exp already computed from expenses
-    const rent = Number(watch("total_rent")) || 0;
-    const dTotal = Number(watch("d_total")) || 0;
+  useEffect(() => {
+    const transport = selectedTransport;
 
-    setValue("trip_rent", rent + dTotal);
-  }
+    if (transport === "own_transport") {
+      // Own transport: total_exp already computed from expenses
+      const rent = Number(watch("total_rent")) || 0;
+      const dTotal = Number(watch("d_total")) || 0;
 
-  if (transport === "vendor_transport") {
-    // Vendor transport: vehicle_rent = total_exp (vendor rent) + v_d_total (vendor demurrage)
-    const totalExp = Number(watch("total_exp")) || 0;
-    const vDemurrage = Number(watch("v_d_total")) || 0;
+      setValue("trip_rent", rent + dTotal);
+    }
 
-    setValue("vehicle_rent", totalExp + vDemurrage);
+    if (transport === "vendor_transport") {
+      // Vendor transport: vehicle_rent = total_exp (vendor rent) + v_d_total (vendor demurrage)
+      const totalExp = Number(watch("total_exp")) || 0;
+      const vDemurrage = Number(watch("v_d_total")) || 0;
 
-    // If you also need trip_rent for customer
-    const rent = Number(watch("total_rent")) || 0;  // customer rent
-    const dTotal = Number(watch("d_total")) || 0;   // customer demurrage
-    setValue("trip_rent", rent + dTotal);
-  }
+      setValue("vehicle_rent", totalExp + vDemurrage);
 
-  // Vendor due amount
-  const vendorRent = Number(watch("vehicle_rent")) || 0;
-  const vendorAdvance = Number(watch("advance")) || 0;
-  setValue("due_amount", vendorRent - vendorAdvance);
+      // If you also need trip_rent for customer
+      const rent = Number(watch("total_rent")) || 0;  // customer rent
+      const dTotal = Number(watch("d_total")) || 0;   // customer demurrage
+      setValue("trip_rent", rent + dTotal);
+    }
 
-}, [
-  selectedTransport,
-  watch("total_exp"),
-  watch("v_d_total"),
-  watch("total_rent"),
-  watch("d_total"),
-  watch("advance"),
-  setValue
-]);
+    // Vendor due amount
+    const vendorRent = Number(watch("vehicle_rent")) || 0;
+    const vendorAdvance = Number(watch("advance")) || 0;
+    setValue("due_amount", vendorRent - vendorAdvance);
+
+  }, [
+    selectedTransport,
+    watch("total_exp"),
+    watch("v_d_total"),
+    watch("total_rent"),
+    watch("d_total"),
+    watch("advance"),
+    setValue
+  ]);
 
 
   const [vendorRent, vendorAdvance] = watch(["total_exp", "advance"])
@@ -723,7 +723,16 @@ export default function AddTripForm() {
                     control={control}
                     required={!id}
                   />
-
+                  {selectedTransport === "vendor_transport" && (
+                    <SelectField
+                      name="vendor_name"
+                      label={t("Vendor Name")}
+                      options={vendorOptions}
+                      control={control}
+                      isCreatable={false}
+                      required={!id}
+                    />
+                  )}
                   {selectedTransport === "own_transport" ? (
                     <SelectField
                       name="vehicle_no"
@@ -752,16 +761,6 @@ export default function AddTripForm() {
                         },
                       ]}
                       control={control}
-                    />
-                  )}
-
-                  {selectedTransport === "vendor_transport" && (
-                    <SelectField
-                      name="vendor_name"
-                      label={t("Vendor Name")}
-                      options={vendorOptions}
-                      control={control}
-                      required={!id}
                     />
                   )}
 
@@ -794,7 +793,7 @@ export default function AddTripForm() {
                       <InputField
                         name="helper_name"
                         label={`${t("Helper")} ${t("Name")}`}
-                        required={ false }
+                        required={false}
                         // options={helperOptions}
                         control={control}
                       />
@@ -817,6 +816,24 @@ export default function AddTripForm() {
                         options={vehicleSizeOptions}
                         control={control}
                         required={!id}
+                        isCreatable={!isFixedRateCustomer}
+                      />
+                    </>
+                  )}
+                   {(selectedTransport==="vendor_transport" || !isFixedRateCustomer) && (
+                    <>
+                      <InputField
+                        name="vehicle_category"
+                        label={t("Vehicle Category")}
+                        control={control}
+                        required={false}
+                      />
+
+                      <InputField
+                        name="vehicle_size"
+                        label={t("Vehicle Size")}
+                        control={control}
+                        required={false}
                         isCreatable={!isFixedRateCustomer}
                       />
                     </>
@@ -866,24 +883,24 @@ export default function AddTripForm() {
                   </div>
                 </div>
               )} */}
-               {/* Demurrage Section — Shared by both Own & Vendor Transport */}
-            {(selectedTransport === "own_transport" || selectedTransport === "vendor_transport") && (
-              <div className="border border-gray-300 p-5 rounded-md mt-5">
-                <h3 className="text-secondary font-medium text-center mb-6">
-                  {t("Customer")} {t("Demurrage")}
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <InputField
-                    name="d_day"
-                    label={t("Demurrage Days")}
-                    type="number"
-                    onChange={(e) => {
-                      const days = Number(e.target.value) || 0;
-                      setValue("d_day", days);
-                      setValue("d_total", days * (Number(d_amount) || 0));
-                    }}
-                  />
-                  {/* <InputField
+              {/* Demurrage Section — Shared by both Own & Vendor Transport */}
+              {(selectedTransport === "own_transport" || selectedTransport === "vendor_transport") && (
+                <div className="border border-gray-300 p-5 rounded-md mt-5">
+                  <h3 className="text-secondary font-medium text-center mb-6">
+                    {t("Customer")} {t("Demurrage")}
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <InputField
+                      name="d_day"
+                      label={t("Demurrage Days")}
+                      type="number"
+                      onChange={(e) => {
+                        const days = Number(e.target.value) || 0;
+                        setValue("d_day", days);
+                        setValue("d_total", days * (Number(d_amount) || 0));
+                      }}
+                    />
+                    {/* <InputField
                     name="d_amount"
                     label="Demurrage Rate/Day"
                     type="number"
@@ -893,40 +910,40 @@ export default function AddTripForm() {
                       setValue("d_total", (Number(d_day) || 0) * rate);
                     }}
                   /> */}
-                  <InputField
-                    name="d_total"
-                    label={t("Total Demurrage")}
-                    type="number"
-                  // readOnly
-                  />
-                  <InputField
-                    name="trip_rent"
-                    
-                    label={t("Demurrage + Total rent")}
-                    type="number"
-                    readOnly
-                  />
-                </div>
-              </div>
-            )}
+                    <InputField
+                      name="d_total"
+                      label={t("Total Demurrage")}
+                      type="number"
+                    // readOnly
+                    />
+                    <InputField
+                      name="trip_rent"
 
-            {(selectedTransport === "vendor_transport") && (
-              <div className="border border-gray-300 p-5 rounded-md mt-5">
-                <h3 className="text-orange-500 font-medium text-center mb-6">
-                  {t("Vendor")} {t("Demurrage")}
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <InputField
-                    name="v_d_day"
-                    label={t("Demurrage Days")}
-                    type="number"
-                    onChange={(e) => {
-                      const days = Number(e.target.value) || 0;
-                      setValue("v_d_day", days);
-                      setValue("v_d_total", days * (Number(d_amount) || 0));
-                    }}
-                  />
-                  {/* <InputField
+                      label={t("Demurrage + Total rent")}
+                      type="number"
+                      readOnly
+                    />
+                  </div>
+                </div>
+              )}
+
+              {(selectedTransport === "vendor_transport") && (
+                <div className="border border-gray-300 p-5 rounded-md mt-5">
+                  <h3 className="text-orange-500 font-medium text-center mb-6">
+                    {t("Vendor")} {t("Demurrage")}
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <InputField
+                      name="v_d_day"
+                      label={t("Demurrage Days")}
+                      type="number"
+                      onChange={(e) => {
+                        const days = Number(e.target.value) || 0;
+                        setValue("v_d_day", days);
+                        setValue("v_d_total", days * (Number(d_amount) || 0));
+                      }}
+                    />
+                    {/* <InputField
                     name="d_amount"
                     label="Demurrage Rate/Day"
                     type="number"
@@ -936,22 +953,22 @@ export default function AddTripForm() {
                       setValue("d_total", (Number(d_day) || 0) * rate);
                     }}
                   /> */}
-                  <InputField
-                    name="v_d_total"
-                    label={t("Total Demurrage")}
-                    type="number"
-                  // readOnly
-                  />
-                  <InputField
-                    name="total_exp"
-                    label={t("Vendor Rent")}
-                    type="number"
-                  // readOnly
-                  required={!id}
-                  />
+                    <InputField
+                      name="v_d_total"
+                      label={t("Total Demurrage")}
+                      type="number"
+                    // readOnly
+                    />
+                    <InputField
+                      name="total_exp"
+                      label={t("Vendor Rent")}
+                      type="number"
+                      // readOnly
+                      required={!id}
+                    />
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
               {/* Own Transport Expenses Section */}
               {selectedTransport === "own_transport" && (
@@ -994,7 +1011,7 @@ export default function AddTripForm() {
                 <div className="border border-gray-300 p-5 rounded-md mt-5">
                   <h3 className="text-secondary font-medium text-center mb-6">{t("Vendor Payment Details")}</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                     <InputField name="vehicle_rent"  label="Vendor Rent +Demurrage" type="number" required={!id} readOnly />
+                    <InputField name="vehicle_rent" label="Vendor Rent +Demurrage" type="number" required={!id} readOnly />
                     <InputField name="advance" label={t("Advance")} type="number" required={!id} />
                     <InputField name="due_amount" readOnly label={t("Due Amount")} type="number" required={!id} />
                   </div>

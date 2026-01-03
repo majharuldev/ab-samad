@@ -1,40 +1,42 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { FaTruck, FaPlus, FaFilter, FaPen, FaTrashAlt } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { FaEye, FaFilter, FaPen, FaTrashAlt } from "react-icons/fa";
+import { FaPlus, FaUserSecret } from "react-icons/fa6";
 import { Link } from "react-router-dom";
-// export
-import { CSVLink } from "react-csv";
 import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
-import jsPDF from "jspdf";
+import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
-//
-import toast, { Toaster } from "react-hot-toast";
+import DatePicker from "react-datepicker";
 import { IoMdClose } from "react-icons/io";
-import { GrFormNext, GrFormPrevious } from "react-icons/gr";
+import { useTranslation } from "react-i18next";
+import api from "../../utils/axiosConfig";
+import { tableFormatDate } from "../hooks/formatDate";
 
 const Fuel = () => {
-  const [fuel, setFuel] = useState([]);
-  const [showFilter, setShowFilter] = useState(false);
+  const { t } = useTranslation();
+  const [purchase, setPurchase] = useState([]);
   const [loading, setLoading] = useState(true);
   // Date filter state
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  // search
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showFilter, setShowFilter] = useState(false);
+  // get single car info by id
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [selectedPurchase, setselectedPurchase] = useState(null);
   // delete modal
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedFuelId, setselectedFuelId] = useState(null);
+  const [selectedOfficialProductId, setSelectedOfficialProductId] = useState(null);
   const toggleModal = () => setIsOpen(!isOpen);
   // pagination
   const [currentPage, setCurrentPage] = useState(1);
-  // search
-  const [searchTerm, setSearchTerm] = useState("");
-  // Fetch fuel data
   useEffect(() => {
-    axios
-      .get("https://api.tramessy.com/api/fuel")
+    api
+      .get(`/purchase`)
       .then((response) => {
-        if (response.data.status === "success") {
-          setFuel(response.data.data);
+        if (response.data.status === "Success") {
+          setPurchase(response.data.data);
         }
         setLoading(false);
       })
@@ -44,221 +46,337 @@ const Fuel = () => {
       });
   }, []);
 
-  if (loading) return <p className="text-center mt-16">Loading fuel...</p>;
+  // state
+  const [vehicleFilter, setVehicleFilter] = useState("");
 
-  console.log("fuel", fuel);
-  // export functionality
-  const headers = [
-    { label: "#", key: "index" },
-    { label: "ড্রাইভারের নাম", key: "driver_name" },
-    { label: "গাড়ির নাম", key: "vehicle_name" },
-    { label: "ফুয়েলের ধরন", key: "type" },
-    { label: "ফুয়েলিং তারিখ", key: "date_time" },
-    { label: "গ্যালন/লিটার", key: "quantity" },
-    { label: "লিটার প্রতি খরচ", key: "price" },
-    { label: "সকল খরচ", key: "total" },
-  ];
-  const csvData = fuel.map((dt, index) => ({
-    index: index + 1,
-    driver_name: dt.driver_name,
-    vehicle_name: dt.vehicle_number,
-    type: dt.type,
-    date_time: dt.date_time,
-    quantity: dt.quantity,
-    price: dt.price,
-    total: dt.quantity * dt.price,
-  }));
-  // export
-  const exportExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(csvData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Fuel Data");
-    const excelBuffer = XLSX.write(workbook, {
-      bookType: "xlsx",
-      type: "array",
-    });
-    const data = new Blob([excelBuffer], { type: "application/octet-stream" });
-    saveAs(data, "fuel_data.xlsx");
+  // Filter by date
+  const filtered = purchase.filter((dt) => {
+    const dtDate = new Date(dt.date);
+    const start = startDate ? new Date(startDate) : null;
+    const end = endDate ? new Date(endDate) : null;
+
+    if (start && end) {
+      return dtDate >= start && dtDate <= end;
+    } else if (start) {
+      return dtDate.toDateString() === start.toDateString();
+    } else {
+      return true; // no filter applied
+    }
+  });
+
+  // Vehicle filter apply
+  const vehicleFiltered = filtered.filter((dt) => {
+    if (vehicleFilter) {
+      return dt.vehicle_no === vehicleFilter;
+    }
+    return true;
+  });
+
+  // Search (Product ID, Supplier, Vehicle, Driver)
+  const filteredPurchase = vehicleFiltered.filter((dt) => {
+    const category = dt.category?.toLowerCase()
+    if (!(category === "engine_oil" || category === "parts" || category === "documents")) {
+      return false
+    }
+
+    const term = searchTerm.toLowerCase()
+    if (!term) {
+      return true
+    }
+
+    const isNumeric = !isNaN(term) && term !== ""
+
+    if (isNumeric) {
+      return dt.id === Number(term)
+    }
+    return (
+      // dt.id?.toString().toLowerCase().includes(term) ||
+      dt.supplier_name?.toLowerCase().includes(term) ||
+      dt.vehicle_no?.toLowerCase().includes(term) ||
+      dt.driver_name?.toLowerCase().includes(term)
+    );
+  });
+
+  // Vehicle No dropdown unique values
+  const uniqueVehicles = [...new Set(purchase.map((p) => p.vehicle_no))];
+  // view car by id
+  const handleViewCar = async (id) => {
+    try {
+      const response = await api.get(
+        `/purchase/${id}`
+      );
+      if (response.data.status === "Success") {
+        setselectedPurchase(response.data.data);
+        setViewModalOpen(true);
+      } else {
+        toast.error(t("Purchase Information could not be loaded."));
+      }
+    } catch (error) {
+      console.error("View error:", error);
+      toast.error(t("Purchase Information could not be loaded."));
+    }
   };
-  const exportPDF = () => {
-    const doc = new jsPDF();
 
-    const tableColumn = [
-      "#",
-      "ড্রাইভারের নাম",
-      "গাড়ির নাম",
-      "ফুয়েলের ধরন",
-      "ফুয়েলিং তারিখ",
-      "গ্যালন/লিটার",
-      "লিটার প্রতি খরচ",
-      "সকল খরচ",
-    ];
-
-    const tableRows = fuel.map((dt, index) => [
-      index + 1,
-      dt.driver_name,
-      dt.driver_name,
-      dt.type,
-      dt.date_time,
-      dt.quantity,
-      dt.price,
-      dt.quantity * dt.price,
-    ]);
-
-    autoTable(doc, {
-      head: [tableColumn],
-      body: tableRows,
-    });
-
-    doc.save("fuel_data.pdf");
-  };
-  const printTable = () => {
-    // hide specific column
-    const actionColumns = document.querySelectorAll(".action_column");
-    actionColumns.forEach((col) => {
-      col.style.display = "none";
-    });
-    const printContent = document.querySelector("table").outerHTML;
-    const WinPrint = window.open("", "", "width=900,height=650");
-    WinPrint.document.write(`
-    <html>
-        <head>
-          <title>Print</title>
-          <style>
-            table { width: 100%; border-collapse: collapse; }
-            th, td { border: 1px solid #000; padding: 8px; text-align: left; }
-          </style>
-        </head>
-        <body>${printContent}</body>
-      </html>
-  `);
-    WinPrint.document.close();
-    WinPrint.focus();
-    WinPrint.print();
-    WinPrint.close();
-  };
   // delete by id
   const handleDelete = async (id) => {
     try {
-      const response = await fetch(`https://api.tramessy.com/api/fuel/${id}`, {
-        method: "DELETE",
-      });
+      const response = await api.delete(`/purchase/${id}`);
 
-      if (!response.ok) {
-        throw new Error("Failed to delete trip");
-      }
-      // Remove fuel from local list
-      setFuel((prev) => prev.filter((driver) => driver.id !== id));
-      toast.success("ট্রিপ সফলভাবে ডিলিট হয়েছে", {
+      // Remove driver from local list
+      setPurchase((prev) => prev.filter((account) => account.id !== id));
+      toast.success(t("Maintenance deleted successfully"), {
         position: "top-right",
         autoClose: 3000,
       });
 
       setIsOpen(false);
-      setselectedFuelId(null);
+      setSelectedOfficialProductId(null);
     } catch (error) {
-      console.error("Delete error:", error);
-      toast.error("ডিলিট করতে সমস্যা হয়েছে!", {
+      console.error(t("Delete error:"), error.response || error);
+      toast.error(t("There was a problem deleting!"), {
         position: "top-right",
         autoClose: 3000,
       });
     }
   };
-  // search
-  const filteredFuel = fuel.filter((dt) => {
-    const term = searchTerm.toLowerCase();
-    const fuelDate = dt.date_time;
-    const matchesSearch =
-      dt.date_time?.toLowerCase().includes(term) ||
-      dt.vehicle_number?.toLowerCase().includes(term) ||
-      dt.driver_name?.toLowerCase().includes(term) ||
-      dt.trip_id_invoice_no?.toLowerCase().includes(term) ||
-      dt.pump_name_address?.toLowerCase().includes(term) ||
-      String(dt.capacity).includes(term) ||
-      dt.type?.toLowerCase().includes(term) ||
-      String(dt.quantity).includes(term) ||
-      dt.price?.toLowerCase().includes(term) ||
-      dt.total_price?.toLowerCase().includes(term);
-    const matchesDateRange =
-      (!startDate || new Date(fuelDate) >= new Date(startDate)) &&
-      (!endDate || new Date(fuelDate) <= new Date(endDate));
 
-    return matchesSearch && matchesDateRange;
-  });
+  if (loading) return <p className="text-center mt-16">{t("Loading")}...</p>;
   // pagination
   const itemsPerPage = 10;
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentFuel = filteredFuel.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(fuel.length / itemsPerPage);
-  const handlePrevPage = () => {
-    if (currentPage > 1) setCurrentPage((currentPage) => currentPage - 1);
-  };
-  const handleNextPage = () => {
-    if (currentPage < totalPages)
-      setCurrentPage((currentPage) => currentPage + 1);
-  };
+  const currentPurchase = filteredPurchase.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
+  const totalPages = Math.ceil(filteredPurchase.length / itemsPerPage);
 
-  const handlePageClick = (number) => {
-    setCurrentPage(number);
-  };
+  // excel export function
+   const exportExcel = () => {
+    const dataToExport = []
+
+    filteredPurchase.forEach((purchase, purchaseIndex) => {
+      if (purchase.items && purchase.items.length > 0) {
+        purchase.items.forEach((item, itemIndex) => {
+          dataToExport.push({
+            "SL No": dataToExport.length + 1,
+            Date: tableFormatDate(purchase.date),
+            "Product ID": purchase.id,
+            "Supplier Name": purchase.supplier_name,
+            "Branch Name": purchase.branch_name,
+            "Driver Name": purchase.driver_name !== "null" ? purchase.driver_name : "N/A",
+            "Vehicle No": purchase.vehicle_no !== "null" ? purchase.vehicle_no : "N/A",
+            "Vehicle Category": purchase.vehicle_category !== "null" ? purchase.vehicle_category : "N/A",
+            Category: purchase.category,
+            "Item Name": item.item_name,
+            Quantity: toNumber(item.quantity),
+            "Unit Price": toNumber(item.unit_price),
+            Total: toNumber(purchase.total),
+          "Service Charge": toNumber(purchase.service_charge),
+          "Purcahse Amount": toNumber(purchase.purchase_amount),
+            "Service Date": tableFormatDate(purchase.service_date || "N/A"),
+            "Next Service Date": tableFormatDate(purchase.next_service_date || "N/A"),
+            "Last KM": purchase.last_km || "N/A",
+            "Next KM": purchase.next_km || "N/A",
+            Remarks: purchase.remarks || "N/A",
+          })
+        })
+      } else {
+        // If no items, still add the purchase record
+        dataToExport.push({
+          "SL No": dataToExport.length + 1,
+          Date: tableFormatDate(purchase.date),
+          "Product ID": purchase.id,
+          "Supplier Name": purchase.supplier_name,
+          "Driver Name": purchase.driver_name !== "null" ? purchase.driver_name : "N/A",
+          "Vehicle No": purchase.vehicle_no !== "null" ? purchase.vehicle_no : "N/A",
+          "Vehicle Category": purchase.vehicle_category !== "null" ? purchase.vehicle_category : "N/A",
+          Category: purchase.category,
+          "Item Name": "N/A",
+          Quantity: 0,
+          "Unit Price": 0,
+          Total: toNumber(purchase.total),
+          "Service Charge": purchase.service_charge,
+          "Purcahse Amount": toNumber(purchase.purchase_amount),
+          "Last KM": purchase.last_km || "N/A",
+            "Next KM": purchase.next_km || "N/A",
+          Remarks: purchase.remarks || "N/A",
+        })
+      }
+    })
+
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport)
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Purchase List")
+
+    XLSX.writeFile(workbook, "Purchase_List.xlsx")
+    toast.success("Excel file downloaded successfully!")
+  }
+
+  // Print Function
+  const printTable = () => {
+    // শুধু filtered data ব্যবহার
+    const tableHeader = `
+    <thead>
+      <tr>
+        <th>${t("SL.")}</th>
+        <th>${t("Date")}</th>
+        <th>${t("Product ID")}</th>
+        <th>${t("Supplier")}</th>
+        <th>${t("Driver")}</th>
+        <th>${t("Vehicle No")}</th>
+        <th>${t("Vehicle")} ${t("Category")}</th>
+        <th>${t("Category")}</th>
+        <th>${t("Item")}</th>
+        <th>${t("Quantity")}</th>
+        <th>${t("Unit Price")}</th>
+        <th>${t("Total")}</th>
+        <th>${t("Service Charge")}</th>
+        <th>${t("Purchase Amount")}</th>
+      </tr>
+    </thead>
+  `
+
+    let rowIndex = 1
+    const tableRows = filteredPurchase
+      .map((item) => {
+        // If purchase has items, create a row for each item
+        if (item.items && item.items.length > 0) {
+          return item.items
+            .map(
+              (subItem, i) => `
+            <tr>
+              <td>${rowIndex++}</td>
+              <td>${tableFormatDate(item.date)}</td>
+              <td>${item.id}</td>
+              <td>${item.supplier_name}</td>
+              <td>${item.driver_name !== "null" ? item.driver_name : "N/A"}</td>
+              <td>${item.vehicle_no !== "null" ? item.vehicle_no : "N/A"}</td>
+              <td>${item.vehicle_category !== "null" ? item.vehicle_category : "N/A"}</td>
+              <td>${item.category}</td>
+              <td>${subItem.item_name}</td>
+              <td>${toNumber(subItem.quantity)}</td>
+              <td>${toNumber(subItem.unit_price)}</td>
+              <td>${toNumber(subItem.total)}</td>
+              <td>${item.service_charge}</td>
+              <td>${toNumber(item.purchase_amount)}</td>
+            </tr>
+          `,
+            )
+            .join("")
+        } else {
+          // If no items, still show the purchase
+          return `
+            <tr>
+              <td>${rowIndex++}</td>
+              <td>${tableFormatDate(item.date)}</td>
+              <td>${item.id}</td>
+              <td>${item.supplier_name}</td>
+              <td>${item.driver_name !== "null" ? item.driver_name : "N/A"}</td>
+              <td>${item.vehicle_no !== "null" ? item.vehicle_no : "N/A"}</td>
+              <td>${item.vehicle_category !== "null" ? item.vehicle_category : "N/A"}</td>
+              <td>${item.category}</td>
+              <td>N/A</td>
+              <td>0</td>
+              <td>0</td>
+              <td>${toNumber(item.service_charge)}</td>
+              <td>${toNumber(item.purchase_amount)}</td>
+            </tr>
+          `
+        }
+      })
+      .join("")
+
+    const printContent = `<table>${tableHeader}<tbody>${tableRows}</tbody></table>`
+
+    const printWindow = window.open("", "", "width=1200,height=700")
+    printWindow.document.write(`
+    <html>
+      <head>
+        <title>-</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 20px; }
+          h2 { color: #11375B; text-align: center; font-size: 22px; margin-bottom: 10px; }
+          table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 11px; }
+          thead tr {
+            background: linear-gradient(to right, #11375B, #1e4a7c);
+            color: white;
+          }
+          th, td { padding: 8px; border: 1px solid #ddd; text-align: center; }
+          td { color: #11375B; }
+          tr:nth-child(even) { background-color: #f9f9f9; }
+          tr:hover { background-color: #f1f5f9; }
+          .footer { margin-top: 20px; text-align: right; font-size: 12px; color: #555; }
+          @media print { body { margin: 0; } }
+          thead th {
+            color: #000000 !important;
+            background-color: #ffffff !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+        </style>
+      </head>
+      <body>
+        <h2>${t("Purchase")} ${t("list")}</h2>
+        ${printContent}
+        <div class="footer">
+          Printed on: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}
+        </div>
+      </body>
+    </html>
+  `)
+    printWindow.document.close()
+    printWindow.focus()
+    printWindow.print()
+    printWindow.close()
+  }
   return (
-    <main className="bg-gradient-to-br from-gray-100 to-white md:p-6">
-      <Toaster />
-      <div className="w-xs md:w-full overflow-hidden overflow-x-auto max-w-7xl mx-auto bg-white/80 backdrop-blur-md shadow-xl rounded-xl p-2 py-10 md:p-8 border border-gray-200">
-        {/* Header */}
+    <div className=" p-2">
+      <div className="w-[22rem] md:w-full overflow-hidden overflow-x-auto max-w-7xl mx-auto bg-white/80 backdrop-blur-md shadow-xl rounded-md p-2 py-10 md:p-4 border border-gray-200">
         <div className="md:flex items-center justify-between mb-6">
-          <h1 className="text-xl font-extrabold text-[#11375B] flex items-center gap-3">
-            <FaTruck className="text-[#11375B] text-2xl" />
-            Fuel Account
+          <h1 className="text-xl font-bold text-gray-800 flex items-center gap-3">
+            <FaUserSecret className="text-gray-800 text-2xl" />
+            {t("Tanki Load Fuel Information")}
           </h1>
           <div className="mt-3 md:mt-0 flex gap-2">
-            <Link to="/tramessy/FuelForm">
-              <button className="bg-gradient-to-r from-[#11375B] to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white px-4 py-1 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer">
-                <FaPlus /> Add Fuel
+            <button
+              onClick={() => setShowFilter((prev) => !prev)}
+              className="border border-primary text-primary px-4 py-1 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer"
+            >
+              <FaFilter /> {t("Filter")}
+            </button>
+            <Link to="/tramessy/add-fuel">
+              <button className="bg-gradient-to-r from-primary to-[#115e15]  text-white px-4 py-1 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer">
+                <FaPlus />{t("Fuel")}
               </button>
             </Link>
-            <button
-              onClick={() => setShowFilter((prev) => !prev)} // Toggle filter
-              className="bg-gradient-to-r from-[#11375B] to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white px-4 py-1 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer"
-            >
-              <FaFilter /> Filter
-            </button>
           </div>
         </div>
         {/* export */}
         <div className="md:flex justify-between items-center">
-          <div className="flex gap-1 md:gap-3 text-primary font-semibold rounded-md">
-            <CSVLink
-              data={csvData}
-              headers={headers}
-              filename={"fuel_data.csv"}
-              className="py-2 px-5 hover:bg-primary bg-gray-200 hover:text-white rounded-md transition-all duration-300 cursor-pointer"
-            >
-              CSV
-            </CSVLink>
+          <div className="flex gap-1 md:gap-3 text-gray-700 font-medium rounded-md">
             <button
               onClick={exportExcel}
-              className="py-2 px-5 hover:bg-primary bg-gray-200 hover:text-white rounded-md transition-all duration-300 cursor-pointer"
+              className="py-1 px-5 hover:bg-primary bg-white hover:text-white rounded shadow transition-all duration-300 cursor-pointer"
             >
-              Excel
+              {t("Excel")}
             </button>
-            <button
+            {/* <button
               onClick={exportPDF}
-              className="py-2 px-5 hover:bg-primary bg-gray-200 hover:text-white rounded-md transition-all duration-300 cursor-pointer"
+              className="py-1 px-5 hover:bg-primary bg-white hover:text-white rounded shadow transition-all duration-300 cursor-pointer"
             >
               PDF
-            </button>
+            </button> */}
             <button
               onClick={printTable}
-              className="py-2 px-5 hover:bg-primary bg-gray-200 hover:text-white rounded-md transition-all duration-300 cursor-pointer"
+              className="py-1 px-5 hover:bg-primary bg-white hover:text-white rounded shadow transition-all duration-300 cursor-pointer"
             >
-              Print
+              {t("Print")}
             </button>
           </div>
-          {/*  */}
+          {/* search */}
           <div className="mt-3 md:mt-0">
-            <span className="text-primary font-semibold pr-3">Search: </span>
+            {/* <span className="text-primary font-semibold pr-3">Search: </span> */}
             <input
               type="text"
               value={searchTerm}
@@ -266,136 +384,399 @@ const Fuel = () => {
                 setSearchTerm(e.target.value);
                 setCurrentPage(1);
               }}
-              placeholder="Search..."
-              className="border border-gray-300 rounded-md outline-none text-xs py-2 ps-2 pr-5"
+              placeholder={`${t("search")}...`}
+              className="lg:w-60 border border-gray-300 rounded-md outline-none text-xs py-2 ps-2 pr-5"
             />
+            {/*  Clear button */}
+            {searchTerm && (
+              <button
+                onClick={() => {
+                  setSearchTerm("");
+                  setCurrentPage(1);
+                }}
+                className="absolute right-5 top-[5.5rem] -translate-y-1/2 text-gray-400 hover:text-red-500 text-sm"
+              >
+                ✕
+              </button>
+            )}
           </div>
         </div>
         {/* Conditional Filter Section */}
         {showFilter && (
-          <div className="md:flex gap-5 border border-gray-300 rounded-md p-5 my-5 transition-all duration-300 pb-5">
-            <div className="relative w-64">
-              <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                placeholder="Start date"
-                className="mt-1 w-full text-sm border border-gray-300 px-3 py-2 rounded bg-white outline-none"
-              />
-            </div>
-
-            <div className="relative w-64">
-              <input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                placeholder="End date"
-                className="mt-1 w-full text-sm border border-gray-300 px-3 py-2 rounded bg-white outline-none"
-              />
-            </div>
-
-            <div className="mt-3 md:mt-0 flex gap-2">
+          <div className="md:flex items-center gap-5 border border-gray-300 rounded-md p-5 my-5 transition-all duration-300 pb-5">
+            <DatePicker
+              selected={startDate}
+              onChange={(date) => setStartDate(date)}
+              selectsStart
+              startDate={startDate}
+              endDate={endDate}
+              dateFormat="dd/MM/yyyy"
+              placeholderText="DD/MM/YYYY"
+              locale="en-GB"
+              className="!w-full p-2 border border-gray-300 rounded text-sm appearance-none outline-none"
+              isClearable
+            />
+            <DatePicker
+              selected={endDate}
+              onChange={(date) => setEndDate(date)}
+              selectsEnd
+              startDate={startDate}
+              endDate={endDate}
+              minDate={startDate}
+              dateFormat="dd/MM/yyyy"
+              placeholderText="DD/MM/YYYY"
+              locale="en-GB"
+              className="!w-full p-2 border border-gray-300 rounded text-sm appearance-none outline-none"
+              isClearable
+            />
+            <select
+              value={vehicleFilter}
+              onChange={(e) => {
+                setVehicleFilter(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="mt-1 w-full text-gray-500 text-sm border border-gray-300 bg-white p-2 rounded appearance-none outline-none"
+            >
+              <option value="">{t("Vehicle No")}</option>
+              {uniqueVehicles.map((v, index) => (
+                <option key={index} value={v}>
+                  {v}
+                </option>
+              ))}
+            </select>
+            <div className="w-md">
               <button
-                onClick={() => setCurrentPage(1)}
-                className="bg-gradient-to-r from-[#11375B] to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white px-4 py-1 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer"
+                onClick={() => {
+                  setStartDate("");
+                  setEndDate("");
+                  setVehicleFilter("");
+                  setShowFilter(false);
+                }}
+                className="bg-primary text-white px-2 py-1.5 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer"
               >
-                <FaFilter /> Filter
+                <FaFilter /> {t("Clear")}
               </button>
             </div>
           </div>
         )}
-        {/* Table */}
-        <div className="mt-5 overflow-x-auto rounded-xl border border-gray-200">
+        <div id="purchaseTable" className="mt-5 overflow-x-auto rounded-md">
           <table className="min-w-full text-sm text-left">
-            <thead className="bg-[#11375B] text-white uppercase text-sm">
+            <thead className="bg-gray-200 text-primary capitalize text-xs ">
               <tr>
-                <th className="px-2 py-3">#</th>
-                <th className="px-2 py-3">Driver's Name</th>
-                <th className="px-2 py-3">Vehicle No.</th>
-                <th className="px-2 py-3">Fuel Type</th>
-                <th className="px-2 py-3">Fueling Date</th>
-                <th className="px-2 py-3">Gallon/Liter</th>
-                <th className="px-2 py-3">Cost per Liter</th>
-                <th className="px-2 py-3">Total Cost</th>
-                <th className="px-2 py-3 action_column">Action</th>
+                <th className="px-2 py-4">"{t("SL.")}"</th>
+                <th className="px-2 py-4">{t("Date")}</th>
+                <th className="px-2 py-4">{t("Challan No")}</th>
+                <th className="px-2 py-4">{t("Supplier")}</th>
+                <th className="px-2 py-2">{t("Driver")}</th>
+                {/* <th className="px-2 py-2">{t("Vehicle")} {t("Category")}</th> */}
+                <th className="px-2 py-2">{t("Vehicle No")}</th>
+                {/* <th className="px-2 py-4">{t("Category")}</th> */}
+                {/* <th className="px-2 py-4">{t("Item Name")}</th> */}
+                <th className="px-2 py-4">{t("Quantity")}</th>
+                <th className="px-2 py-4">{t("Unit Price")}</th>
+                <th className="px-2 py-4">{t("Service Charge")}</th>
+                <th className="px-2 py-4">{t("Total")}</th>
+                {/* <th className="px-2 py-4">Bill Image</th> */}
+                <th className="px-2 py-4">{t("Action")}</th>
               </tr>
             </thead>
-            <tbody className="text-[#11375B] font-semibold bg-gray-100">
-              {currentFuel?.map((dt, index) => (
-                <tr key={index} className="hover:bg-gray-50 transition-all">
-                  <td className="px-4 py-4 font-bold">
-                    {indexOfFirstItem + index + 1}
+            <tbody className="text-gray-700">
+              {currentPurchase.length === 0 ? (
+                <tr>
+                  <td colSpan="10" className="text-center p-4 text-gray-500">
+                    {t("No purchase data found")}
                   </td>
-                  <td className="px-2 py-4">{dt.driver_name}</td>
-                  <td className="px-2 py-4">{dt.vehicle_number}</td>
-                  <td className="px-2 py-4">{dt.type}</td>
-                  <td className="px-2 py-4">{dt.date_time}</td>
-                  <td className="px-2 py-4">{dt.quantity}</td>
-                  <td className="px-2 py-4">{dt.price}</td>
-                  <td className="px-2 py-4">{dt.quantity * dt.price}.00</td>
-                  <td className="px-2 py-4 action_column">
-                    <div className="flex gap-2">
-                      <Link to={`/UpdateFuelForm/${dt.id}`}>
-                        <button className="text-primary hover:bg-primary hover:text-white px-2 py-1 rounded shadow-md transition-all cursor-pointer">
-                          <FaPen className="text-[12px]" />
+                </tr>)
+                : (currentPurchase?.map((dt, index) => (
+                  <tr
+                    key={index}
+                    className="hover:bg-gray-50 transition-all border border-gray-200"
+                  >
+                    <td className="p-2 font-bold">
+                      {indexOfFirstItem + index + 1}.
+                    </td>
+                    <td className="p-2">{tableFormatDate(dt.date)}</td>
+                    <td className="p-2">{dt.id}</td>
+                    <td className="p-2">{dt.supplier_name}</td>
+                    <td className="px-2 py-2">{dt.driver_name !== "null" ? dt.driver_name : "N/A"}</td>
+                    <td className="px-2 py-2">{dt.vehicle_no !== "null" ? dt.vehicle_no : "N/A"}</td>
+                    <td className="p-2">{dt.items.map((item, i) => (
+                      <div key={i}>{item.quantity}</div>
+                    ))}</td>
+                    <td className="p-2">{dt.items.map((item, i) => (
+                      <div key={i}>{item.unit_price}</div>
+                    ))}</td>
+                    <td className="p-2">{dt.service_charge}</td>
+                    <td className="p-2">{dt.purchase_amount}</td>
+                    {/* <td className="p-2">
+                    <img
+                      src={`${import.meta.env.VITE_BASE_URL}/public/uploads/purchase/${dt.bill_image}`}
+                      alt=""
+                      className="w-20 h-20 rounded-xl"
+                    />
+                  </td> */}
+                    <td className="px-2 action_column">
+                      <div className="flex gap-1">
+                        <Link
+                          to={`/tramessy/Purchase/update-maintenance/${dt.id}`}
+                        >
+                          <button className="text-primary hover:bg-primary hover:text-white px-2 py-1 rounded shadow-md transition-all cursor-pointer">
+                            <FaPen className="text-[12px]" />
+                          </button>
+                        </Link>
+                        <button
+                          onClick={() => handleViewCar(dt.id)}
+                          className="text-primary hover:bg-primary hover:text-white px-2 py-1 rounded shadow-md transition-all cursor-pointer"
+                        >
+                          <FaEye className="text-[12px]" />
                         </button>
-                      </Link>
-                      <button
-                        onClick={() => {
-                          setselectedFuelId(dt.id);
-                          setIsOpen(true);
-                        }}
-                        className="text-red-900 hover:text-white hover:bg-red-900 px-2 py-1 rounded shadow-md transition-all cursor-pointer"
-                      >
-                        <FaTrashAlt className="text-[12px]" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                        <button
+                          onClick={() => {
+                            setSelectedOfficialProductId(dt.id);
+                            setIsOpen(true);
+                          }}
+                          className="text-red-500 hover:text-white hover:bg-red-600 px-2 py-1 rounded shadow-md transition-all cursor-pointer"
+                        >
+                          <FaTrashAlt className="text-[12px]" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                )))
+              }
             </tbody>
           </table>
         </div>
         {/* pagination */}
-        <div className="mt-10 flex justify-center">
-          <div className="space-x-2 flex items-center">
-            <button
-              onClick={handlePrevPage}
-              className={`p-2 ${
-                currentPage === 1 ? "bg-gray-300" : "bg-primary text-white"
-              } rounded-sm`}
-              disabled={currentPage === 1}
-            >
-              <GrFormPrevious />
-            </button>
-            {[...Array(totalPages).keys()].map((number) => (
+
+        {currentPurchase.length > 0 && totalPages >= 1 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={(page) => setCurrentPage(page)}
+            maxVisible={8}
+          />
+        )}
+      </div>
+      {/* view modal */}
+      {viewModalOpen && selectedPurchase && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-white rounded-2xl shadow-2xl">
+
+            {/* Header */}
+            <div className="sticky top-0 bg-white z-10 flex justify-between items-center p-5">
+              <h2 className="text-2xl font-semibold text-gray-800">
+                {t("Maintenance Details")}
+              </h2>
               <button
-                key={number + 1}
-                onClick={() => handlePageClick(number + 1)}
-                className={`px-3 py-1 rounded-sm ${
-                  currentPage === number + 1
-                    ? "bg-primary text-white hover:bg-gray-200 hover:text-primary transition-all duration-300 cursor-pointer"
-                    : "bg-gray-200 hover:bg-primary hover:text-white transition-all cursor-pointer"
-                }`}
+                onClick={() => setViewModalOpen(false)}
+                className="text-gray-500 hover:text-red-500 transition-colors text-xl font-bold"
               >
-                {number + 1}
+                ✕
               </button>
-            ))}
-            <button
-              onClick={handleNextPage}
-              className={`p-2 ${
-                currentPage === totalPages
-                  ? "bg-gray-300"
-                  : "bg-primary text-white"
-              } rounded-sm`}
-              disabled={currentPage === totalPages}
-            >
-              <GrFormNext />
-            </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 space-y-10">
+
+              {/* Image Preview */}
+              {/* {selectedPurchase.image && (
+                <div className="flex justify-center">
+                  <img
+                    src={selectedPurchase.image}
+                    alt="Purchase"
+                    className="w-60 h-60 object-cover rounded-xl border shadow-md"
+                  />
+                </div>
+              )} */}
+
+              {/* Basic Information */}
+              <section>
+                <h3 className="text-lg font-semibold text-primary border-b pb-2 mb-4">
+                  {t("Basic")} {t("Information")}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm md:text-base">
+                  <p><span className="font-medium text-gray-600">{t("Date")}:</span> {tableFormatDate(selectedPurchase.date)}</p>
+                  <p><span className="font-medium text-gray-600">{t("Supplier")} {("Name")}:</span> {selectedPurchase.supplier_name}</p>
+                  <p><span className="font-medium text-gray-600">{t("Category")}:</span> {selectedPurchase.category}</p>
+                  <p><span className="font-medium text-gray-600">{t("Purchase Amount")}:</span> {selectedPurchase.purchase_amount}</p>
+                  <p><span className="font-medium text-gray-600">{t("Service Charge")}:</span> {selectedPurchase.service_charge || "N/A"}</p>
+                  <p><span className="font-medium text-gray-600">{t("Remarks")}:</span> {selectedPurchase.remarks}</p>
+                  <p><span className="font-medium text-gray-600">{t("Status")}:</span>
+                    <span className={`ml-2 px-3 py-1 rounded-full text-sm font-medium ${selectedPurchase.status === "pending"
+                        ? "bg-yellow-100 text-yellow-700"
+                        : selectedPurchase.status === "completed"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-gray-100 text-gray-600"
+                      }`}>
+                      {selectedPurchase.status}
+                    </span>
+                  </p>
+                </div>
+              </section>
+
+              {/* Vehicle Information */}
+              <section>
+                <h3 className="text-lg font-semibold text-primary border-b pb-2 mb-4">
+                  {t("Vehicle")} {t("Information")}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm md:text-base">
+                  <p><span className="font-medium text-gray-600">{t("Driver")} {t("Name")}:</span> {selectedPurchase.driver_name}</p>
+                  <p><span className="font-medium text-gray-600">{t("Branch")} {t("Name")}:</span> {selectedPurchase.branch_name}</p>
+                  <p><span className="font-medium text-gray-600">{t("Vehicle No")}:</span> {selectedPurchase.vehicle_no}</p>
+                  <p><span className="font-medium text-gray-600">{t("Vehicle")} {t("Category")}:</span> {selectedPurchase.vehicle_category}</p>
+                </div>
+              </section>
+
+              {/* Service Information */}
+              <section>
+                <h3 className="text-lg font-semibold text-primary border-b pb-2 mb-4">
+                  {t("Service")} {t("Information")}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm md:text-base">
+                  <p><span className="font-medium text-gray-600">{t("Service Date")}:</span> {selectedPurchase.service_date || "N/A"}</p>
+                  <p><span className="font-medium text-gray-600">{t("Next")} {t("Service Date")}:</span> {selectedPurchase.next_service_date || "N/A"}</p>
+                  <p><span className="font-medium text-gray-600">{t("Last KM")}:</span> {selectedPurchase.last_km || "N/A"}</p>
+                  <p><span className="font-medium text-gray-600">{t("Next KM")}:</span> {selectedPurchase.next_km || "N/A"}</p>
+                  <p><span className="font-medium text-gray-600">{t("Priority")}:</span> {selectedPurchase.priority}</p>
+                  <p><span className="font-medium text-gray-600">{t("Validity")}:</span> {selectedPurchase.validity || "N/A"}</p>
+                </div>
+              </section>
+
+              {/* Creator Info */}
+              {/* <section>
+                <h3 className="text-lg font-semibold text-primary border-b pb-2 mb-4">
+                  System Info
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm md:text-base">
+                  <p><span className="font-medium text-gray-600">Created By:</span> {selectedPurchase.created_by}</p>
+                  <div className="flex flex-col items-start ">
+                    <span className="font-medium mb-2">Bill Image:</span>
+                    <img
+                      src={`https://ajenterprise.tramessy.com/backend/uploads/purchase/${selectedPurchase.image}`}
+                      alt="Bill"
+                      className="w-32 h-32 object-cover rounded-lg border"
+                    />
+                  </div>
+                </div>
+              </section> */}
+
+              <section>
+  <h3 className="text-lg font-semibold text-primary border-b pb-2 mb-4">
+    {t("System")} {t("info")}
+  </h3>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm md:text-base">
+    <p>
+      <span className="font-medium text-gray-600">{t("Created By")}:</span>{" "}
+      {selectedPurchase.created_by}
+    </p>
+    <div className="flex flex-col items-start">
+      <span className="font-medium mb-2">{t("Bill Documents")}:</span>
+      {selectedPurchase.image ? (
+        <div>
+          {/* Check if file is PDF or Image */}
+          {selectedPurchase.image.toLowerCase().endsWith(".pdf") ||
+          selectedPurchase.image.includes("pdf") ? (
+            // PDF Preview
+            <div className="border rounded-lg p-2 bg-gray-50">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-red-600 font-bold">{t("PDF")}</span>
+                <span className="text-sm text-gray-600">
+                  {selectedPurchase.image}
+                </span>
+              </div>
+              <a
+                href={`https://ajenterprise.tramessy.com/backend/uploads/purchase/${selectedPurchase.image}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-800 text-sm underline"
+              >
+                {t("View")} {t("PDF")}
+              </a>
+              {/* Optional: Embed PDF preview */}
+              {/* <iframe
+                src={`https://ajenterprise.tramessy.com/backend/uploads/purchase/${selectedPurchase.image}`}
+                className="w-full h-48 mt-2 border rounded"
+                title="PDF Preview"
+              /> */}
+            </div>
+          ) : (
+            // Image Preview
+            <img
+              src={`https://ajenterprise.tramessy.com/backend/uploads/purchase/${selectedPurchase.image}`}
+              alt="Bill"
+              className="w-32 h-32 object-cover rounded-lg border"
+              onError={(e) => {
+                // If image fails to load, show placeholder
+                e.target.onerror = null;
+                e.target.src = "/placeholder-image.png";
+                e.target.className = "w-32 h-32 object-contain rounded-lg border p-2";
+              }}
+            />
+          )}
+          {/* Download link for both */}
+          <a
+            href={`https://ajenterprise.tramessy.com/backend/uploads/purchase/${selectedPurchase.image}`}
+            download
+            className="block mt-2 text-blue-600 hover:text-blue-800 text-sm"
+          >
+            {t("Download")} {t("File")}
+          </a>
+        </div>
+      ) : (
+        <span className="text-gray-500 italic">{t("No bill image uploaded")}</span>
+      )}
+    </div>
+  </div>
+</section>
+
+              {/* Purchase Items */}
+              {(
+                <section>
+                  <h3 className="text-lg font-semibold text-primary border-b pb-2 mb-4">
+                    {t("Purchased Items")}
+                  </h3>
+                  <div className="overflow-x-auto">
+                    <table className="w-full border border-gray-200 rounded-lg overflow-hidden text-sm md:text-base">
+                      <thead className="bg-gray-100 text-gray-700">
+                        <tr>
+                          <th className="p-3 text-left">{t("Item Name")}</th>
+                          <th className="p-3 text-center">{t("Quantity")}</th>
+                          <th className="p-3 text-center">{t("Unit Price")}</th>
+                          <th className="p-3 text-center">{t("Total")}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {selectedPurchase?.items?.map((item, index) => (
+                          <tr key={item.id} className=" hover:bg-gray-50">
+                            <td className="p-3">{item.item_name}</td>
+                            <td className="p-3 text-center">{item.quantity}</td>
+                            <td className="p-3 text-center">{item.unit_price}</td>
+                            <td className="p-3 text-center font-medium text-gray-800">{item.total}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+              )}
+
+            </div>
+
+            {/* Footer */}
+            <div className="sticky bottom-0 bg-white flex justify-end p-2">
+              <button
+                onClick={() => setViewModalOpen(false)}
+                className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary/90 transition-all font-medium"
+              >
+                {t("Close")}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-      {/* Delete modal */}
+      )}
+
+      {/* Delete Modal */}
       <div className="flex justify-center items-center">
         {isOpen && (
           <div className="fixed inset-0 flex items-center justify-center bg-[#000000ad] z-50">
@@ -406,32 +787,31 @@ const Fuel = () => {
               >
                 <IoMdClose />
               </button>
-
               <div className="flex justify-center mb-4 text-red-500 text-4xl">
                 <FaTrashAlt />
               </div>
               <p className="text-center text-gray-700 font-medium mb-6">
-                Are you sure you want to delete this fuel entry?
+                {t("Are you sure you want to delete?")}
               </p>
               <div className="flex justify-center space-x-4">
                 <button
                   onClick={toggleModal}
                   className="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-primary hover:text-white cursor-pointer"
                 >
-                  No
+                  {t("No")}
                 </button>
                 <button
-                  onClick={() => handleDelete(selectedFuelId)}
+                  onClick={() => handleDelete(selectedOfficialProductId)}
                   className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 cursor-pointer"
                 >
-                  Yes
+                  {t("Yes")}
                 </button>
               </div>
             </div>
           </div>
         )}
       </div>
-    </main>
+    </div>
   );
 };
 

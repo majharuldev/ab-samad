@@ -82,6 +82,7 @@ import Loan from "../Pages/HR/Payroll/Loan";
 import Bonus from "../Pages/HR/Payroll/Bonus";
 import Requisition from "../Pages/HR/HRM/Requsition";
 import RequisitionForm from "../Pages/HR/HRM/RequisitionForm";
+import FuelOdit from "../Pages/FuelOdit";
 export const router = createBrowserRouter([
   {
     path: "/tramessy",
@@ -200,7 +201,23 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "/tramessy/FuelForm",
+        path: "/tramessy/add-fuel",
+        element: (
+          <PrivateRoute>
+            <FuelForm />
+          </PrivateRoute>
+        ),
+      },
+        {
+        path: "/tramessy/fuel-odit",
+        element: (
+          <PrivateRoute>
+            <FuelOdit />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/tramessy/fuel-odit-form",
         element: (
           <PrivateRoute>
             <FuelForm />

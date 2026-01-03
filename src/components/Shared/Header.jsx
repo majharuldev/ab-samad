@@ -45,7 +45,7 @@ const Header = ({ setMobileSidebarOpen }) => {
     // Header
     <div className="fixed top-0  w-full md:w-[calc(100%-16rem)] flex justify-between items-center px-5 py-2 border-b border-gray-300  z-40 bg-white">
       {/* Title */}
-      <div className="flex items-center gap-3 cursor-pointer">
+      <div className="flex items-center md:gap-3 cursor-pointer">
         {/* Toggle sidebar on mobile */}
         <h3
           className="text-primary md:hidden"
@@ -54,7 +54,7 @@ const Header = ({ setMobileSidebarOpen }) => {
           <FaBars />
         </h3>
         <div>
-          <h1 className="text-xl font-bold text-primary">
+          <h1 className="text-md md:text-xl font-bold text-primary">
             {t("headerTitle")}
           </h1>
           <p className="text-xs text-gray-600">

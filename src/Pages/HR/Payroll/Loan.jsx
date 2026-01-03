@@ -361,7 +361,7 @@ const onSubmit = async (data) => {
               <tr>
                 <th className="p-2">{t("SL.")}</th>
                 <th className="p-2">{t("Date")}</th>
-                <th className="p-2">{t("Employee Name")}</th>
+                <th className="p-2">{t("Employee")} {t("Name")}</th>
                 <th className="p-2">{t("Amount")}</th>
                 <th className="p-2">{t("Monthly Deduction")}</th>
                 <th className="p-2">{t("After Adjustment")}</th>

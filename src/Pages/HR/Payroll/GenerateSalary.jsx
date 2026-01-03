@@ -152,6 +152,14 @@ const [selectedSheet, setSelectedSheet] = useState(null);
   setIsDeleteModalOpen(true);
 };
 
+ // Check if salary already generated for the month
+  const isSalaryAlreadyGenerated = (month) => {
+  return salarySheetApiData.some(
+    (sheet) => sheet.generate_month === month
+  );
+}; 
+
+// confim delete
 const handleConfirmDelete = async () => {
   try {
     await api.delete(`/salarySheet/${deleteId}`);
@@ -333,7 +341,11 @@ const handleUpdateGenerateSalary = async () => {
       toast.error(t("Please select a month"));
       return;
     }
-
+ //  already generated check
+  if (isSalaryAlreadyGenerated(generateSalaryMonth)) {
+    toast.error(t("Already salary generate this Month"));
+    return;
+  }
     const dataToSend = generateSalaryForMonth(generateSalaryMonth);
       const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
 

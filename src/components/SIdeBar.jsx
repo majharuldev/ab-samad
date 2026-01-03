@@ -11,7 +11,7 @@ import {
 } from "react-icons/fa6";
 import { FaTruckPickup, FaUsersCog } from "react-icons/fa";
 import { MdShop } from "react-icons/md";
-import logo from "../assets/AJ_Logo.png";
+import logo from "../assets/tramessy.png";
 // import avatar from "../assets/ms.png";
 import { Link, useLocation } from "react-router-dom";
 import useAdmin from "../hooks/useAdmin";
@@ -45,11 +45,11 @@ const Sidebar = () => {
     <div className="overflow-y-scroll hide-scrollbar">
       <main>
         {/* Logo */}
-        <div className="py-[9px] flex justify-center border-b border-gray-300">
+        <div className="py-[12px] flex justify-center border-b border-gray-300">
           <Link to="/tramessy">
-            {/* <img src={logo} alt="Logo" className="w-10" /> */}
+            <img src={logo} alt="Logo" className="w-28" />
             <div className="text-xs text-primary">
-              <div className="font-semibold text-lg py-2">সৈনিক ট্রান্সপোর্ট এজেন্সি</div>
+              {/* <div className="font-semibold text-lg py-2">সৈনিক ট্রান্সপোর্ট এজেন্সি</div> */}
             </div>
           </Link>
         </div>
@@ -665,6 +665,63 @@ const Sidebar = () => {
                     </ul>
                   </div>
                 </li> */}
+                {/* Fuel */}
+              <li className="text-gray-700 font-medium rounded-sm">
+                <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => toggleMenu("fuel")}
+                  onKeyDown={(e) =>
+                    (e.key === "Enter" || e.key === " ") &&
+                    toggleMenu("fuel")
+                  }
+                  className="flex justify-between items-center py-3 px-2 cursor-pointer hover:bg-primary hover:text-white hover:rounded-sm duration-300 outline-none"
+                >
+                  <span className="flex items-center gap-2">
+                    <PiUsersFour />
+                    <span>{t("Fuel")} {t("Management")}</span>
+                  </span>
+                  <span
+                    className={`transform transition-transform duration-500 ${openMenu.fuel ? "rotate-180" : ""
+                      }`}
+                  >
+                    <FaChevronDown />
+                  </span>
+                </div>
+
+                {/* Dropdown container with smooth expand/collapse */}
+                <div
+                  className={`transition-all duration-700 ease-in-out overflow-hidden ${openMenu.fuel ? "max-h-[500px]" : "max-h-0"
+                    }`}
+                >
+                  <ul className="space-y-3 px-2 text-sm mt-2">
+                    <li>
+                      <Link
+                        to="/tramessy/fuel"
+                        className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/fuel")
+                            ? "text-gray-700 bg-gray-200"
+                            : "text-gray-500 hover:text-primary"
+                          }`}
+                      >
+
+                        <span>{t("Tanki Load")}</span>
+                      </Link>
+                    </li>
+                    {isAdmin && <li>
+                      <Link
+                        to="/tramessy/fuel-odit"
+                        className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/route-pricing")
+                            ? "text-gray-700 bg-gray-200"
+                            : "text-gray-500 hover:text-primary"
+                          }`}
+                      >
+
+                        <span>{t("Excess Oil Mileage")}</span>
+                      </Link>
+                    </li>}
+                  </ul>
+                </div>
+              </li>
               {/* Purchase */}
               <li className="text-gray-700 font-medium rounded-sm">
                 <div
@@ -728,7 +785,7 @@ const Sidebar = () => {
                   </ul>
                 </div>
               </li>
-              {/* Customer */}
+              {/* customer */}
               <li className="text-gray-700 font-medium rounded-sm">
                 <div
                   role="button"

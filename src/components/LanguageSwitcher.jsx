@@ -57,11 +57,11 @@ export default function LanguageSwitcher() {
   return (
     <button
       onClick={toggleLanguage}
-      className="px-3 py-1 border rounded-md text-sm font-medium hover:bg-primary hover:text-white transition flex gap-2 items-center"
+      className="px-2 md:px-3 py-1 border rounded-md text-sm font-medium hover:bg-primary hover:text-white transition flex gap-2 items-center"
     >
      {/* Flag Icon */}
       
-        {lang === "bn" ? <img width={20} src="https://i.ibb.co.com/8gt0hPd9/united-states.png" alt="GB"/> : <img width={20} src="https://i.ibb.co.com/WNBt536S/bangladesh.png" alt="bd"/>}
+        {lang === "bn" ? <img width={18} src="https://i.ibb.co.com/8gt0hPd9/united-states.png" alt="GB"/> : <img width={18} src="https://i.ibb.co.com/WNBt536S/bangladesh.png" alt="bd"/>}
     
       {lang === "bn" ? "EN" : "বাংলা"}
     </button>
