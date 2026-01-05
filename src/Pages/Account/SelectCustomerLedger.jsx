@@ -49,8 +49,8 @@ const SelectCustomerLadger = ({ customer, selectedCustomerName }) => {
   const selectedCustomer = customerList.find(
     cust => cust.customer_name === selectedCustomerName
   );
-  const dueAmount = selectedCustomer && selectedCustomer.due
-    ? toNumber(selectedCustomer.due) || 0
+  const dueAmount = selectedCustomer && selectedCustomer.opening_balance
+    ? toNumber(selectedCustomer.opening_balance) || 0
     : 0;
 
   // filter date 
@@ -147,107 +147,6 @@ const exportToExcel = () => {
   XLSX.utils.book_append_sheet(workbook, worksheet, "Customer Ledger");
   XLSX.writeFile(workbook, `${customerName}-Ledger.xlsx`);
 };
-
-
-
-  //  PDF Export (Filtered Data
-  // const exportToPDF = () => {
-  //   const doc = new jsPDF("p", "pt", "a4");
-
-  //   // Prepare table rows
-  //   let cumulativeDue = dueAmount;
-  //   const rows = filteredLedger.map((dt, index) => {
-  //     const tripRent = toNumber(dt.bill_amount);
-  //     const receivedAmount = toNumber(dt.rec_amount);
-  //     const demurageTotal = toNumber(dt.d_total);
-  //     const billAmount = tripRent + demurageTotal;
-  //     cumulativeDue += billAmount - receivedAmount;
-
-  //     return [
-  //       index + 1,
-  //       tableFormatDate(dt.working_date),
-  //       dt.customer_name,
-  //       dt.load_point || "--",
-  //       dt.unload_point || "--",
-  //       dt.vehicle_no || "--",
-  //       dt.driver_name || "--",
-  //       tripRent.toFixed(2),
-  //       demurageTotal.toFixed(2),
-  //       billAmount.toFixed(2),
-  //       receivedAmount.toFixed(2),
-  //       cumulativeDue.toFixed(2),
-  //     ];
-  //   });
-
-  //   // Add totals row (first 7 columns empty for alignment)
-  //   rows.push([
-  //     "Total",
-  //     "", "", "", "", "", "",
-  //     totals.rent.toFixed(2),
-  //     "", "",
-  //     totals.rec_amount.toFixed(2),
-  //     totals.due.toFixed(2),
-  //   ]);
-
-  //   // Table headers
-  //   const headers = [
-  //     "SL.",
-  //     "Date",
-  //     "Customer",
-  //     "Load",
-  //     "Unload",
-  //     "Vehicle",
-  //     "Driver",
-  //     "Trip Rent",
-  //     "Demurage",
-  //     "Bill Amount",
-  //     "Received Amount",
-  //     "Due",
-  //   ];
-
-  //   // Add table
-  //   doc.autoTable({
-  //     head: [headers],
-  //     body: rows,
-  //     startY: 70,
-  //     styles: { fontSize: 8, cellPadding: 3 },
-  //     headStyles: { fillColor: [22, 160, 133], textColor: 255, halign: "center" },
-  //     columnStyles: {
-  //       0: { halign: "center" }, // SL
-  //       1: { halign: "center" }, // Date
-  //       2: { halign: "left" },   // Customer
-  //       3: { halign: "left" },
-  //       4: { halign: "left" },
-  //       5: { halign: "left" },
-  //       6: { halign: "left" },
-  //       7: { halign: "right" },  // Trip Rent
-  //       8: { halign: "right" },  // Demurage
-  //       9: { halign: "right" },  // Bill Amount
-  //       10: { halign: "right" }, // Received Amount
-  //       11: { halign: "right" }, // Due
-  //     },
-  //     didParseCell: (data) => {
-  //       // Make totals row bold
-  //       if (data.row.index === rows.length - 1) {
-  //         data.cell.styles.fontStyle = "bold";
-  //       }
-  //     },
-  //   });
-
-  //   // Add title
-  //   doc.setFontSize(14);
-  //   doc.text(`${customerName} - Customer Ledger`, doc.internal.pageSize.getWidth() / 2, 30, { align: "center" });
-  //   doc.setFontSize(10);
-  //   doc.text(
-  //     `Date Range: ${startDate ? tableFormatDate(startDate) : "All"} - ${endDate ? tableFormatDate(endDate) : "All"}`,
-  //     doc.internal.pageSize.getWidth() / 2,
-  //     45,
-  //     { align: "center" }
-  //   );
-
-  //   doc.save(`${customerName}-Ledger.pdf`);
-  // };
-
   
   
   
@@ -368,7 +267,7 @@ const exportToExcel = () => {
             <table className="min-w-full text-sm text-left text-gray-900">
               <thead className="bg-gray-100 text-gray-800 font-bold">
                 <tr className="font-bold bg-gray-50">
-                  <td colSpan={6} className="border px-2 py-1 text-right">
+                  <td colSpan={7} className="border px-2 py-1 text-right">
                     {t("Total")}
                   </td>
 
@@ -394,7 +293,8 @@ const exportToExcel = () => {
                 </tr>
                 <tr>
                   <th className="border px-2 py-1">{t("SL.")}</th>
-                  <th className="border px-2 py-1">{t("Date")}</th>
+                  <th className="border px-2 py-1">{t("Working Date")}</th>
+                  <th className="border px-2 py-1">{t("Bill Date")}</th>
                   <th className="border px-2 py-1">{t("Customer")}</th>
                   <th className="border px-2 py-1">{t("Load")}</th>
                   <th className="border px-2 py-1">{t("Unload")}</th>
@@ -430,6 +330,7 @@ const exportToExcel = () => {
                       <tr key={idx}>
                         <td className="border px-2 py-1">{idx + 1}</td>
                         <td className="border px-2 py-1">{tableFormatDate(item.working_date)}</td>
+                        <td className="border px-2 py-1">{tableFormatDate(item.bill_date)}</td>
                         <td className="border px-2 py-1">{item.customer_name}</td>
                         <td className="border px-2 py-1">
                           {item.load_point || <span className="flex justify-center items-center">--</span>}

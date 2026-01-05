@@ -12,9 +12,10 @@ import DatePicker from "react-datepicker";
 import { FaFilter } from "react-icons/fa6";
 import toNumber from "../../hooks/toNumber";
 import { useTranslation } from "react-i18next";
+import { Spin } from "antd";
 
 const SupplierLedger = () => {
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const [supplies, setSupplies] = useState([]); // Supplier dropdown options
   const [supplierLedger, setSupplierLedger] = useState([]); // Ledger data for table
   const [loading, setLoading] = useState(true); // Loading state
@@ -101,40 +102,40 @@ const SupplierLedger = () => {
 
   //  filter ledger data based on selected supplier and date range
   useEffect(() => {
-  const filtered = supplierLedger.filter((item) => {
-    const supplierMatch = selectedSupplier
-      ? item.supplier_name === selectedSupplier
-      : true;
+    const filtered = supplierLedger.filter((item) => {
+      const supplierMatch = selectedSupplier
+        ? item.supplier_name === selectedSupplier
+        : true;
 
-    const itemDate = new Date(item.date);
-    itemDate.setHours(0, 0, 0, 0);
+      const itemDate = new Date(item.date);
+      itemDate.setHours(0, 0, 0, 0);
 
-    // No date filter
-    if (!startDate && !endDate) return supplierMatch;
+      // No date filter
+      if (!startDate && !endDate) return supplierMatch;
 
-    // Only start date
-    if (startDate && !endDate) {
-      const start = new Date(startDate);
-      start.setHours(0, 0, 0, 0);
-      return supplierMatch && itemDate.getTime() === start.getTime();
-    }
+      // Only start date
+      if (startDate && !endDate) {
+        const start = new Date(startDate);
+        start.setHours(0, 0, 0, 0);
+        return supplierMatch && itemDate.getTime() === start.getTime();
+      }
 
-    // Range filter
-    if (startDate && endDate) {
-      const start = new Date(startDate);
-      start.setHours(0, 0, 0, 0);
+      // Range filter
+      if (startDate && endDate) {
+        const start = new Date(startDate);
+        start.setHours(0, 0, 0, 0);
 
-      const end = new Date(endDate);
-      end.setHours(23, 59, 59, 999);
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
 
-      return supplierMatch && itemDate >= start && itemDate <= end;
-    }
+        return supplierMatch && itemDate >= start && itemDate <= end;
+      }
 
-    return supplierMatch;
-  });
+      return supplierMatch;
+    });
 
-  setFilteredLedger(filtered);
-}, [supplierLedger, selectedSupplier, startDate, endDate]);
+    setFilteredLedger(filtered);
+  }, [supplierLedger, selectedSupplier, startDate, endDate]);
 
 
   //  Excel Export
@@ -273,7 +274,7 @@ const SupplierLedger = () => {
       ? ledgerWithBalance[ledgerWithBalance.length - 1].runningBalance
       : openingBalance;
 
-  if (loading) return <p className="text-center mt-16">Loading data...</p>;
+  // if (loading) return <p className="text-center mt-16">Loading...</p>;
 
   return (
     <main className="p-2 ">
@@ -356,16 +357,16 @@ const SupplierLedger = () => {
             </div>
             <div className="w-lg">
               <button
-              onClick={() => {
-                setStartDate("");
-                setEndDate("");
-                setSelectedSupplier("");
-                setShowFilter(false);
-              }}
-              className="bg-primary text-white px-2 py-1.5 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer"
-            >
-              <FaFilter /> {t("Clear")}
-            </button>
+                onClick={() => {
+                  setStartDate("");
+                  setEndDate("");
+                  setSelectedSupplier("");
+                  setShowFilter(false);
+                }}
+                className="bg-primary text-white px-2 py-1.5 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer"
+              >
+                <FaFilter /> {t("Clear")}
+              </button>
             </div>
           </div>
 
@@ -376,7 +377,7 @@ const SupplierLedger = () => {
           <table className="w-full text-sm text-left">
             <thead className="text-black capitalize font-bold">
               <tr>
-                <td colSpan="6" className="text-right border border-gray-700 px-2 py-2">
+                <td colSpan="7" className="text-right border border-gray-700 px-2 py-2">
                   {t("Closing")} {t("Balance")}:
                 </td>
                 <td className="border border-gray-700 px-2 py-2">
@@ -386,6 +387,7 @@ const SupplierLedger = () => {
               <tr>
                 <th className="border border-gray-700 px-2 py-1">{t("SL.")}</th>
                 <th className="border border-gray-700 px-2 py-1">{t("Date")}</th>
+                <th className="border border-gray-700 px-2 py-1">{t("Supplier")} {t("Name")}</th>
                 <th className="border border-gray-700 px-2 py-1">
                   {t("Particulars")}
                 </th>
@@ -405,33 +407,42 @@ const SupplierLedger = () => {
               </tr>
             </thead>
             <tbody className="text-black font-semibold">
-              {ledgerWithBalance.map((dt, index) => (
-                <tr key={index} className="hover:bg-gray-50 transition-all">
-                  <td className="border border-gray-700 px-2 py-1 font-bold">
-                    {index + 1}.
-                  </td>
-                  <td className="border border-gray-700 px-2 py-1">
-                    {tableFormatDate(dt.date)}
-                  </td>
-                  <td className="border border-gray-700 px-2 py-1">
-                    {dt.remarks}
-                  </td>
-                  <td className="border border-gray-700 px-2 py-1">
-                    {dt.mode}
-                  </td>
-                  <td className="border border-gray-700 px-2 py-1">
-                    {dt.purchase_amount}
-                  </td>
-                  <td className="border border-gray-700 px-2 py-1">
-                    {dt.pay_amount}
-                  </td>
-                  <td className="border border-gray-700 px-2 py-1">
-                    {dt.runningBalance < 0
-                      ? `(${Math.abs(dt.runningBalance)})`
-                      : dt.runningBalance}
-                  </td>
-                </tr>
-              ))}
+              {
+                loading ? (
+                  <tr>
+                    <td colSpan={12} className="text-center py-20"><Spin /></td>
+                  </tr>
+                )
+                  : ledgerWithBalance.map((dt, index) => (
+                    <tr key={index} className="hover:bg-gray-50 transition-all">
+                      <td className="border border-gray-700 px-2 py-1 font-bold">
+                        {index + 1}.
+                      </td>
+                      <td className="border border-gray-700 px-2 py-1">
+                        {tableFormatDate(dt.date)}
+                      </td>
+                      <td className="border border-gray-700 px-2 py-1">
+                        {dt.supplier_name}
+                      </td>
+                      <td className="border border-gray-700 px-2 py-1">
+                        {dt.remarks}
+                      </td>
+                      <td className="border border-gray-700 px-2 py-1">
+                        {dt.mode}
+                      </td>
+                      <td className="border border-gray-700 px-2 py-1">
+                        {dt.purchase_amount}
+                      </td>
+                      <td className="border border-gray-700 px-2 py-1">
+                        {dt.pay_amount}
+                      </td>
+                      <td className="border border-gray-700 px-2 py-1">
+                        {dt.runningBalance < 0
+                          ? `(${Math.abs(dt.runningBalance)})`
+                          : dt.runningBalance}
+                      </td>
+                    </tr>
+                  ))}
             </tbody>
           </table>
         </div>

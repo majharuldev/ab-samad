@@ -53,7 +53,7 @@ export default function AddTripForm() {
       fuel_cost: "",
       toll_cost: "",
       police_cost: "",
-      // driver_commission: "",
+      driver_commission: "",
       labor: "",
       others_cost: "",
       d_day: "",
@@ -146,7 +146,7 @@ export default function AddTripForm() {
     "fuel_cost",
     "toll_cost",
     "police_cost",
-    // "driver_commission",
+    "driver_commission",
     "labor",
     "others_cost",
     "parking_cost",
@@ -202,49 +202,7 @@ export default function AddTripForm() {
     setValue,
     selectedTransport,
   ])
-
-  //     useEffect(() => {
-  //   const transport = selectedTransport;
-
-  //   if (transport === "own_transport") {
-  //     // Own transport: total_exp already computed from expenses
-  //     const rent = Number(watch("total_rent")) || 0;
-  //     const dTotal = Number(watch("d_total")) || 0;
-
-  //     setValue("trip_rent", rent + dTotal);
-  //   }
-
-  //   if (transport === "vendor_transport") {
-  //     // Vendor transport: vehicle_rent = total_exp (vendor rent) + v_d_total (vendor demurrage)
-  //     const totalExp = Number(watch("total_exp")) || 0;
-  //     const vDemurrage = Number(watch("v_d_total")) || 0;
-
-  //     setValue("vehicle_rent", totalExp + vDemurrage);
-
-  //     // If you also need trip_rent for customer
-  //     const rent = Number(watch("total_rent")) || 0;  // customer rent
-  //     const dTotal = Number(watch("d_total")) || 0;   // customer demurrage
-  //     setValue("trip_rent", rent + dTotal);
-  //   }
-
-  //   // Vendor due amount
-  //   const vendorRent = Number(watch("vehicle_rent")) || 0;
-  //   const vendorAdvance = Number(watch("advance")) || 0;
-  //   setValue("due_amount", vendorRent - vendorAdvance);
-
-  // }, [
-  //   selectedTransport,
-  //   watch("total_exp"),
-  //   watch("v_d_total"),
-  //   watch("total_rent"),
-  //   watch("d_total"),
-  //   watch("advance"),
-  //   setValue
-  // ]);
-
-
-  // Watch vendor transport fields
-
+// demurrage + rent  total
   useEffect(() => {
     const transport = selectedTransport;
 
@@ -285,7 +243,7 @@ export default function AddTripForm() {
   ]);
 
 
-  const [vendorRent, vendorAdvance] = watch(["total_exp", "advance"])
+  const [vendorRent, vendorAdvance] = watch(["vehicle_rent", "advance"])
 
   useEffect(() => {
     const due = (Number(vendorRent) || 0) - (Number(vendorAdvance) || 0)
@@ -356,7 +314,7 @@ export default function AddTripForm() {
               fuel_cost: Number(tripData.fuel_cost) || 0,
               toll_cost: Number(tripData.toll_cost) || 0,
               police_cost: Number(tripData.police_cost) || 0,
-              // driver_commission: Number(tripData.driver_commission) || 0,
+              driver_commission: Number(tripData.driver_commission) || 0,
               labor: Number(tripData.labor) || 0,
               others_cost: Number(tripData.others_cost) || 0,
               parking_cost: Number(tripData.parking_cost) || 0,
@@ -412,6 +370,8 @@ export default function AddTripForm() {
     // 👉 Add these:
     driver: v.driver_name,
     mobile: v.driver_mobile,
+    vehicle_category: v.vehicle_category,
+    vehicle_size: v.vehicle_size,
     helper: v.helper_name,
   }))
 
@@ -481,7 +441,11 @@ export default function AddTripForm() {
       setValue("driver_name", vData.driver || "");
       setValue("driver_mobile", vData.mobile || "");
       setValue("helper_name", vData.helper || "");
+      //  Vehicle Category & Size auto fill
+    setValue("vehicle_category", vData.vehicle_category || "")
+    setValue("vehicle_size", vData.vehicle_size || "")
     }
+     
   }, [selectedVehicle, selectedTransport]);
 
   // Fixed rate calculation based on load point, unload point, vehicle category and size
@@ -755,7 +719,7 @@ export default function AddTripForm() {
                       label={t("Vehicle No")}
                       options={[
                         {
-                          label: `${t("Select")} ${t("Transport")} ${t("Type")} ${t("First")}`,
+                          label: `${t("Select")} ${t("Transport")} ${t("Type")}`,
                           value: "",
                           disabled: true,
                         },
@@ -800,7 +764,7 @@ export default function AddTripForm() {
                     ) : ""
                   }
 
-                  {isFixedRateCustomer && (
+                  {(selectedTransport === "own_transport") && (
                     <>
                       <SelectField
                         name="vehicle_category"
@@ -820,7 +784,7 @@ export default function AddTripForm() {
                       />
                     </>
                   )}
-                   {(selectedTransport==="vendor_transport" || !isFixedRateCustomer) && (
+                   {(selectedTransport==="vendor_transport") && (
                     <>
                       <InputField
                         name="vehicle_category"
@@ -977,7 +941,7 @@ export default function AddTripForm() {
 
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <InputField name="driver_adv" label={`${t("Driver")} ${t("Advance")}`} type="number" />
-                    {/* <InputField name="driver_commission" label="Driver Commission" type="number" /> */}
+                    <InputField name="driver_commission" label="Driver Commission" type="number" />
                     <InputField name="labor" label={t("Labour Cost")} type="number" />
                     <InputField name="fuel_cost" label={t("Fuel Cost")} type="number" />
                     <InputField name="night_guard" label={t("Night Guard")} type="number" />

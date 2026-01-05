@@ -144,7 +144,7 @@ const AddVendorForm = () => {
                   { value: "open_truck", label: t("Open Truck") },
                   { value: "trailer", label: t("Trailer") },
                   { value: "freezer_van", label: t("Freezer Van") },
-                  { value: "Oil Tanker", label: t("Oil Tranker") },
+                  { value: "Oil Tanker", label: t("Oil Tanker") },
                 ]}
                 />
               </div>
@@ -169,9 +169,9 @@ const AddVendorForm = () => {
                   label={t("Status")}
                   required={!isUpdateMode}
                   options={[
-                    { value: "", label: "Select status..." },
-                    { value: "Active", label: "Active" },
-                    { value: "Inactive", label: "Inactive" },
+                    { value: "", label: `${t("Status")} ${t("Select")}...` },
+                    { value: "Active", label: t("Active") },
+                    { value: "Inactive", label: t("Inactive") },
                   ]}
                 />
               </div>

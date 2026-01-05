@@ -108,21 +108,17 @@ const {t} = useTranslation()
 };
 
 // // input
-import { parse } from "date-fns";
+import { useTranslation } from "react-i18next";
 import "react-datepicker/dist/react-datepicker.css";
 import { FiCalendar } from "react-icons/fi";
-import { useTranslation } from "react-i18next";
 
 export const InputField = ({
   name,
   label,
-  type,
-  value,
+  type = "text",
   placeholder = "",
-  defaultValue,
+  defaultValue = null,
   required = false,
-  inputRef,
-  icon,
   readOnly = false,
 }) => {
   const {
@@ -133,15 +129,12 @@ export const InputField = ({
 
   const error = errors[name]?.message;
 const {t} = useTranslation()
-  //  If type="date" → Use react-datepicker
+  //  DATE PICKER ONLY
   if (type === "date") {
     return (
-      <div className="mb-4 ">
+      <div className="mb-4">
         {label && (
-          <label
-            htmlFor={name}
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label className="block text-sm font-medium text-gray-700">
             {label} {required && <span className="text-red-500">*</span>}
           </label>
         )}
@@ -150,33 +143,27 @@ const {t} = useTranslation()
           <Controller
             name={name}
             control={control}
-            defaultValue={defaultValue || null}
+            defaultValue={defaultValue}
             rules={{
-              required: required ? `${label || name} ${t("is required")}` : false,
+              required: required ? `${label} ${t("is required")}` : false,
             }}
             render={({ field }) => (
               <DatePicker
-                id={name}
                 selected={field.value ? new Date(field.value) : null}
                 onChange={(date) => field.onChange(date)}
                 dateFormat="dd-MM-yyyy"
-                placeholderText={placeholder || `${label || name}`}
-                className={`mt-1 text-sm border border-gray-300 px-3 py-2 rounded outline-none ${icon ? "pr-12" : ""
-                  } ${readOnly ? "bg-gray-200" : "bg-white"} w-full`}
+                placeholderText={placeholder || `${t("Select")} ${label}`}
+                className="mt-1 w-full text-sm border border-gray-300 px-3 py-2 rounded outline-none pr-10"
                 readOnly={readOnly}
-                ref={(el) => {
-                  if (inputRef) inputRef(el);
-                }}
-                wrapperClassName="w-full" //  important for full width
+                showPopperArrow={false}
+                autoComplete="off"
               />
             )}
           />
 
-          {/* {icon && ( */}
-          <span className="absolute inset-y-0 right-0 flex items-center justify-center  px-3 rounded-r cursor-pointer">
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
             <FiCalendar />
           </span>
-          {/* )} */}
         </div>
 
         {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
@@ -184,39 +171,27 @@ const {t} = useTranslation()
     );
   }
 
-  // If not date → Default Input Logic
+  //  NORMAL INPUT
   const { ref, ...rest } = register(name, {
-    required: required ? `${label || name} ${t("is required")}` : false,
+    required: required ? `${label} ${t("is required")}` : false,
   });
+
   return (
     <div className="mb-4">
       {label && (
-        <label
-          htmlFor={name}
-          className="block text-sm font-medium text-gray-700"
-        >
+        <label className="block text-sm font-medium text-gray-700">
           {label} {required && <span className="text-red-500">*</span>}
         </label>
       )}
 
-      <div className="relative">
-        <input
-          id={name}
-          type={type}
-          placeholder={placeholder || ` ${label || name}`}
-          defaultValue={defaultValue}
-          value={value}
-          readOnly={readOnly}
-          {...rest}
-          ref={(el) => {
-            ref(el);
-            if (inputRef) inputRef(el);
-          }}
-          className={`remove-date-icon mt-1 w-full text-sm border border-gray-300 px-3 py-2 rounded outline-none ${icon ? "pr-10" : ""
-            } ${readOnly ? "bg-gray-200" : "bg-white"}`}
-        />
-        {icon && icon}
-      </div>
+      <input
+        {...rest}
+        ref={ref}
+        type={type}
+        placeholder={placeholder || `${label} ${t("Enter")}`}
+        readOnly={readOnly}
+        className="mt-1 w-full text-sm border border-gray-300 px-3 py-2 rounded outline-none"
+      />
 
       {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
     </div>

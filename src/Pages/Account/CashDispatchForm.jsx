@@ -204,6 +204,7 @@ const formatDate = (date) => {
                   options={[
                     { value: "Cash", label: t("Cash") },
                     { value: "Bank", label: t("Bank") },
+                    { value: "Check", label: t("Check") },
                     { value: "Card", label: t("Card") },
                   ]}
                 />

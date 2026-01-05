@@ -363,8 +363,8 @@ const onSubmit = async (data) => {
                 <th className="p-2">{t("Date")}</th>
                 <th className="p-2">{t("Employee")} {t("Name")}</th>
                 <th className="p-2">{t("Amount")}</th>
-                <th className="p-2">{t("Monthly Deduction")}</th>
-                <th className="p-2">{t("After Adjustment")}</th>
+                <th className="p-2">{t("Monthly")} {t("Deduction")}</th>
+                <th className="p-2">{t("After")} {t("Adjustment")}</th>
                 <th className="p-2">{t("Status")}</th>
                 <th className="p-2">{t("Created By")}</th>
                 <th className="p-2">{t("Action")}</th>
@@ -433,7 +433,7 @@ const onSubmit = async (data) => {
         <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50 overflow-auto scroll-hidden">
           <div className="bg-white w-full max-w-2xl rounded-md shadow-lg p-6 relative">
             <h3 className="text-lg font-semibold text-primary mb-4">
-              {selectedLoan ? t("Edit Loan") : t("Add Loan")}
+              {selectedLoan ? t("Update Loan") : t("Add Loan")}
             </h3>
 
             <FormProvider {...methods}>
@@ -445,11 +445,6 @@ const onSubmit = async (data) => {
                       label={`${t("Loan")} ${t("Date")}`}
                       type="date"
                       required={!selectedLoan}
-                      inputRef={(e) => {
-                        register("date").ref(e);
-                        loanDateRef.current = e;
-                      }}
-
                     />
                   </div>
                   <div className="w-full">

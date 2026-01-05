@@ -299,7 +299,7 @@ const printTable = () => {
               onClick={printTable}
               className="py-1 px-5 hover:bg-primary bg-white shadow hover:text-white rounded transition-all duration-300 cursor-pointer"
             >
-              {t("PDF")}
+              {t("Print")}
             </button>
           </div>
           {/*  */}

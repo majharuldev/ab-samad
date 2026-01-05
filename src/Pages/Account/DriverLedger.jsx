@@ -179,14 +179,14 @@ const toNumber = (val) => {
   const calculateFooterTotals = () => {
     return rowsWithBalance.reduce(
       (acc, item) => {
-        // acc.commission += toNumber(item.driver_commission || 0);
+        acc.commission += toNumber(item.driver_commission || 0);
         acc.advance += toNumber(item.driver_adv || 0);
         acc.totalExpense += item.totalExpense;
         acc.balance = item.balance; // Last balance will be the final balance
         return acc;
       },
       {
-        // commission: 0,
+        commission: 0,
         advance: 0,
         totalExpense: 0,
         balance: openingBalance,
@@ -206,7 +206,7 @@ const toNumber = (val) => {
       balance -= tadaAmounts[selectedDriver].amount;
     }
     // Deduct driver commission
-    // balance -= footerTotals.commission;
+    balance -= footerTotals.commission;
     // Deduct helper salary if a helper is selected
     if (selectedHelper) {
       balance -= toNumber(currentHelperSalary); // Use currentHelperSalary
@@ -222,7 +222,7 @@ const toNumber = (val) => {
       Driver: item.driver_name,
       Load: item.load_point,
       Unload: item.unload_point,
-      // Commission: item.driver_commission,
+      Commission: item.driver_commission,
       Advance: item.driver_adv,
       Labor: item.labor,
       Parking: item.parking_cost,
@@ -245,7 +245,7 @@ const toNumber = (val) => {
         Driver: selectedDriver,
         Load: "",
         Unload: "",
-        // Commission: "",
+        Commission: "",
         Advance: "",
         Labor: "",
         Parking: "",
@@ -269,7 +269,7 @@ const toNumber = (val) => {
         Driver: selectedHelper,
         Load: "",
         Unload: "",
-        // Commission: "",
+        Commission: "",
         Advance: "",
         Labor: "",
         Parking: "",
@@ -309,7 +309,7 @@ const toNumber = (val) => {
       "Driver",
       "Load",
       "Unload",
-      // "Commission",
+      "Commission",
       "Advance",
       "Labor",
       "Parking",
@@ -332,7 +332,7 @@ const toNumber = (val) => {
         item.driver_name || "",
         item.load_point || "",
         item.unload_point || "",
-        // item.driver_commission || "0",
+        item.driver_commission || "0",
         item.driver_adv || "0",
         item.labor || "0",
         item.parking_cost || "0",
@@ -602,7 +602,7 @@ const toNumber = (val) => {
             <h3 className="font-semibold text-primary">
               {t("Present Summary for")} {selectedDriver}
             </h3>
-            <p>{t("Total")} {("Days")} {t("Present")}: {tadaAmounts[selectedDriver].days}</p>
+            <p>{t("Total")} {t("Days present")}: {tadaAmounts[selectedDriver].days}</p>
             {/* <p>
               Total TADA Amount: {tadaAmounts[selectedDriver].amount} BDT (300
               BDT per day)
@@ -617,7 +617,7 @@ const toNumber = (val) => {
                 <th rowSpan="2" className="border px-2 py-1">
                   {t("Date")}
                 </th>
-                <th colSpan="2" className="border py-1">
+                <th colSpan="3" className="border py-1">
                   {t("Particulars")}
                 </th>
                 <th rowSpan="2" className="border px-2 py-1">
@@ -639,7 +639,7 @@ const toNumber = (val) => {
               <tr>
                 <th className="border px-2 py-1">{t("Load")}</th>
                 <th className="border px-2 py-1">{t("Unload")}</th>
-                {/* <th className="border px-2 py-1">Commission</th> */}
+                <th className="border px-2 py-1">{t("Commission")}</th>
                 <th className="border px-2 py-1">{t("Labour")}</th>
                 <th className="border px-2 py-1">{t("Parking")}</th>
                 <th className="border px-2 py-1">{t("Night")}</th>
@@ -659,7 +659,7 @@ const toNumber = (val) => {
                   <td className="border px-2 py-1">{item.date}</td>
                   <td className="border px-2 py-1">{item.load_point}</td>
                   <td className="border px-2 py-1">{item.unload_point}</td>
-                  {/* <td className="border px-2 py-1">{toNumber(item.driver_commission)}</td> */}
+                  <td className="border px-2 py-1">{toNumber(item.driver_commission)}</td>
                   <td className="border px-2 py-1">{toNumber(item.driver_adv)}</td>
                   <td className="border px-2 py-1">{toNumber(item.labor)}</td>
                   <td className="border px-2 py-1">{toNumber(item.parking_cost)}</td>
@@ -684,12 +684,12 @@ const toNumber = (val) => {
             </tbody>
             <tfoot>
               <tr className="font-bold bg-gray-100">
-                <td colSpan={4} className="border px-2 py-1 text-right">
+                <td colSpan={3} className="border px-2 py-1 text-right">
                   {t("Total")}:
                 </td>
-                {/* <td className="border px-2 py-1">{footerTotals.commission}</td> */}
+                <td className="border px-2 py-1">{footerTotals.commission}</td>
                 <td className="border px-2 py-1">{footerTotals.advance}</td>
-                <td colSpan={9} className="border px-2 py-1"></td>
+                <td colSpan={10} className="border px-2 py-1"></td>
                 <td className="border px-2 py-1">
                   {footerTotals.totalExpense}
                 </td>
@@ -729,12 +729,12 @@ const toNumber = (val) => {
                     </td>
                   </tr> */}
                   <tr className="font-bold bg-gray-100">
-                    {/* <td colSpan={17} className="border px-2 py-1">
+                    <td colSpan={17} className="border px-2 py-1">
                       <div className="flex justify-between">
-                        <span>Driver Commission:</span>
+                        <span>{t("Driver")} {t("Commission")}:</span>
                         <span>{footerTotals.commission} BDT</span>
                       </div>
-                    </td> */}
+                    </td>
                   </tr>
                   {/* Helper Salary Row */}
                   {/* {selectedHelper && (
@@ -748,7 +748,7 @@ const toNumber = (val) => {
                     </tr>
                   )} */}
                   <tr className="font-bold bg-gray-100">
-                    <td colSpan={16} className="border px-2 py-1">
+                    <td colSpan={17} className="border px-2 py-1">
                       <div className="flex justify-between">
                         <span>{t("Final Balance")} ({t("After")} {t("All")} {t("Deduction")}):</span>
                         <span className={finalBalance < 0 ? "text-red-500" : ""}>

@@ -1126,7 +1126,7 @@ const exportTripsToExcel = async () => {
                                 ? "bg-yellow-50 text-yellow-700  border-yellow-300"
                                 : dt.status === "Rejected"
                                   ? "bg-red-50 text-red-700  border-red-300"
-                                  : "bg-gray-50 text-gray-700  border-gray-300"
+                                  : "bg-blue-50 text-blue-700  border-gray-300"
                             }`}
                         >
                           {dt.status || "Pending"}
@@ -1154,7 +1154,7 @@ const exportTripsToExcel = async () => {
                               onClick={(e) => e.stopPropagation()}
                             >
                               <div className="py-1">
-                                {((isAdmin || dt.status !== "Approved") ) && (<Link to={`/tramessy/UpdateTripForm/${dt.id}`} onClick={() => setOpenDropdown(null)}>
+                                {(( dt.status !== "Approved" && dt.status !== "Submitted") ) && (<Link to={`/tramessy/UpdateTripForm/${dt.id}`} onClick={() => setOpenDropdown(null)}>
                                   <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                     <FaPen className="mr-2 text-[12px]" />
                                     {t("Edit")}

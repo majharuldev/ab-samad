@@ -93,12 +93,13 @@ const VendorLedger = () => {
       ? v.date && new Date(v.date).toISOString().slice(0, 7) === selectedMonth
       : true;
     return matchesVendor && matchesMonth;
-  }).sort((a, b) => {
-    // Sort by date to ensure correct running balance calculation
-    const dateA = new Date(a.date);
-    const dateB = new Date(b.date);
-    return dateA.getTime() - dateB.getTime();
-  });
+  })
+  // .sort((a, b) => {
+  //   // Sort by date to ensure correct running balance calculation
+  //   const dateA = new Date(a.date);
+  //   const dateB = new Date(b.date);
+  //   return dateA.getTime() - dateB.getTime();
+  // });
 
   // Calculate running balance for filtered data
   let currentRunningBalance = openingBalance;

@@ -194,7 +194,7 @@ const VendorPaymentForm = () => {
                   required={!id}
                   control={control}
                   options={[
-                    { label: "Select Branch", value: "", disabled: true },
+                    { label: `${t("Select")} ${t("Branch")}`, value: "", disabled: true },
                     // { label: "Head Office", value: "Head Office" },
                     ...branchOptions, 
                   ]}

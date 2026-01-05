@@ -449,7 +449,7 @@ const handleFileChange = (e) => {
                   name="service_charge"
                   label={t("Service Charge")}
                   type="number"
-                  required={!isEditMode}
+                  required={false}
                 />
               </div>
 

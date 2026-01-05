@@ -503,7 +503,7 @@ const RoutePricing = () => {
                     value={formData.vehicle_size}
                     onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                    placeholder="Enter 1 Ton/7 Feet"
+                    placeholder={t("Enter 1 Ton/7 Feet")}
                   />
                 </div>
                 <div className="w-full">

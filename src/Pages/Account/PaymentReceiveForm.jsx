@@ -233,8 +233,8 @@ const PaymentReceiveForm = () => {
                   label={t("Status")}
                   required={!isEditing}
                   options={[
-                    { value: "Active", label: t("Active") },
-                    { value: "Inactive", label: t("Inactive") },
+                    { value: "Paid", label: t("Paid") },
+                    { value: "Unpaid", label: t("Unpaid") },
                   ]}
                 />
               </div>

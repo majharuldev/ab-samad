@@ -211,9 +211,9 @@ const Bonus = () => {
         <tr style="background:#ddd;">
           <th style="border:1px solid #000; padding:6px;">${t("SL.")}</th>
           <th style="border:1px solid #000; padding:6px;">${t("Date")}</th>
-          <th style="border:1px solid #000; padding:6px;">${t("Employee Name")}</th>
+          <th style="border:1px solid #000; padding:6px;">${t("Employee")} ${t("Name")}</th>
           <th style="border:1px solid #000; padding:6px;">${t("Amount")}</th>
-          <th style="border:1px solid #000; padding:6px;">${t("Salary Month")}</th>
+          <th style="border:1px solid #000; padding:6px;">${t("Salary")} ${t("Month")}</th>
           <th style="border:1px solid #000; padding:6px;">${t("Status")}</th>
           <th style="border:1px solid #000; padding:6px;">${t("Created By")}</th>
         </tr>
@@ -341,9 +341,9 @@ const Bonus = () => {
               <tr>
                 <th className="p-2">{t("SL.")}</th>
                 <th className="p-2">{t("Date")}</th>
-                <th className="p-2">{t("Employee Name")}</th>
+                <th className="p-2">{t("Employee")} {t("Name")}</th>
                 <th className="p-2">{t("Amount")}</th>
-                <th className="p-2">{t("Salary Month")}</th>
+                <th className="p-2">{t("Salary")} {t("Month")}</th>
                 <th className="p-2">{t("Status")}</th>
                 <th className="p-2">{t("Created By")}</th>
                 <th className="p-2">{t("Action")}</th>
@@ -415,7 +415,7 @@ const Bonus = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50 overflow-auto">
           <div className="bg-white w-full max-w-2xl rounded-md shadow-lg p-6 relative">
             <h3 className="text-lg font-semibold text-primary mb-4">
-              {selectedBonous ? t("Edit Bonous") : t("Add Bonous")}
+              {selectedBonous ? t("Update Bonous") : t("Add Bonous")}
             </h3>
 
             <FormProvider {...methods}>
