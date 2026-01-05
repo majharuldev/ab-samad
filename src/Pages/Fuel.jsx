@@ -11,6 +11,7 @@ import { IoMdClose } from "react-icons/io";
 import { useTranslation } from "react-i18next";
 import api from "../../utils/axiosConfig";
 import { tableFormatDate } from "../hooks/formatDate";
+import Pagination from "../components/Shared/Pagination";
 
 const Fuel = () => {
   const { t } = useTranslation();
@@ -33,11 +34,9 @@ const Fuel = () => {
   const [currentPage, setCurrentPage] = useState(1);
   useEffect(() => {
     api
-      .get(`/purchase`)
-      .then((response) => {
-        if (response.data.status === "Success") {
-          setPurchase(response.data.data);
-        }
+      .get(`/fuel`)
+      .then((response) => {   
+          setPurchase(response.data);
         setLoading(false);
       })
       .catch((error) => {
@@ -74,11 +73,6 @@ const Fuel = () => {
 
   // Search (Product ID, Supplier, Vehicle, Driver)
   const filteredPurchase = vehicleFiltered.filter((dt) => {
-    const category = dt.category?.toLowerCase()
-    if (!(category === "engine_oil" || category === "parts" || category === "documents")) {
-      return false
-    }
-
     const term = searchTerm.toLowerCase()
     if (!term) {
       return true
@@ -90,7 +84,8 @@ const Fuel = () => {
       return dt.id === Number(term)
     }
     return (
-      // dt.id?.toString().toLowerCase().includes(term) ||
+      dt.id?.toString().toLowerCase().includes(term) ||
+      dt.branch_name?.toString().toLowerCase().includes(term) ||
       dt.supplier_name?.toLowerCase().includes(term) ||
       dt.vehicle_no?.toLowerCase().includes(term) ||
       dt.driver_name?.toLowerCase().includes(term)
@@ -518,7 +513,7 @@ const Fuel = () => {
                     <td className="px-2 action_column">
                       <div className="flex gap-1">
                         <Link
-                          to={`/tramessy/Purchase/update-maintenance/${dt.id}`}
+                          to={`/tramessy/update-fuel/${dt.id}`}
                         >
                           <button className="text-primary hover:bg-primary hover:text-white px-2 py-1 rounded shadow-md transition-all cursor-pointer">
                             <FaPen className="text-[12px]" />
@@ -579,17 +574,6 @@ const Fuel = () => {
             {/* Content */}
             <div className="p-6 space-y-10">
 
-              {/* Image Preview */}
-              {/* {selectedPurchase.image && (
-                <div className="flex justify-center">
-                  <img
-                    src={selectedPurchase.image}
-                    alt="Purchase"
-                    className="w-60 h-60 object-cover rounded-xl border shadow-md"
-                  />
-                </div>
-              )} */}
-
               {/* Basic Information */}
               <section>
                 <h3 className="text-lg font-semibold text-primary border-b pb-2 mb-4">
@@ -597,7 +581,7 @@ const Fuel = () => {
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm md:text-base">
                   <p><span className="font-medium text-gray-600">{t("Date")}:</span> {tableFormatDate(selectedPurchase.date)}</p>
-                  <p><span className="font-medium text-gray-600">{t("Supplier")} {("Name")}:</span> {selectedPurchase.supplier_name}</p>
+                  <p><span className="font-medium text-gray-600">{t("Supplier")} {t("Name")}:</span> {selectedPurchase.supplier_name}</p>
                   <p><span className="font-medium text-gray-600">{t("Category")}:</span> {selectedPurchase.category}</p>
                   <p><span className="font-medium text-gray-600">{t("Purchase Amount")}:</span> {selectedPurchase.purchase_amount}</p>
                   <p><span className="font-medium text-gray-600">{t("Service Charge")}:</span> {selectedPurchase.service_charge || "N/A"}</p>
@@ -634,32 +618,14 @@ const Fuel = () => {
                   {t("Service")} {t("Information")}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm md:text-base">
-                  <p><span className="font-medium text-gray-600">{t("Service Date")}:</span> {selectedPurchase.service_date || "N/A"}</p>
-                  <p><span className="font-medium text-gray-600">{t("Next")} {t("Service Date")}:</span> {selectedPurchase.next_service_date || "N/A"}</p>
-                  <p><span className="font-medium text-gray-600">{t("Last KM")}:</span> {selectedPurchase.last_km || "N/A"}</p>
-                  <p><span className="font-medium text-gray-600">{t("Next KM")}:</span> {selectedPurchase.next_km || "N/A"}</p>
+                  {/* <p><span className="font-medium text-gray-600">{t("Service Date")}:</span> {selectedPurchase.service_date || "N/A"}</p> */}
+                  {/* <p><span className="font-medium text-gray-600">{t("Next")} {t("Service Date")}:</span> {selectedPurchase.next_service_date || "N/A"}</p> */}
+                  {/* <p><span className="font-medium text-gray-600">{t("Last KM")}:</span> {selectedPurchase.last_km || "N/A"}</p> */}
+                  {/* <p><span className="font-medium text-gray-600">{t("Next KM")}:</span> {selectedPurchase.next_km || "N/A"}</p> */}
                   <p><span className="font-medium text-gray-600">{t("Priority")}:</span> {selectedPurchase.priority}</p>
                   <p><span className="font-medium text-gray-600">{t("Validity")}:</span> {selectedPurchase.validity || "N/A"}</p>
                 </div>
               </section>
-
-              {/* Creator Info */}
-              {/* <section>
-                <h3 className="text-lg font-semibold text-primary border-b pb-2 mb-4">
-                  System Info
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm md:text-base">
-                  <p><span className="font-medium text-gray-600">Created By:</span> {selectedPurchase.created_by}</p>
-                  <div className="flex flex-col items-start ">
-                    <span className="font-medium mb-2">Bill Image:</span>
-                    <img
-                      src={`https://ajenterprise.tramessy.com/backend/uploads/purchase/${selectedPurchase.image}`}
-                      alt="Bill"
-                      className="w-32 h-32 object-cover rounded-lg border"
-                    />
-                  </div>
-                </div>
-              </section> */}
 
               <section>
   <h3 className="text-lg font-semibold text-primary border-b pb-2 mb-4">
@@ -686,7 +652,7 @@ const Fuel = () => {
                 </span>
               </div>
               <a
-                href={`https://ajenterprise.tramessy.com/backend/uploads/purchase/${selectedPurchase.image}`}
+                href={`${import.meta.env.IMAGE_URL}/purchase/${selectedPurchase.image}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-600 hover:text-blue-800 text-sm underline"
@@ -695,7 +661,7 @@ const Fuel = () => {
               </a>
               {/* Optional: Embed PDF preview */}
               {/* <iframe
-                src={`https://ajenterprise.tramessy.com/backend/uploads/purchase/${selectedPurchase.image}`}
+                src={${import.meta.env.IMAGE_URL}/purchase/${selectedPurchase.image}`}
                 className="w-full h-48 mt-2 border rounded"
                 title="PDF Preview"
               /> */}
@@ -703,7 +669,7 @@ const Fuel = () => {
           ) : (
             // Image Preview
             <img
-              src={`https://ajenterprise.tramessy.com/backend/uploads/purchase/${selectedPurchase.image}`}
+              src={`${import.meta.env.IMAGE_URL}/purchase/${selectedPurchase.image}`}
               alt="Bill"
               className="w-32 h-32 object-cover rounded-lg border"
               onError={(e) => {
@@ -716,7 +682,7 @@ const Fuel = () => {
           )}
           {/* Download link for both */}
           <a
-            href={`https://ajenterprise.tramessy.com/backend/uploads/purchase/${selectedPurchase.image}`}
+            href={`${import.meta.env.IMAGE_URL}/purchase/${selectedPurchase.image}`}
             download
             className="block mt-2 text-blue-600 hover:text-blue-800 text-sm"
           >

@@ -707,7 +707,7 @@ const Sidebar = () => {
                         <span>{t("Tanki Load")}</span>
                       </Link>
                     </li>
-                    {isAdmin && <li>
+                     <li>
                       <Link
                         to="/tramessy/fuel-odit"
                         className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/route-pricing")
@@ -718,7 +718,19 @@ const Sidebar = () => {
 
                         <span>{t("Excess Oil Mileage")}</span>
                       </Link>
-                    </li>}
+                    </li>
+                    <li>
+                      <Link
+                        to="/tramessy/fuel-ledger"
+                        className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/fuel-ledger")
+                            ? "text-gray-700 bg-gray-200"
+                            : "text-gray-500 hover:text-primary"
+                          }`}
+                      >
+
+                        <span>{t("Fuel")} {t("Ledger")}</span>
+                      </Link>
+                    </li>
                   </ul>
                 </div>
               </li>

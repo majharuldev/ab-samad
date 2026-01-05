@@ -83,6 +83,7 @@ import Bonus from "../Pages/HR/Payroll/Bonus";
 import Requisition from "../Pages/HR/HRM/Requsition";
 import RequisitionForm from "../Pages/HR/HRM/RequisitionForm";
 import FuelOdit from "../Pages/FuelOdit";
+import FuelLedger from "../Pages/Account/FuelLedger";
 export const router = createBrowserRouter([
   {
     path: "/tramessy",
@@ -205,6 +206,22 @@ export const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <FuelForm />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/tramessy/update-fuel/:id",
+        element: (
+          <PrivateRoute>
+            <FuelForm />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/tramessy/fuel-ledger",
+        element: (
+          <PrivateRoute>
+            <FuelLedger />
           </PrivateRoute>
         ),
       },

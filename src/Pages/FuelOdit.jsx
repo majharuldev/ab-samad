@@ -360,7 +360,7 @@ const FuelOdit = () => {
                 {/* Table */}
                 <div id="pricingTable" className="overflow-x-auto rounded-xl">
                     <table className="min-w-full text-sm text-left">
-                        <thead className="bg-gray-200 text-primary">
+                        <thead className="bg-gray-200 text-primary text-xs">
                             <tr>
                                 <th className="p-2">{t("SL.")}</th>
                                 <th className="p-2">{t("Date")}</th>
@@ -424,123 +424,125 @@ const FuelOdit = () => {
             </div>
 
             {/* Add/Edit Modal */}
-            {isModalOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-                    <div className="relative bg-white rounded-lg shadow-lg p-6 w-full max-w-xl border border-gray-300">
-                        <button onClick={closeModal} className="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
-                            <IoMdClose className="text-2xl" />
-                        </button>
-                        <h2 className="text-xl font-bold text-[#11375B] mb-6 text-center">
-                            {editId ? t("Update Route Pricing") : t("Add Route Pricing")}
-                        </h2>
-                        <form onSubmit={handleSubmit} className="space-y-4">
-
-                            {/* Date */}
-                            <div>
-                                <label>{t("Date")}</label>
-                                <input
-                                    type="date"
-                                    name="date"
-                                    value={formData.date}
-                                    onChange={handleInputChange}
-                                    className="input"
-                                    required
-                                />
-                            </div>
-
-                            {/* Cost Category */}
-                            <div>
-                                <label>{t("Cost")} {t("Category")}</label>
-                                <input
-                                    type="text"
-                                    name="cost_category"
-                                    value={formData.cost_category}
-                                    onChange={handleInputChange}
-                                    className="input"
-                                    placeholder={t("Enter cost category")}
-                                />
-                            </div>
-
-                            {/* Vehicle Size */}
-                            <div>
-                                <label>{t("Size")}</label>
-                                <input
-                                    type="text"
-                                    name="vehicle_size"
-                                    value={formData.vehicle_size}
-                                    onChange={handleInputChange}
-                                    className="input"
-                                    placeholder="1 Ton / 7 Feet"
-                                />
-                            </div>
-
-                            {/* Start & End Point */}
-                            <div className="flex gap-2">
-                                <div className="w-full">
-                                    <label>{t("Start Point")}</label>
-                                    <input
-                                        type="text"
-                                        name="start_point"
-                                        value={formData.start_point}
-                                        onChange={handleInputChange}
-                                        className="input"
-                                    />
-                                </div>
-
-                                <div className="w-full">
-                                    <label>{t("End Point")}</label>
-                                    <input
-                                        type="text"
-                                        name="end_point"
-                                        value={formData.end_point}
-                                        onChange={handleInputChange}
-                                        className="input"
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Distance & KPL */}
-                            <div className="flex gap-2">
-                                <div className="w-full">
-                                    <label>{t("Distance")} (km)</label>
-                                    <input
-                                        type="number"
-                                        name="distance"
-                                        value={formData.distance}
-                                        onChange={handleInputChange}
-                                        className="input"
-                                    />
-                                </div>
-
-                                <div className="w-full">
-                                    <label>{t("KPL")}</label>
-                                    <input
-                                        type="number"
-                                        step="0.01"
-                                        name="kpl"
-                                        value={formData.kpl}
-                                        onChange={handleInputChange}
-                                        className="input"
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Fuel Cost */}
-                            <div>
-                                <label>{t("Fuel Cost")}</label>
-                                <input
-                                    type="number"
-                                    name="fuel_cost"
-                                    value={formData.fuel_cost}
-                                    onChange={handleInputChange}
-                                    className="input"
-                                />
-                            </div>
-
-                        </form>
-                    </div>
+      {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+          <div className="relative bg-white rounded-lg shadow-lg p-6 w-full max-w-xl border border-gray-300">
+            <button onClick={closeModal} className="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
+              <IoMdClose className="text-2xl" />
+            </button>
+            <h2 className="text-xl font-bold text-[#11375B] mb-6 text-center">
+              {editId ? t("Update Route Pricing") : t("Add Route Pricing")}
+            </h2>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="flex gap-2">
+                <div className="w-full">
+                  <label className="block text-gray-700 text-sm font-medium mb-1">{t("Customer")}</label>
+                  <CreatableSelect
+                    options={customers.map(c => ({ value: c.customer_name, label: c.customer_name }))}
+                    value={formData.customer_name ? { value: formData.customer_name, label: formData.customer_name } : null}
+                    onChange={selected => setFormData(prev => ({ ...prev, customer_name: selected?.value || "" }))}
+                    isClearable
+                    placeholder="Select or type customer"
+                    className="focus:!outline-none focus:!ring-2 focus:!ring-primary"
+                  />
                 </div>
-            )}
+                <div className="relative w-full">
+                  <label className="block text-gray-700 text-sm font-medium mb-1">
+                    {t("Cost")} {t("Category")}
+                  </label>
+                  <select
+                    name="cost_category"
+                    value={formData.cost_category}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, cost_category: e.target.value }))
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    required
+                  >
+                    <option value="">{t("Vehicle")} {t("Category")} {t("Select")}...</option>
+                    <option value="pickup">{t("Pickup")}</option>
+                    <option value="covered_van">{t("Covered Van")}</option>
+                    <option value="open_truck">{t("Open Truck")}</option>
+                    <option value="trailer">{t("Trailer")}</option>
+                    <option value="freezer_van">{t("Freezer Van")}</option>
+                    <option value="oil_tanker">{t("Oil Tanker")}</option>
+                  </select>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <div className="w-full">
+                  <label className="block text-gray-700 text-sm font-medium mb-1">{t("Start Point")}</label>
+                  <CreatableSelect
+                    options={customers.map(c => ({ value: c.customer_name, label: c.customer_name }))}
+                    value={formData.start_point ? { value: formData.start_point, label: formData.start_point } : null}
+                    onChange={selected => setFormData(prev => ({ ...prev, start_point: selected?.value || "" }))}
+                    isClearable
+                    placeholder={t("Select or type start")}
+                    className="focus:!ring-2 focus:!ring-primary"
+                  />
+                </div>
+
+                <div className="w-full">
+                  <label className="block text-gray-700 text-sm font-medium mb-1">{t("End Point")}</label>
+                  <CreatableSelect
+                    options={unloadpoints.map(c => ({ value: c.name, label: c.name }))}
+                    value={formData.end_point ? { value: formData.end_point, label: formData.end_point } : null}
+                    onChange={selected => setFormData(prev => ({ ...prev, end_point: selected?.value || "" }))}
+                    isClearable
+                    placeholder={t("Select or type End load")}
+                    className="focus:!ring-2 focus:!ring-primary"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <div className="w-full">
+                  <label className="block text-gray-700 text-sm font-medium mb-1">{t("Distance")}</label>
+                  <input
+                    type="text"
+                    name="distance"
+                    value={formData.distance}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    placeholder={t("Enter Distance")}
+                  />
+                </div>
+                <div className="w-full">
+                  <label className="block text-gray-700 text-sm font-medium mb-1">{t("Fuel")} {t("Cost")}</label>
+                  <input
+                    type="number"
+                    name="fuel_cost"
+                    value={formData.fuel_cost}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    placeholder={t("Enter price")}
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-gray-700 text-sm font-medium mb-1">{t("KPL")}</label>
+                <input
+                  type="number"
+                  name="kpl"
+                  value={formData.kpl}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  placeholder="Enter KPL"
+                />
+              </div>
+
+              <div className="flex justify-end gap-3">
+                <button type="button" onClick={closeModal} className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+                  {t("Cancel")}
+                </button>
+                <button type="submit" className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/80">
+                  {editId ? t("Update Pricing") : t("Add Pricing")}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
             {/* Delete Modal */}
             <div className="flex justify-center items-center">
                 {isOpen && (
