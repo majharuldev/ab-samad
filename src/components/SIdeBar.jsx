@@ -8,6 +8,8 @@ import {
   FaUser,
   FaTruck,
   FaNewspaper,
+  FaHireAHelper,
+  FaPeopleCarryBox,
 } from "react-icons/fa6";
 import { FaTruckPickup, FaUsersCog } from "react-icons/fa";
 import { MdShop } from "react-icons/md";
@@ -16,11 +18,12 @@ import logo from "../assets/tramessy.png";
 import { Link, useLocation } from "react-router-dom";
 import useAdmin from "../hooks/useAdmin";
 import { FaUsers } from "react-icons/fa";
-import { PiUsersFour } from "react-icons/pi";
-import { RiLuggageCartLine } from "react-icons/ri";
+import { PiBuildingOfficeBold, PiUsersFour } from "react-icons/pi";
+import { RiIdCardLine, RiLuggageCartLine } from "react-icons/ri";
 import { HiCurrencyBangladeshi } from "react-icons/hi2";
 import { useTranslation } from "react-i18next";
 import { BsExplicitFill, BsFuelPumpDiesel } from "react-icons/bs";
+import { FiSettings } from "react-icons/fi";
 
 
 const Sidebar = () => {
@@ -101,44 +104,83 @@ const Sidebar = () => {
                     <span>{t("Trip Management")}</span>
                   </Link>
                 </li>
-                <li>
-                  <Link
-                    to="/tramessy/CarList"
-                    className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/CarList")
-                      ? "text-gray-700 bg-gray-200"
-                      : "text-gray-700 hover:text-primary"
-                      }`}
-                  >
-                    <FaCarRear />
-                    <span>{t("vehicles")} {t("info")}</span>
-                  </Link>
-                </li>
-
               </ul>
 
-              {/* Fleet Management */}
-              {/* <li className="text-gray-700 font-medium rounded-sm">
-                  <div
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => toggleMenu("fleet")}
-                    className="flex justify-between items-center py-3 px-2 cursor-pointer hover:bg-primary hover:text-white hover:rounded-sm duration-300"
-                  >
-                    <span className="flex items-center gap-2">
-                      <FaCarRear />
-                      <span>Fleet Management</span>
-                    </span>
-                    <span
-                      className={`transform transition-transform duration-900 ${
-                        openMenu.fleet ? "rotate-180" : ""
+              {/* Setup */}
+              <li className="text-gray-700 font-medium rounded-sm">
+                <div
+                  onClick={() => toggleMenu("setup")}
+                  className="flex justify-between items-center py-3 px-2 cursor-pointer hover:bg-primary hover:text-white hover:rounded-sm duration-300"
+                >
+                  <span className="flex items-center gap-2">
+                    <FiSettings />
+                    <span>{t("Set Up")}</span>
+                  </span>
+                  <span
+                    className={`transform transition-transform duration-900 ${openMenu.setup ? "rotate-180" : ""
                       }`}
-                    >
-                      <FaChevronDown />
-                    </span>
-                  </div>
+                  >
+                    <FaChevronDown />
+                  </span>
+                </div>
 
-                  
-                </li> */}
+                <div
+                  className={`transition-all duration-900 ease-in-out overflow-hidden ${openMenu.setup ? "max-h-[200px]" : "max-h-0"
+                    }`}
+                >
+                  <ul className="space-y-3 px-2 text-sm mt-2">
+                    <li>
+                      <Link
+                        to="/tramessy/DriverList"
+                        className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/DriverList")
+                          ? "text-gray-700 bg-gray-200"
+                          : "text-gray-500 hover:text-primary"
+                          }`}
+                      >
+                        <RiIdCardLine />
+                        <span>{t("Driver Information")}</span>
+                      </Link>
+                    </li>
+                     <li>
+                      <Link
+                        to="/tramessy/CarList"
+                        className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/CarList")
+                          ? "text-gray-700 bg-gray-200"
+                          : "text-gray-700 hover:text-primary"
+                          }`}
+                      >
+                        <FaCarRear />
+                        <span>{t("vehicles")} {t("info")}</span>
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        to="/tramessy/HelperList"
+                        className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/HelperList")
+                          ? "text-gray-700 bg-gray-200"
+                          : "text-gray-500 hover:text-primary"
+                          }`}
+                      >
+                        <FaHireAHelper/>
+                        <span>{t("Helper Info")}</span>
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        to="/tramessy/HR/HRM/Office"
+                        className={`flex gap-2 items-center p-2 rounded-sm ${isActive("/tramessy/HR/HRM/Office")
+                          ? "text-gray-700 bg-gray-200"
+                          : "text-gray-500 hover:text-primary"
+                          }`}
+                      >
+                        <PiBuildingOfficeBold />
+                        {t("Office")}
+                      </Link>
+                    </li>
+
+                  </ul>
+                </div>
+              </li>
               {/* Vendor management */}
               <li className="text-gray-700 font-medium rounded-sm">
                 <div
@@ -189,47 +231,6 @@ const Sidebar = () => {
                   </ul>
                 </div>
               </li>
-              {/* Rent management */}
-              {/* <li className="text-primary font-medium rounded-sm">
-                  <div
-                    onClick={() => toggleMenu("rentVehicle")}
-                    className="flex justify-between items-center py-3 px-2 cursor-pointer hover:bg-primary hover:text-white hover:rounded-sm duration-300"
-                  >
-                    <span className="flex items-center gap-2">
-                      <FaTruck />
-                      <span>Rent Vehicle</span>
-                    </span>
-                    <span
-                      className={`transform transition-transform duration-900 ${
-                        openMenu.rentVehicle ? "rotate-180" : ""
-                      }`}
-                    >
-                      <FaChevronDown />
-                    </span>
-                  </div>
-
-                  <div
-                    className={`transition-all duration-900 ease-in-out overflow-hidden ${
-                      openMenu.rentVehicle ? "max-h-[100px]" : "max-h-0"
-                    }`}
-                  >
-                    <ul className="space-y-3 px-2 text-sm mt-2">
-                      <li>
-                        <Link
-                          to="/tramessy/RentList"
-                          className={`flex gap-2 items-center p-2 rounded-sm font-medium ${
-                            isActive("/tramessy/RentList")
-                              ? "text-white bg-primary"
-                              : "text-gray-500 hover:text-primary"
-                          }`}
-                        >
-                          
-                          <span>Rent Vehicle List</span>
-                        </Link>
-                      </li>
-                    </ul>
-                  </div>
-                </li> */}
               {/* Expense */}
               <li className="text-gray-700 font-medium rounded-sm">
                 <div
@@ -357,46 +358,11 @@ const Sidebar = () => {
                               : "text-gray-500 hover:text-primary"
                               }`}
                           >
-
+                          <FaPeopleCarryBox />
                             {t("Employee Information")}
                           </Link>
                         </li>
-                        <li>
-                          <Link
-                            to="/tramessy/DriverList"
-                            className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/DriverList")
-                              ? "text-gray-700 bg-gray-200"
-                              : "text-gray-500 hover:text-primary"
-                              }`}
-                          >
 
-                            <span>{t("Driver Information")}</span>
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            to="/tramessy/HelperList"
-                            className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/HelperList")
-                              ? "text-gray-700 bg-gray-200"
-                              : "text-gray-500 hover:text-primary"
-                              }`}
-                          >
-
-                            <span>{t("Helper Info")}</span>
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            to="/tramessy/HR/HRM/Office"
-                            className={`flex gap-2 items-center p-2 rounded-sm ${isActive("/tramessy/HR/HRM/Office")
-                              ? "text-gray-700 bg-gray-200"
-                              : "text-gray-500 hover:text-primary"
-                              }`}
-                          >
-
-                            {t("Office")}
-                          </Link>
-                        </li>
                       </ul>
                       {/* </div> */}
                     </li>
@@ -846,7 +812,7 @@ const Sidebar = () => {
                 >
                   <span className="flex items-center gap-2">
                     <PiUsersFour />
-                    <span>{t("Customer")}</span>
+                    <span>{t("Customer")} {t("Set Up")}</span>
                   </span>
                   <span
                     className={`transform transition-transform duration-500 ${openMenu.customer ? "rotate-180" : ""
