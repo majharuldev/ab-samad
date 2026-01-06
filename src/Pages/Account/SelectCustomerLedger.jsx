@@ -97,59 +97,59 @@ const SelectCustomerLadger = ({ customer, selectedCustomerName }) => {
 
 
   //  Excel Export (Filtered Data)
-const exportToExcel = () => {
-  let cumulativeDue = dueAmount; // opening balance
+  const exportToExcel = () => {
+    let cumulativeDue = dueAmount; // opening balance
 
-  const rows = filteredLedger.map((dt, index) => {
-    const tripRent = toNumber(dt.bill_amount || 0);
-    const dem = toNumber(dt.d_total || 0);
-    const received = toNumber(dt.rec_amount || 0);
-    const billAmount = tripRent + dem;
+    const rows = filteredLedger.map((dt, index) => {
+      const tripRent = toNumber(dt.bill_amount || 0);
+      const dem = toNumber(dt.d_total || 0);
+      const received = toNumber(dt.rec_amount || 0);
+      const billAmount = tripRent + dem;
 
-    cumulativeDue += billAmount;
-    cumulativeDue -= received;
+      cumulativeDue += billAmount;
+      cumulativeDue -= received;
 
-    return {
-      SL: index + 1,
-      Date: tableFormatDate(dt.working_date),
-      Customer: dt.customer_name,
-      Load: dt.load_point || "--",
-      Unload: dt.unload_point || "--",
-      Vehicle: dt.vehicle_no || "--",
-      "Trip Rent": tripRent,
-      Demurrage: dem,
-      "Bill Amount": billAmount,
-      "Received Amount": received,
-      Due:
-        cumulativeDue < 0
-          ? `(${Math.abs(cumulativeDue)})`
-          : cumulativeDue,
-    };
-  });
+      return {
+        SL: index + 1,
+        Date: tableFormatDate(dt.working_date),
+        Customer: dt.customer_name,
+        Load: dt.load_point || "--",
+        Unload: dt.unload_point || "--",
+        Vehicle: dt.vehicle_no || "--",
+        "Trip Rent": tripRent,
+        Demurrage: dem,
+        "Bill Amount": billAmount,
+        "Received Amount": received,
+        Due:
+          cumulativeDue < 0
+            ? `(${Math.abs(cumulativeDue)})`
+            : cumulativeDue,
+      };
+    });
 
-  //  Total row
-  rows.push({
-    SL: "Total",
-    Date: "",
-    Customer: "",
-    Load: "",
-    Unload: "",
-    Vehicle: "",
-    "Trip Rent": totals.tripRent,
-    Demurrage: totals.demurrage,
-    "Bill Amount": totals.billAmount,
-    "Received Amount": totals.received,
-    Due: grandDue < 0 ? `(${Math.abs(grandDue)})` : grandDue,
-  });
+    //  Total row
+    rows.push({
+      SL: "Total",
+      Date: "",
+      Customer: "",
+      Load: "",
+      Unload: "",
+      Vehicle: "",
+      "Trip Rent": totals.tripRent,
+      Demurrage: totals.demurrage,
+      "Bill Amount": totals.billAmount,
+      "Received Amount": totals.received,
+      Due: grandDue < 0 ? `(${Math.abs(grandDue)})` : grandDue,
+    });
 
-  const worksheet = XLSX.utils.json_to_sheet(rows);
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Customer Ledger");
-  XLSX.writeFile(workbook, `${customerName}-Ledger.xlsx`);
-};
-  
-  
-  
+    const worksheet = XLSX.utils.json_to_sheet(rows);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Customer Ledger");
+    XLSX.writeFile(workbook, `${customerName}-Ledger.xlsx`);
+  };
+
+
+
   //  Print (Filtered Data)
   const handlePrint = () => {
     const printContent = tableRef.current.innerHTML;
@@ -263,124 +263,163 @@ const exportToExcel = () => {
         {loading ? (
           <p className="text-center mt-16">{t("Loading")}...</p>
         ) : (
-          <div ref={tableRef}>
-            <table className="min-w-full text-sm text-left text-gray-900">
-              <thead className="bg-gray-100 text-gray-800 font-bold">
-                <tr className="font-bold bg-gray-50">
-                  <td colSpan={7} className="border px-2 py-1 text-right">
-                    {t("Total")}
-                  </td>
+          <div>
+            {/* ===== Total Summary Cards ===== */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-5">
 
-                  <td className="border px-2 py-1 text-right">
-                    ৳{totals.tripRent}
-                  </td>
+              {/* Trip Rent */}
+              <div className="bg-white shadow border-l-4 border-blue-500 rounded p-4">
+                <p className="text-xs text-gray-500">{t("Total Trip Rent Till Now")}</p>
+                <h3 className="text-lg font-bold text-gray-800">
+                  ৳{totals.tripRent}
+                </h3>
+              </div>
 
-                  <td className="border px-2 py-1 text-right">
-                    ৳{totals.demurrage}
-                  </td>
+              {/* Demurrage */}
+              <div className="bg-white shadow border-l-4 border-orange-500 rounded p-4">
+                <p className="text-xs text-gray-500">{t("Total Demurrage Till Now")}</p>
+                <h3 className="text-lg font-bold text-gray-800">
+                  ৳{totals.demurrage}
+                </h3>
+              </div>
 
-                  <td className="border px-2 py-1 text-right">
-                    ৳{totals.billAmount}
-                  </td>
+              {/* Bill Amount */}
+              <div className="bg-white shadow border-l-4 border-purple-500 rounded p-4">
+                <p className="text-xs text-gray-500">{t("Total Bill Till Now")}</p>
+                <h3 className="text-lg font-bold text-gray-800">
+                  ৳{totals.billAmount}
+                </h3>
+              </div>
 
-                  <td className="border px-2 py-1 text-right">
-                    ৳{totals.received}
-                  </td>
+              {/* Received */}
+              <div className="bg-white shadow border-l-4 border-green-500 rounded p-4">
+                <p className="text-xs text-gray-500">{t("Total Received Till Now")}</p>
+                <h3 className="text-lg font-bold text-gray-800">
+                  ৳{totals.received}
+                </h3>
+              </div>
 
-                  <td className="border px-2 py-1 text-right font-extrabold">
-                    ৳{grandDue}
-                  </td>
-                </tr>
-                <tr>
-                  <th className="border px-2 py-1">{t("SL.")}</th>
-                  <th className="border px-2 py-1">{t("Working Date")}</th>
-                  <th className="border px-2 py-1">{t("Bill Date")}</th>
-                  <th className="border px-2 py-1">{t("Customer")}</th>
-                  <th className="border px-2 py-1">{t("Load")}</th>
-                  <th className="border px-2 py-1">{t("Unload")}</th>
-                  <th className="border px-2 py-1">{t("Vehicle")}</th>
-                  {/* <th className="border px-2 py-1">Driver</th> */}
-                  <th className="border px-2 py-1">{t("Trip Rent")}</th>
-                  <th className="border px-2 py-1">{t("Demurrage")}</th>
-                  <th className="border px-2 py-1">{t("Bill Amount")}</th>
-                  <th className="border px-2 py-1">{t("Received Amount")}</th>
-                  <th className="border border-gray-700 px-2 py-1">
-                    {selectedCustomerName && (
-                      <p className="text-sm font-medium text-gray-800">
-                        {t("Opening Balance")}: ৳{dueAmount?.toFixed(2)}
-                      </p>
-                    )}
-                    {t("Due")}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {(() => {
-                  let cumulativeDue = dueAmount; // Opening balance
-                  return filteredLedger.map((item, idx) => {
-                    const tripRent = toNumber(item.bill_amount || 0);
-                    const receivedAmount = toNumber(item.rec_amount || 0);
-                    const demurageTotal = toNumber(item.d_total)
-                    const billAmount = tripRent + demurageTotal;
-                    // মোট due হিসাব
-                    cumulativeDue += billAmount;
-                    cumulativeDue -= receivedAmount;
+              {/* Due */}
+              <div className="bg-white shadow border-l-4 border-red-500 rounded p-4">
+                <p className="text-xs text-gray-500">{t("Currently Due")}</p>
+                <h3
+                  className={`text-lg font-bold ${grandDue < 0 ? "text-red-600" : "text-gray-800"
+                    }`}
+                >
+                  {grandDue < 0 ? `৳(${Math.abs(grandDue)})` : `৳${grandDue}`}
+                </h3>
+              </div>
 
-                    return (
-                      <tr key={idx}>
-                        <td className="border px-2 py-1">{idx + 1}</td>
-                        <td className="border px-2 py-1">{tableFormatDate(item.working_date)}</td>
-                        <td className="border px-2 py-1">{tableFormatDate(item.bill_date)}</td>
-                        <td className="border px-2 py-1">{item.customer_name}</td>
-                        <td className="border px-2 py-1">
-                          {item.load_point || <span className="flex justify-center items-center">--</span>}
-                        </td>
-                        <td className="border px-2 py-1">
-                          {item.unload_point || <span className="flex justify-center items-center">--</span>}
-                        </td>
-                        <td className="border px-2 py-1">
-                          {item.vehicle_no || <span className="flex justify-center items-center">--</span>}
-                        </td>
-                        {/* <td className="border px-2 py-1">
+            </div>
+            <div ref={tableRef}>
+              <table className="min-w-full text-sm text-left text-gray-900">
+                <thead className="bg-gray-100 text-gray-800 font-bold">
+                  <tr>
+                    <th className="border px-2 py-1">{t("SL.")}</th>
+                    <th className="border px-2 py-1">{t("Working Date")}</th>
+                    <th className="border px-2 py-1">{t("Bill Date")}</th>
+                    <th className="border px-2 py-1">{t("Customer")}</th>
+                    <th className="border px-2 py-1">{t("Load")}</th>
+                    <th className="border px-2 py-1">{t("Unload")}</th>
+                    <th className="border px-2 py-1">{t("Vehicle")}</th>
+                    {/* <th className="border px-2 py-1">Driver</th> */}
+                    <th className="border px-2 py-1">{t("Trip Rent")}</th>
+                    <th className="border px-2 py-1">{t("Demurrage")}</th>
+                    <th className="border px-2 py-1">{t("Bill Amount")}</th>
+                    <th className="border px-2 py-1">{t("Received Amount")}</th>
+                    <th className="border border-gray-700 px-2 py-1">
+                      {selectedCustomerName && (
+                        <p className="text-sm font-medium text-gray-800">
+                          {t("Opening Balance")}: ৳{dueAmount?.toFixed(2)}
+                        </p>
+                      )}
+                      {t("Due")}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(() => {
+                    let cumulativeDue = dueAmount; // Opening balance
+                    return filteredLedger.map((item, idx) => {
+                      const tripRent = toNumber(item.bill_amount || 0);
+                      const receivedAmount = toNumber(item.rec_amount || 0);
+                      const demurageTotal = toNumber(item.d_total)
+                      const billAmount = tripRent + demurageTotal;
+                      // মোট due হিসাব
+                      cumulativeDue += billAmount;
+                      cumulativeDue -= receivedAmount;
+
+                      return (
+                        <tr key={idx}>
+                          <td className="border px-2 py-1">{idx + 1}</td>
+                          <td className="border px-2 py-1">{tableFormatDate(item.working_date)}</td>
+                          <td className="border px-2 py-1">{tableFormatDate(item.bill_date)}</td>
+                          <td className="border px-2 py-1">{item.customer_name}</td>
+                          <td className="border px-2 py-1">
+                            {item.load_point || <span className="flex justify-center items-center">--</span>}
+                          </td>
+                          <td className="border px-2 py-1">
+                            {item.unload_point || <span className="flex justify-center items-center">--</span>}
+                          </td>
+                          <td className="border px-2 py-1">
+                            {item.vehicle_no || <span className="flex justify-center items-center">--</span>}
+                          </td>
+                          {/* <td className="border px-2 py-1">
                           {item.driver_name || <span className="flex justify-center items-center">--</span>}
                         </td> */}
-                        <td className="border px-2 py-1">
-                          {tripRent ? tripRent : "--"}
-                        </td>
-                        <td className="border px-2 py-1">
-                          {demurageTotal ? demurageTotal : "--"}
-                        </td>
-                        <td className="border px-2 py-1">
-                          {billAmount ? billAmount : "--"}
-                        </td>
-                        <td className="border px-2 py-1">
-                          {receivedAmount ? receivedAmount : "--"}
-                        </td>
-                        <td className={`border border-gray-700 px-2 py-1 ${cumulativeDue < 0 ? 'text-red-600' : ''}`}>
-                          {cumulativeDue < 0 ? `(${Math.abs(cumulativeDue)})` : cumulativeDue}
-                        </td>
-                      </tr>
-                    );
-                  });
-                })()}
-              </tbody>
+                          <td className="border px-2 py-1">
+                            {tripRent ? tripRent : "--"}
+                          </td>
+                          <td className="border px-2 py-1">
+                            {demurageTotal ? demurageTotal : "--"}
+                          </td>
+                          <td className="border px-2 py-1">
+                            {billAmount ? billAmount : "--"}
+                          </td>
+                          <td className="border px-2 py-1">
+                            {receivedAmount ? receivedAmount : "--"}
+                          </td>
+                          <td className={`border border-gray-700 px-2 py-1 ${cumulativeDue < 0 ? 'text-red-600' : ''}`}>
+                            {cumulativeDue < 0 ? `(${Math.abs(cumulativeDue)})` : cumulativeDue}
+                          </td>
+                        </tr>
+                      );
+                    });
+                  })()}
+                </tbody>
 
-              <tfoot>
+                <tfoot>
+                  <tr className="font-bold bg-gray-50">
+                    <td colSpan={7} className="border px-2 py-1 text-right">
+                      {t("Total")}
+                    </td>
 
-                {/* <tr className="font-bold bg-blue-100">
-    <td colSpan={9} className="border border-black px-2 py-1 text-right">
-      Final Due (Opening Due +)
-    </td>
-    <td className="border border-black px-2 py-1 text-right text-black">
-      ৳{grandDue?.toFixed(2)}
-    </td>
-  </tr> */}
-              </tfoot>
+                    <td className="border px-2 py-1 text-right">
+                      ৳{totals.tripRent}
+                    </td>
 
-            </table>
+                    <td className="border px-2 py-1 text-right">
+                      ৳{totals.demurrage}
+                    </td>
 
-            {/* Pagination */}
-            {/* {pageCount > 1 && (
+                    <td className="border px-2 py-1 text-right">
+                      ৳{totals.billAmount}
+                    </td>
+
+                    <td className="border px-2 py-1 text-right">
+                      ৳{totals.received}
+                    </td>
+
+                    <td className="border px-2 py-1 text-right font-extrabold">
+                      ৳{grandDue}
+                    </td>
+                  </tr>
+                </tfoot>
+
+              </table>
+
+              {/* Pagination */}
+              {/* {pageCount > 1 && (
               <div className="mt-4 flex justify-center">
                 <ReactPaginate
                   previousLabel={"Previous"}
@@ -400,6 +439,7 @@ const exportToExcel = () => {
                 />
               </div>
             )} */}
+            </div>
           </div>
         )}
       </div>

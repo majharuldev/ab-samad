@@ -14,7 +14,7 @@ import api from "../../../utils/axiosConfig";
 import { useTranslation } from "react-i18next";
 
 const OfficeLedger = () => {
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const [branch, setBranch] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showFilter, setShowFilter] = useState(false);
@@ -119,16 +119,16 @@ const OfficeLedger = () => {
     branchDataWithBalance.length > 0
       ? branchDataWithBalance[branchDataWithBalance.length - 1].runningBalance
       : openingBalance;
-      // Calculate total Cash In, Cash Out, and Net Balance
-const totalCashIn = filteredBranch.reduce(
-  (sum, item) => sum + (parseFloat(item.cash_in) || 0),
-  0
-);
-const totalCashOut = filteredBranch.reduce(
-  (sum, item) => sum + (parseFloat(item.cash_out) || 0),
-  0
-);
-const totalBalance = openingBalance + totalCashIn - totalCashOut;
+  // Calculate total Cash In, Cash Out, and Net Balance
+  const totalCashIn = filteredBranch.reduce(
+    (sum, item) => sum + (parseFloat(item.cash_in) || 0),
+    0
+  );
+  const totalCashOut = filteredBranch.reduce(
+    (sum, item) => sum + (parseFloat(item.cash_out) || 0),
+    0
+  );
+  const totalBalance = openingBalance + totalCashIn - totalCashOut;
 
 
   // ================= Excel Export =================
@@ -221,7 +221,7 @@ const totalBalance = openingBalance + totalCashIn - totalCashOut;
               <th>${t("SL.")}</th>
               <th>${t("Date")}</th>
               <th>${t("Particulars")}</th>
-              <th>${t("Mode")}</th>
+              <th>${t("Payment Mode")}</th>
               <th>${t("Destination")}</th>
               <th>${t("Due")}</th>
               <th>${t("CashIn")}</th>
@@ -356,24 +356,60 @@ const totalBalance = openingBalance + totalCashIn - totalCashOut;
         )}
 
         {/* Table */}
-        <div className="w-full mt-5 overflow-x-auto border border-gray-200">
+        <div className="w-full mt-5 overflow-x-auto ">
+          {/* Summary Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-5">
+
+            {/* Opening Balance */}
+            <div className="bg-white border-l-4 border-blue-500 shadow rounded p-4">
+              <p className="text-xs text-gray-500">{t("Opening Balance")}</p>
+              <h3 className="text-lg font-bold text-gray-800">
+                {openingBalance}
+              </h3>
+            </div>
+
+            {/* Total Cash In */}
+            <div className="bg-white border-l-4 border-green-500 shadow rounded p-4">
+              <p className="text-xs text-gray-500">{t("Total Cash In")}</p>
+              <h3 className="text-lg font-bold text-gray-800">
+                {totalCashIn}
+              </h3>
+            </div>
+
+            {/* Total Cash Out */}
+            <div className="bg-white border-l-4 border-red-500 shadow rounded p-4">
+              <p className="text-xs text-gray-500">{t("Total Cash Out")}</p>
+              <h3 className="text-lg font-bold text-gray-800">
+                {totalCashOut}
+              </h3>
+            </div>
+
+            {/* Closing Balance */}
+            <div className="bg-white border-l-4 border-purple-500 shadow rounded p-4">
+              <p className="text-xs text-gray-500">{t("Closing")} {t("Balance")}</p>
+              <h3
+                className={`text-lg font-bold ${totalBalance < 0 ? "text-red-600" : "text-gray-800"
+                  }`}
+              >
+                {totalBalance < 0 ? `(${Math.abs(totalBalance)})` : totalBalance}
+              </h3>
+            </div>
+
+            {/* Net Balance Status */}
+            <div className="bg-white border-l-4 border-gray-800 shadow rounded p-4">
+              <p className="text-xs text-gray-500">{t("Balance Status")}</p>
+              <h3
+                className={`text-lg font-bold ${totalBalance < 0 ? "text-red-600" : "text-green-600"
+                  }`}
+              >
+                {totalBalance < 0 ? t("Negative") : t("Positive")}
+              </h3>
+            </div>
+
+          </div>
+
           <table className="w-full text-sm text-left">
             <thead className="text-black capitalize font-bold">
-              <tr className="bg-gray-100 font-bold text-black">
-                <td colSpan="6" className="text-right border border-gray-700 px-2 py-2">
-                  {t("Closing")} {t("Balance")}:
-                </td>
-                <td className="border border-gray-700 px-2 py-2">
-                  <span className="text-gray-800">{totalCashIn}</span>
-                </td>
-                <td className="border border-gray-700 px-2 py-2">
-                 <span className="text-gray-800">{totalCashOut}</span>
-                </td>
-                <td className="border border-gray-700 px-2 py-2">
-                <span className={`text-gray-800 ${totalBalance < 0 ? 'text-red-600' : 'text-gray-800'}`}>{totalBalance <0 ? `(${totalBalance})`: totalBalance}</span>
-                </td>
-                <td className="border border-gray-700 px-2 py-2"></td>
-              </tr>
               <tr>
                 <th className="border border-gray-700 px-2 py-1">{t("SL.")}</th>
                 <th className="border border-gray-700 px-2 py-1">{t("Date")}</th>
@@ -428,6 +464,23 @@ const totalBalance = openingBalance + totalCashIn - totalCashOut;
                 </tr>
               ))}
             </tbody>
+            <tfoot>
+              <tr className="bg-gray-100 font-bold text-black">
+                <td colSpan="6" className="text-right border border-gray-700 px-2 py-2">
+                  {t("Closing")} {t("Balance")}:
+                </td>
+                <td className="border border-gray-700 px-2 py-2">
+                  <span className="text-gray-800">{totalCashIn}</span>
+                </td>
+                <td className="border border-gray-700 px-2 py-2">
+                  <span className="text-gray-800">{totalCashOut}</span>
+                </td>
+                <td className="border border-gray-700 px-2 py-2">
+                  <span className={`text-gray-800 ${totalBalance < 0 ? 'text-red-600' : 'text-gray-800'}`}>{totalBalance < 0 ? `(${totalBalance})` : totalBalance}</span>
+                </td>
+                <td className="border border-gray-700 px-2 py-2"></td>
+              </tr>
+            </tfoot>
           </table>
         </div>
       </div>

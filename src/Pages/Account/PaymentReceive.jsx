@@ -392,7 +392,7 @@ const exportToExcel = () => {
 
         <div className="mt-5 overflow-x-auto rounded-md">
           <table className="min-w-full text-sm text-left">
-            <thead className="bg-gray-200 text-primary capitalize text-sm">
+            <thead className="bg-gray-200 text-primary capitalize text-xs">
               <tr>
                 <th className="p-2">{t("SL.")}</th>
                 <th className="p-2">{t("Date")}</th>

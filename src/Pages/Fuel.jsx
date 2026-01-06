@@ -15,7 +15,7 @@ import Pagination from "../components/Shared/Pagination";
 
 const Fuel = () => {
   const { t } = useTranslation();
-  const [purchase, setPurchase] = useState([]);
+  const [fuel, setFuel] = useState([]);
   const [loading, setLoading] = useState(true);
   // Date filter state
   const [startDate, setStartDate] = useState("");
@@ -36,7 +36,7 @@ const Fuel = () => {
     api
       .get(`/fuel`)
       .then((response) => {   
-          setPurchase(response.data);
+          setFuel(response?.data?.Data);
         setLoading(false);
       })
       .catch((error) => {
@@ -49,7 +49,7 @@ const Fuel = () => {
   const [vehicleFilter, setVehicleFilter] = useState("");
 
   // Filter by date
-  const filtered = purchase.filter((dt) => {
+  const filtered = fuel?.filter((dt) => {
     const dtDate = new Date(dt.date);
     const start = startDate ? new Date(startDate) : null;
     const end = endDate ? new Date(endDate) : null;
@@ -64,7 +64,7 @@ const Fuel = () => {
   });
 
   // Vehicle filter apply
-  const vehicleFiltered = filtered.filter((dt) => {
+  const vehicleFiltered = filtered?.filter((dt) => {
     if (vehicleFilter) {
       return dt.vehicle_no === vehicleFilter;
     }
@@ -72,7 +72,7 @@ const Fuel = () => {
   });
 
   // Search (Product ID, Supplier, Vehicle, Driver)
-  const filteredPurchase = vehicleFiltered.filter((dt) => {
+  const filteredFuel = vehicleFiltered.filter((dt) => {
     const term = searchTerm.toLowerCase()
     if (!term) {
       return true
@@ -93,7 +93,7 @@ const Fuel = () => {
   });
 
   // Vehicle No dropdown unique values
-  const uniqueVehicles = [...new Set(purchase.map((p) => p.vehicle_no))];
+  const uniqueVehicles = [...new Set(fuel.map((p) => p.vehicle_no))];
   // view car by id
   const handleViewCar = async (id) => {
     try {
@@ -115,7 +115,7 @@ const Fuel = () => {
   // delete by id
   const handleDelete = async (id) => {
     try {
-      const response = await api.delete(`/purchase/${id}`);
+      const response = await api.delete(`/fuel/${id}`);
 
       // Remove driver from local list
       setPurchase((prev) => prev.filter((account) => account.id !== id));
@@ -140,17 +140,17 @@ const Fuel = () => {
   const itemsPerPage = 10;
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentPurchase = filteredPurchase.slice(
+  const currentPurchase = filteredFuel.slice(
     indexOfFirstItem,
     indexOfLastItem
   );
-  const totalPages = Math.ceil(filteredPurchase.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredFuel.length / itemsPerPage);
 
   // excel export function
    const exportExcel = () => {
     const dataToExport = []
 
-    filteredPurchase.forEach((purchase, purchaseIndex) => {
+    filteredFuel.forEach((purchase, purchaseIndex) => {
       if (purchase.items && purchase.items.length > 0) {
         purchase.items.forEach((item, itemIndex) => {
           dataToExport.push({
@@ -233,7 +233,7 @@ const Fuel = () => {
   `
 
     let rowIndex = 1
-    const tableRows = filteredPurchase
+    const tableRows = filteredFuel
       .map((item) => {
         // If purchase has items, create a row for each item
         if (item.items && item.items.length > 0) {

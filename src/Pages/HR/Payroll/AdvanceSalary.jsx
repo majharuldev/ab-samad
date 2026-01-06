@@ -261,8 +261,8 @@ const AdvanceSalary = () => {
                 <th className="p-2">{t("Date")}</th>
                 <th className="p-2">{t("Employee")} {t("Name")}</th>
                 <th className="p-2">{t("Amount")}</th>
-                <th className="p-2">{t("Salary Month")}</th>
-                <th className="p-2">{t("After Adjustment")}</th>
+                <th className="p-2">{t("Salary")} {t("Month")}</th>
+                <th className="p-2">{t("After")} {t("Adjustment")}</th>
                 <th className="p-2">{t("Status")}</th>
                 <th className="p-2">{t("Created By")}</th>
                 <th className="p-2">{t("Action")}</th>

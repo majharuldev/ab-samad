@@ -51,7 +51,7 @@ const OfficialExpense = () => {
   const salaryCategories = [
     "Utility",
   ];
-  const statusOptions = ["Paid", "Unpaid"];
+  const statusOptions = [t("Paid"), t("Unpaid")];
 
   //   branch api
   const [branches, setBranches] = useState([]);

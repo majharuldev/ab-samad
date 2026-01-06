@@ -436,7 +436,7 @@ const PurchaseList = () => {
                 <th className="p-2">{t("SL.")}</th>
                 <th className="p-2">{t("Date")}</th>
                 <th className="p-2">{t("Product ID")}</th>
-                <th className="p-2">{t("Supplier Name")}</th>
+                <th className="p-2">{t("Supplier")} {t("Name")}</th>
 
                 <th className="p-2">{t("Category")}</th>
                 <th className="p-2">{t("Item Name")}</th>
@@ -610,7 +610,7 @@ const PurchaseList = () => {
                   <div className="flex flex-col items-start ">
                     <span className="font-medium mb-2">{t("Bill Documents")}:</span>
                     <img
-                      src={`https://soinik.tramessy.com/backend/uploads/purchase/${selectedPurchase.image}`}
+                      src={`${import.meta.env.VITE_IMAGE_URL}/purchase/${selectedPurchase.image}`}
                       alt="Bill"
                       className="w-32 h-32 object-cover rounded-lg border"
                     />

@@ -52,7 +52,7 @@ const { t } = useTranslation();
             const employee = res.data.data;
             reset(employee); // form এর মধ্যে data বসানো
             if (employee.image) {
-  setPreviewImage(`https://ajenterprise.tramessy.com/backend/uploads/employee/${employee.image}`);
+  setPreviewImage(`${import.meta.env.VITE_IMAGE_URL}/employee/${employee.image}`);
 }
           } else {
             toast.error("Employee not found!");

@@ -21,6 +21,7 @@ const OfficialProductForm = () => {
   const methods = useForm({
     defaultValues: {
       sms_sent: "yes",
+      items: [{ item_name: "", quantity: "", unit_price: "", total: "" }],
     },
   });
   const isAdmin = useAdmin();
@@ -32,29 +33,29 @@ const OfficialProductForm = () => {
   const [supplier, setSupplier] = useState([]);
   const [isLoading, setIsLoading] = useState(isEditMode);
   const [existingImage, setExistingImage] = useState(null);
-// Dynamic item fields
+  // Dynamic item fields
   const { fields, append, remove } = useFieldArray({
     control,
     name: "items",
   });
 
   const selectedCategory = watch("category");
-
+  const quantity = parseFloat(watch("quantity") || 0);
+  const unitPrice = parseFloat(watch("unit_price") || 0);
   // সব items এবং service charge এর হিসাব করার জন্য
-    const items = useWatch({ control, name: "items" });
-    const serviceCharge = useWatch({ control, name: "service_charge" });
-  
-    useEffect(() => {
-      const totalItemsAmount = (items || []).reduce((sum, item) => {
-        const quantity = parseFloat(item.quantity) || 0;
-        const unitPrice = parseFloat(item.unit_price) || 0;
-        return sum + quantity * unitPrice;
-      }, 0);
-  
-      const grandTotal = totalItemsAmount + (parseFloat(serviceCharge) || 0);
-      setValue("purchase_amount", grandTotal);
-    }, [items, serviceCharge, setValue]);
+  const items = useWatch({ control, name: "items" });
+  const serviceCharge = useWatch({ control, name: "service_charge" });
 
+  useEffect(() => {
+    const totalItemsAmount = (items || []).reduce((sum, item) => {
+      const quantity = parseFloat(item.quantity) || 0;
+      const unitPrice = parseFloat(item.unit_price) || 0;
+      return sum + quantity * unitPrice;
+    }, 0);
+
+    const grandTotal = totalItemsAmount + (parseFloat(serviceCharge) || 0);
+    setValue("purchase_amount", grandTotal);
+  }, [items, serviceCharge, setValue]);
   // Preview image
   const [previewImage, setPreviewImage] = useState(null);
 
@@ -110,7 +111,7 @@ const OfficialProductForm = () => {
           reset(formValues)
 
           if (purchaseData.image) {
-            const imageUrl = `https://soinik.tramessy.com/backend/uploads/purchase/${purchaseData.image}`
+            const imageUrl = `${import.meta.env.VITE_IMAGE_URL}/purchase/${purchaseData.image}`
             setPreviewImage(imageUrl)
             setExistingImage(purchaseData.image)
           }
@@ -147,192 +148,120 @@ const OfficialProductForm = () => {
     label: supply.supplier_name,
   }));
 
+
   // Handle form submission for both add and update
-  // const onSubmit = async (data) => {
-  //   try {
-
-  //     // date format local 
-  //     ["date", "service_date", "next_service_date"].forEach((field) => {
-  //       if (data[field]) {
-  //         const d = new Date(data[field]);
-  //         d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-  //         data[field] = d.toISOString().split("T")[0];
-  //       }
-  //     });
-  //     // created_by ঠিকভাবে সেট করা
-  //     let createdByValue = "Unknown";
-  //     if (user?.name) createdByValue = user.name;
-  //     else if (user?.email) createdByValue = user.email;
-
-  //     // যদি Edit mode হয়, তাহলে আগেরটা রেখে দাও
-  //     if (isEditMode && data.created_by) {
-  //       createdByValue = data.created_by;
-  //     }
-
-  //     const payload = {
-  //       ...data,
-  //       created_by: createdByValue,
-  //     };
-
-  //     const response = isEditMode
-  //       ? await api.put(`/purchase/${id}`, payload)
-  //       : await api.post(`/purchase`, payload);
-
-  //     if (response.data.success) {
-  //       toast.success(isEditMode ? "Official Products Purchase updated!" : "Official Products Purchase submitted!");
-  //       //  Only send SMS if it's a new trip and sms_sent = "yes"
-  //       if (!id && !isAdmin && data.sms_sent === "yes") {
-  //         const purchase = response.data.data;
-  //         const purchaseId = purchase.id;
-  //         const purchaseDate = purchase.date || "";
-  //         const supplierName = purchase.supplier_name || "";
-  //         const userName = user.name || "";
-  //         const purchaseItem = purchase?.item_name || "";
-
-  //         // Build message content
-  //         const messageContent = `Dear Sir, A new Official Product created by ${userName}.\nPurchase Id: ${purchaseId}\nPurchase Date: ${purchaseDate}\nSupplier: ${supplierName}\nPurchase Name: ${purchaseItem}`;
-
-  //         // SMS Config
-  //         const adminNumber = "01872121862"; // or multiple separated by commas
-  //         const API_KEY = "3b82495582b99be5";
-  //         const SECRET_KEY = "ae771458";
-  //         const CALLER_ID = "1234";
-
-  //         // Correct URL (same structure as your given example)
-  //         const smsUrl = `http://smpp.revesms.com:7788/sendtext?apikey=${API_KEY}&secretkey=${SECRET_KEY}&callerID=${CALLER_ID}&toUser=${adminNumber}&messageContent=${encodeURIComponent(messageContent)}`;
-  //         try {
-  //           await fetch(smsUrl);
-  //           toast.success("SMS sent to admin!");
-  //         } catch (smsError) {
-  //           // console.error("SMS sending failed:", smsError);
-  //           // toast.error("Trip saved, but SMS failed to send.");
-  //         }
-  //       }
-  //       navigate("/tramessy/Purchase/official-product");
-  //       reset();
-  //     } else {
-  //       throw new Error(isEditMode ? "Failed to update Purchase" : "Failed to create Purchase");
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //     toast.error(error.response?.data?.message || "Server error");
-  //   }
-  // };
-
-   // Handle form submission for both add and update
-    const onSubmit = async (data) => {
-      try {
-        //  Date fields localize করা
-        ["date", "service_date", "next_service_date"].forEach((field) => {
-          if (data[field]) {
-            const d = new Date(data[field]);
-            d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-            data[field] = d.toISOString().split("T")[0];
-          }
-        });
-  
-        //  created_by
-        // let createdByValue = user?.name || user?.email || "Unknown";
-        // if (isEditMode && data.created_by) {
-        //   createdByValue = data.created_by;
-        // }
-         const createdByValue = user?.name || user?.email || "Unknown";
-        //  items array আলাদা করে নেওয়া
-        const item_name = data.items.map((item) => item.item_name);
-        const quantity = data.items.map((item) => Number(item.quantity));
-        const unit_price = data.items.map((item) => Number(item.unit_price));
-        const total = data.items.map((item) => Number(item.quantity) * Number(item.unit_price));
-  
-        //  purchase_amount হিসাব করা
-        const purchase_amount =
-          total.reduce((sum, val) => sum + val, 0) + Number(data.service_charge || 0);
-  
-        //  FormData তৈরি
-        const formData = new FormData();
-  
-        formData.append("date", data.date || "");
-        formData.append("supplier_name", data.supplier_name || "");
-        formData.append("category", data.category || "");
-        formData.append("purchase_amount", purchase_amount);
-        formData.append("service_charge", data.service_charge || 0);
-        formData.append("remarks", data.remarks || "");
-        // formData.append("driver_name", data.driver_name || "");
-        formData.append("branch_name", data.branch_name || "");
-        // formData.append("vehicle_no", data.vehicle_no || "");
-        // formData.append("vehicle_category", data.vehicle_category || "");
-        formData.append("priority", data.priority || "");
-        // formData.append("validity", data.validity || "");
-        // formData.append("next_service_date", data.next_service_date || "");
-        // formData.append("service_date", data.service_date || "");
-        // formData.append("last_km", data.last_km || 0);
-        // formData.append("next_km", data.next_km || 0);
-        formData.append("created_by", createdByValue);
-  
-        //  items গুলো আলাদা array হিসেবে append করা
-        item_name.forEach((name, i) => formData.append("item_name[]", name));
-        quantity.forEach((q, i) => formData.append("quantity[]", q));
-        unit_price.forEach((u, i) => formData.append("unit_price[]", u));
-        total.forEach((t, i) => formData.append("total[]", t));
-  
-        if (data.bill_image instanceof File) {
-          formData.append("image", data.bill_image);
-        } else if (isEditMode && existingImage) {
-          formData.append("existing_image", existingImage);
+  const onSubmit = async (data) => {
+    try {
+      //  Date fields localize করা
+      ["date", "service_date", "next_service_date"].forEach((field) => {
+        if (data[field]) {
+          const d = new Date(data[field]);
+          d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+          data[field] = d.toISOString().split("T")[0];
         }
-  
-  
-        //  API Call
-        const response = isEditMode
-          ? await api.post(`/purchase/${id}`, formData, {
-            headers: { "Content-Type": "multipart/form-data" },
-          })
-          : await api.post(`/purchase`, formData, {
-            headers: { "Content-Type": "multipart/form-data" },
-          });
-  
-         if (response.data.success) {
+      });
+
+      //  created_by
+      // let createdByValue = user?.name || user?.email || "Unknown";
+      // if (isEditMode && data.created_by) {
+      //   createdByValue = data.created_by;
+      // }
+      const createdByValue = user?.name || user?.email || "Unknown";
+      //  items array আলাদা করে নেওয়া
+      const item_name = data.items.map((item) => item.item_name);
+      const quantity = data.items.map((item) => Number(item.quantity));
+      const unit_price = data.items.map((item) => Number(item.unit_price));
+      const total = data.items.map((item) => Number(item.quantity) * Number(item.unit_price));
+
+      //  purchase_amount হিসাব করা
+      const purchase_amount =
+        total.reduce((sum, val) => sum + val, 0) + Number(data.service_charge || 0);
+
+      //  FormData তৈরি
+      const formData = new FormData();
+
+      formData.append("date", data.date || "");
+      formData.append("supplier_name", data.supplier_name || "");
+      formData.append("category", data.category || "");
+      formData.append("purchase_amount", purchase_amount);
+      formData.append("service_charge", data.service_charge || 0);
+      formData.append("remarks", data.remarks || "");
+      // formData.append("driver_name", data.driver_name || "");
+      formData.append("branch_name", data.branch_name || "");
+      // formData.append("vehicle_no", data.vehicle_no || "");
+      // formData.append("vehicle_category", data.vehicle_category || "");
+      formData.append("priority", data.priority || "");
+      // formData.append("validity", data.validity || "");
+      // formData.append("next_service_date", data.next_service_date || "");
+      // formData.append("service_date", data.service_date || "");
+      // formData.append("last_km", data.last_km || 0);
+      // formData.append("next_km", data.next_km || 0);
+      formData.append("created_by", createdByValue);
+
+      //  items গুলো আলাদা array হিসেবে append করা
+      item_name.forEach((name, i) => formData.append("item_name[]", name));
+      quantity.forEach((q, i) => formData.append("quantity[]", q));
+      unit_price.forEach((u, i) => formData.append("unit_price[]", u));
+      total.forEach((t, i) => formData.append("total[]", t));
+
+      if (data.bill_image instanceof File) {
+        formData.append("image", data.bill_image);
+      } else if (isEditMode && existingImage) {
+        formData.append("existing_image", existingImage);
+      }
+
+
+      //  API Call
+      const response = isEditMode
+        ? await api.post(`/purchase/${id}`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        })
+        : await api.post(`/purchase`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+
+      if (response.data.success) {
         toast.success(isEditMode ? t("Official Products Purchase updated!") : t("Official Products Purchase submitted!"));
         //  Only send SMS if it's a new trip and sms_sent = "yes"
-      //   if (!id && !isAdmin && data.sms_sent === "yes") {
-      //     const purchase = response.data.data;
-      //     const purchaseId = purchase.id;
-      //     const purchaseDate = purchase.date || "";
-      //     const supplierName = purchase.supplier_name || "";
-      //     const userName = user.name || "";
-      //     const purchaseItem = purchase?.item_name || "";
+        //   if (!id && !isAdmin && data.sms_sent === "yes") {
+        //     const purchase = response.data.data;
+        //     const purchaseId = purchase.id;
+        //     const purchaseDate = purchase.date || "";
+        //     const supplierName = purchase.supplier_name || "";
+        //     const userName = user.name || "";
+        //     const purchaseItem = purchase?.item_name || "";
 
-      //     // Build message content
-      //     const messageContent = `Dear Sir, A new Official Product created by ${userName}.\nPurchase Id: ${purchaseId}\nPurchase Date: ${purchaseDate}\nSupplier: ${supplierName}\nPurchase Name: ${purchaseItem}`;
+        //     // Build message content
+        //     const messageContent = `Dear Sir, A new Official Product created by ${userName}.\nPurchase Id: ${purchaseId}\nPurchase Date: ${purchaseDate}\nSupplier: ${supplierName}\nPurchase Name: ${purchaseItem}`;
 
-      //     // SMS Config
-      //     const adminNumber = "01872121862"; // or multiple separated by commas
-      //     const API_KEY = "3b82495582b99be5";
-      //     const SECRET_KEY = "ae771458";
-      //     const CALLER_ID = "1234";
+        //     // SMS Config
+        //     const adminNumber = "01872121862"; // or multiple separated by commas
+        //     const API_KEY = "3b82495582b99be5";
+        //     const SECRET_KEY = "ae771458";
+        //     const CALLER_ID = "1234";
 
-      //     // Correct URL (same structure as your given example)
-      //     const smsUrl = `https://smpp.revesms.com:7790/sendtext?apikey=${API_KEY}&secretkey=${SECRET_KEY}&callerID=${CALLER_ID}&toUser=${adminNumber}&messageContent=${encodeURIComponent(
-      //   messageContent
-      // )}`;
-      //     try {
-      //        await axios.post(smsUrl);
-      //       toast.success("SMS sent to admin!");
-      //     } catch (smsError) {
-      //       console.error("SMS sending failed:", smsError);
-      //       // toast.error("Trip saved, but SMS failed to send.");
-      //     }
-      //   }
+        //     // Correct URL (same structure as your given example)
+        //     const smsUrl = `https://smpp.revesms.com:7790/sendtext?apikey=${API_KEY}&secretkey=${SECRET_KEY}&callerID=${CALLER_ID}&toUser=${adminNumber}&messageContent=${encodeURIComponent(
+        //   messageContent
+        // )}`;
+        //     try {
+        //        await axios.post(smsUrl);
+        //       toast.success("SMS sent to admin!");
+        //     } catch (smsError) {
+        //       console.error("SMS sending failed:", smsError);
+        //       // toast.error("Trip saved, but SMS failed to send.");
+        //     }
+        //   }
         navigate("/tramessy/Purchase/official-product");
         reset();
       } else {
         throw new Error(isEditMode ? t("Failed to update Purchase") : t("Failed to create Purchase"));
       }
-      } catch (error) {
-        console.error("Error:", error);
-        toast.error(error.response?.data?.message || t("Server error"));
-      }
-    };
-
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error(error.response?.data?.message || t("Server error"));
+    }
+  };
 
   return (
     <div className="mt-5 md:p-2">
@@ -342,11 +271,11 @@ const OfficialProductForm = () => {
           {isEditMode ? t("Update Official Purchase") : t("Add Official Purchase")}
         </h3>
         <FormProvider {...methods}>
-          {isLoading  ? (
-                      <div className="p-4 bg-white rounded-md shadow border-t-2 border-primary">
-                        <FormSkeleton />
-                      </div>
-                    ) : (<form
+          {isLoading ? (
+            <div className="p-4 bg-white rounded-md shadow border-t-2 border-primary">
+              <FormSkeleton />
+            </div>
+          ) : (<form
             onSubmit={handleSubmit(onSubmit)}
             className="mx-auto p-6 space-y-4"
           >
@@ -421,13 +350,21 @@ const OfficialProductForm = () => {
                   const quantity = watch(`items.${index}.quantity`) || 0;
                   const unitPrice = parseFloat(watch(`items.${index}.unit_price`)) || 0;
                   const total = quantity * unitPrice;
-
+                  useEffect(() => {
+                    const total = Number(quantity) * Number(unitPrice);
+                    setValue(`items.${index}.total`, total, { shouldValidate: false });
+                  }, [quantity, unitPrice, index, setValue]);
                   return (
                     <div key={field.id} className="flex flex-col md:flex-row gap-3 border border-gray-300 p-3 rounded-md relative">
                       <InputField name={`items.${index}.item_name`} label={t("Item Name")} required={!isEditMode} className="!w-full" />
                       <InputField name={`items.${index}.quantity`} label={t("Quantity")} type="number" required={!isEditMode} className="!w-full" />
                       <InputField name={`items.${index}.unit_price`} label={t("Unit Price")} type="number" required={!isEditMode} className="!w-full" />
-                      <InputField name={`items.${index}.total`} label={t("Total")} readOnly value={total} className="!salw-full" />
+                      <InputField
+                        name={`items.${index}.total`}
+                        label={t("Total")}
+                        readOnly
+                        value={total}
+                        className="!salw-full" />
 
                       <button
                         type="button"
@@ -464,8 +401,6 @@ const OfficialProductForm = () => {
                   name="purchase_amount"
                   label={`${t("Total")} ${t("Purchase Amount")}`}
                   readOnly
-                 value={watch("purchase_amount") || 0}
-                  required={!isEditMode}
                 />
               </div>
               <div className="w-full">
@@ -477,86 +412,86 @@ const OfficialProductForm = () => {
             </div>
 
             <div className="md:flex justify-between gap-3">
-            <div className="w-full">
-              <label className="text-gray-700 text-sm font-semibold">
-                {t("Bill Documents")}
-              </label>
-              <Controller
-                name="bill_image"
-                control={control}
-                // rules={isEditMode ? false : { required: "This field is required" }}
-                render={({
-                  field: { onChange, ref },
-                  fieldState: { error },
-                }) => (
-                  <div className="relative">
-                    <label
-                      htmlFor="bill_image"
-                      className="border p-2 rounded w-[50%] block bg-white text-gray-300 text-sm cursor-pointer"
-                    >
-                      {previewImage ? t("Image selected") : t("Choose image")}
-                    </label>
-                    <input
-                      id="bill_image"
-                      type="file"
-                      accept="image/*"
-                      ref={ref}
-                      className="hidden"
-                      onChange={(e) => {
-                        const file = e.target.files[0];
-                        if (file) {
-                          const url = URL.createObjectURL(file);
-                          setPreviewImage(url);
-                          onChange(file);
-                        } else {
-                          setPreviewImage(null);
-                          onChange(null);
-                        }
-                      }}
-                    />
-                    {error && (
-                      <span className="text-red-600 text-sm">
-                        {error.message}
-                      </span>
-                    )}
-                    {isEditMode && existingImage && (
-                      <span className="text-green-600 text-sm">
-                        {t("Current image")}: {existingImage}
-                      </span>
-                    )}
-                  </div>
-                )}
-              />
+              <div className="w-full">
+                <label className="text-gray-700 text-sm font-semibold">
+                  {t("Bill Documents")}
+                </label>
+                <Controller
+                  name="bill_image"
+                  control={control}
+                  // rules={isEditMode ? false : { required: "This field is required" }}
+                  render={({
+                    field: { onChange, ref },
+                    fieldState: { error },
+                  }) => (
+                    <div className="relative">
+                      <label
+                        htmlFor="bill_image"
+                        className="border p-2 rounded w-[50%] block bg-white text-gray-300 text-sm cursor-pointer"
+                      >
+                        {previewImage ? t("Image selected") : t("Choose image")}
+                      </label>
+                      <input
+                        id="bill_image"
+                        type="file"
+                        accept="image/*"
+                        ref={ref}
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const url = URL.createObjectURL(file);
+                            setPreviewImage(url);
+                            onChange(file);
+                          } else {
+                            setPreviewImage(null);
+                            onChange(null);
+                          }
+                        }}
+                      />
+                      {error && (
+                        <span className="text-red-600 text-sm">
+                          {error.message}
+                        </span>
+                      )}
+                      {isEditMode && existingImage && (
+                        <span className="text-green-600 text-sm">
+                          {t("Current image")}: {existingImage}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                />
+              </div>
             </div>
-          </div>
 
             {/* Preview */}
             {previewImage && (
-            <div className="mt-2 relative flex justify-end">
-              <button
-                type="button"
-                onClick={() => {
-                  setPreviewImage(null);
-                  setValue("bill_image", null);
-                  const fileInput = document.getElementById("bill_image");
-                  if (fileInput) fileInput.value = "";
-                  
-                  if (!isEditMode) {
-                    setExistingImage(null);
-                  }
-                }}
-                className="absolute top-2 right-2 text-red-600 bg-white shadow rounded-sm hover:text-white hover:bg-secondary transition-all duration-300 cursor-pointer font-bold text-xl p-[2px]"
-                title="Remove image"
-              >
-                <IoMdClose />
-              </button>
-              <img
-                src={previewImage}
-                alt="Bill Preview"
-                className="max-w-xs h-auto rounded border border-gray-300"
-              />
-            </div>
-          )}
+              <div className="mt-2 relative flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPreviewImage(null);
+                    setValue("bill_image", null);
+                    const fileInput = document.getElementById("bill_image");
+                    if (fileInput) fileInput.value = "";
+
+                    if (!isEditMode) {
+                      setExistingImage(null);
+                    }
+                  }}
+                  className="absolute top-2 right-2 text-red-600 bg-white shadow rounded-sm hover:text-white hover:bg-secondary transition-all duration-300 cursor-pointer font-bold text-xl p-[2px]"
+                  title="Remove image"
+                >
+                  <IoMdClose />
+                </button>
+                <img
+                  src={previewImage}
+                  alt="Bill Preview"
+                  className="max-w-xs h-auto rounded border border-gray-300"
+                />
+              </div>
+            )}
             {/* {!isAdmin && <div className="mt-4">
               <h3 className="text-secondary font-medium mb-2">SMS Sent</h3>
               <div className="flex gap-6">
@@ -579,7 +514,7 @@ const OfficialProductForm = () => {
               </div>
             </div>} */}
 
-            <BtnSubmit>{isEditMode ? (t("Update Purchase")) : t("Submit")}</BtnSubmit>
+            <BtnSubmit type="submit">{isEditMode ? (t("Update Purchase")) : t("Submit")}</BtnSubmit>
           </form>)}
         </FormProvider>
       </div>

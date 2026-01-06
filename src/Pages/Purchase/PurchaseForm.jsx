@@ -63,39 +63,7 @@ const PurchaseForm = () => {
     const grandTotal = totalItemsAmount + (parseFloat(serviceCharge) || 0);
     setValue("purchase_amount", grandTotal);
   }, [items, serviceCharge, setValue]);
-
-
-  // Set vehicle category when vehicle is selected
-  // useEffect(() => {
-  //   if (selectedVehicle) {
-  //     const selectedVehicleData = vehicle.find(
-  //       (v) =>
-  //         `${v.reg_zone} ${v.reg_serial} ${v.reg_no}`.trim() ===
-  //         selectedVehicle.trim()
-  //     );
-
-  //     if (selectedVehicleData) {
-  //       // Vehicle category বসাও
-  //       setValue("vehicle_category", selectedVehicleData.vehicle_category || "", {
-  //         shouldValidate: true,
-  //         shouldDirty: true,
-  //       });
-
-  //       // Driver Name auto বসাও
-  //       setValue("driver_name", selectedVehicleData.driver_name || "", {
-  //         shouldValidate: true,
-  //         shouldDirty: true,
-  //       });
-  //     } else {
-  //       setValue("vehicle_category", "");
-  //       setValue("driver_name", "");
-  //     }
-  //   } else {
-  //     setValue("vehicle_category", "");
-  //     setValue("driver_name", "");
-  //   }
-  // }, [selectedVehicle, vehicle, setValue]);
-
+// set category
   useEffect(() => {
     if (watch("vehicle_no")) {
       const selectedVehicleData = vehicle.find(
@@ -173,7 +141,7 @@ const PurchaseForm = () => {
           reset(formValues)
 
           if (purchaseData.image) {
-            const imageUrl = `https://ajenterprise.tramessy.com/backend/uploads/purchase/${purchaseData.image}`
+            const imageUrl = `${import.meta.env.VITE_IMAGE_URL}/purchase/${purchaseData.image}`
             setPreviewImage(imageUrl)
             setExistingImage(purchaseData.image)
           }
@@ -482,7 +450,10 @@ const handleFileChange = (e) => {
                   const quantity = watch(`items.${index}.quantity`) || 0;
                   const unitPrice = parseFloat(watch(`items.${index}.unit_price`)) || 0;
                   const total = quantity * unitPrice;
-
+useEffect(() => {
+    const total = Number(quantity) * Number(unitPrice);
+    setValue(`items.${index}.total`, total, { shouldValidate: false });
+  }, [quantity, unitPrice, index, setValue]);
                   return (
                     <div key={field.id} className="flex flex-col md:flex-row gap-3 border border-gray-300 p-3 rounded-md relative">
                       <InputField name={`items.${index}.item_name`} label={`${t("Item")} ${t("Name")}`} required={!isEditMode} className="!w-full" />

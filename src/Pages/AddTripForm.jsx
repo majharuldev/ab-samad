@@ -690,7 +690,7 @@ export default function AddTripForm() {
                   {selectedTransport === "vendor_transport" && (
                     <SelectField
                       name="vendor_name"
-                      label={t("Vendor Name")}
+                      label={`${t("Vendor")} ${t("Name")}`}
                       options={vendorOptions}
                       control={control}
                       isCreatable={false}
@@ -768,7 +768,7 @@ export default function AddTripForm() {
                     <>
                       <SelectField
                         name="vehicle_category"
-                        label={t("Vehicle Category")}
+                        label={`${t("Vehicle")} ${t("Category")}`}
                         options={vehicleCategoryOptions}
                         control={control}
                         required={!id}
@@ -788,7 +788,7 @@ export default function AddTripForm() {
                     <>
                       <InputField
                         name="vehicle_category"
-                        label={t("Vehicle Category")}
+                        label={`${t("Vehicle")} ${t("Category")}`}
                         control={control}
                         required={false}
                       />
@@ -893,7 +893,7 @@ export default function AddTripForm() {
 
               {(selectedTransport === "vendor_transport") && (
                 <div className="border border-gray-300 p-5 rounded-md mt-5">
-                  <h3 className="text-orange-500 font-medium text-center mb-6">
+                  <h3 className="text-secondary font-medium text-center mb-6">
                     {t("Vendor")} {t("Demurrage")}
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -941,7 +941,7 @@ export default function AddTripForm() {
 
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <InputField name="driver_adv" label={`${t("Driver")} ${t("Advance")}`} type="number" />
-                    <InputField name="driver_commission" label="Driver Commission" type="number" />
+                    <InputField name="driver_commission" label={`${t("Driver")} ${t("Commission")}`} type="number" />
                     <InputField name="labor" label={t("Labour Cost")} type="number" />
                     <InputField name="fuel_cost" label={t("Fuel Cost")} type="number" />
                     <InputField name="night_guard" label={t("Night Guard")} type="number" />
@@ -975,7 +975,7 @@ export default function AddTripForm() {
                 <div className="border border-gray-300 p-5 rounded-md mt-5">
                   <h3 className="text-secondary font-medium text-center mb-6">{t("Vendor Payment Details")}</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <InputField name="vehicle_rent" label="Vendor Rent +Demurrage" type="number" required={!id} readOnly />
+                    <InputField name="vehicle_rent" label={`${t("Vendor Rent")} + ${t("Demurrage")}`} type="number" required={!id} readOnly />
                     <InputField name="advance" label={t("Advance")} type="number" required={!id} />
                     <InputField name="due_amount" readOnly label={t("Due Amount")} type="number" required={!id} />
                   </div>

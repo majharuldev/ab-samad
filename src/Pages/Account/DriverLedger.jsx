@@ -9,9 +9,10 @@ import autoTable from "jspdf-autotable";
 import { FaFilter } from "react-icons/fa";
 import api from "../../../utils/axiosConfig";
 import { useTranslation } from "react-i18next";
+import { tableFormatDate } from "../../hooks/formatDate";
 
 const DriverLedger = () => {
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const [driver, setDriver] = useState([]);
   const [loading, setLoading] = useState(true);
   const [driverList, setDriverList] = useState([]);
@@ -48,15 +49,15 @@ const DriverLedger = () => {
       .get(`/driver`)
       .then((res) => {
         // if (res.data.status === "Success") {
-          const drivers = res.data;
-          setDriverList(drivers);
-          // Store opening balances by driver name
-          const openingBalances = {};
-          drivers.forEach((driver) => {
-            openingBalances[driver.driver_name] =
-              Number(driver.opening_balance) || 0;
-          });
-          setDriverOpeningBalances(openingBalances);
+        const drivers = res.data;
+        setDriverList(drivers);
+        // Store opening balances by driver name
+        const openingBalances = {};
+        drivers.forEach((driver) => {
+          openingBalances[driver.driver_name] =
+            Number(driver.opening_balance) || 0;
+        });
+        setDriverOpeningBalances(openingBalances);
         // }
       })
       .catch((err) => console.error("Error fetching driver list:", err));
@@ -72,7 +73,7 @@ const DriverLedger = () => {
       .get(`/driverLedger`)
       .then((response) => {
         // if (response.data.status === "Success") {
-          setDriver(response.data);
+        setDriver(response.data);
         // }
         setLoading(false);
       })
@@ -98,14 +99,14 @@ const DriverLedger = () => {
   ].sort();
 
   // helper function
-const toNumber = (val) => {
-  if (val === null || val === undefined) return 0;
-  if (typeof val === "string") {
-    if (val.trim().toLowerCase() === "null" || val.trim() === "") return 0;
-  }
-  const num = Number(val);
-  return isNaN(num) ? 0 : num;
-};
+  const toNumber = (val) => {
+    if (val === null || val === undefined) return 0;
+    if (typeof val === "string") {
+      if (val.trim().toLowerCase() === "null" || val.trim() === "") return 0;
+    }
+    const num = Number(val);
+    return isNaN(num) ? 0 : num;
+  };
 
   // Filter by driver and month
   const filteredDriver = driver.filter((d) => {
@@ -152,8 +153,8 @@ const toNumber = (val) => {
       police_cost = 0,
       chada = 0,
       challan_cost = 0,
-    others_cost = 0,
-    fuel_cost = 0,
+      others_cost = 0,
+      fuel_cost = 0,
       driver_adv = 0,
     } = item;
     const totalExpense =
@@ -165,8 +166,8 @@ const toNumber = (val) => {
       toNumber(police_cost) +
       toNumber(chada) +
       toNumber(challan_cost) +
-    toNumber(others_cost) +
-    toNumber(fuel_cost);
+      toNumber(others_cost) +
+      toNumber(fuel_cost);
     runningBalance += Number(driver_adv) - totalExpense;
     return {
       ...item,
@@ -232,8 +233,8 @@ const toNumber = (val) => {
       Police: item.police_cost,
       Chada: item.chada,
       Fuel: item.fuel_cost,
-  Callan: item.callan_cost,
-  Others: item.others_cost,
+      Callan: item.callan_cost,
+      Others: item.others_cost,
       Total_Expense: item.totalExpense,
       Balance: item.balance,
     }));
@@ -258,7 +259,7 @@ const toNumber = (val) => {
         Callan: "",
         Others: "",
         Total_Expense: tadaAmounts[selectedDriver].amount,
-        Balance: finalBalance, 
+        Balance: finalBalance,
       });
     }
 
@@ -341,9 +342,9 @@ const toNumber = (val) => {
         item.feri_cost || "0",
         item.police_cost || "0",
         item.chada || "0",
-         item.fuel_cost || "0",
-  item.callan_cost || "0",
-  item.others_cost || "0",
+        item.fuel_cost || "0",
+        item.callan_cost || "0",
+        item.others_cost || "0",
         item.totalExpense || "0",
         item.balance < 0 ? `(${Math.abs(item.balance)})` : item.balance,
       ]);
@@ -530,7 +531,7 @@ const toNumber = (val) => {
             <div className="w-full">
               <div className="relative w-full">
                 <label className="text-gray-700 text-sm font-semibold">
-                 {t("Driver")}
+                  {t("Driver")}
                 </label>
                 {/* <select
                   value={selectedDriver}
@@ -545,17 +546,17 @@ const toNumber = (val) => {
                   ))}
                 </select> */}
                 <select
-  value={selectedDriver}
-  onChange={(e) => setSelectedDriver(e.target.value)}
-  className="mt-1 w-full text-gray-500 text-sm border border-gray-300 bg-white p-2 rounded appearance-none outline-none"
->
-  <option value="">{t("All")} {t("Driver")}</option>
-  {driverList.map((driver, idx) => (
-    <option key={idx} value={driver.driver_name}>
-      {driver.driver_name}
-    </option>
-  ))}
-</select>
+                  value={selectedDriver}
+                  onChange={(e) => setSelectedDriver(e.target.value)}
+                  className="mt-1 w-full text-gray-500 text-sm border border-gray-300 bg-white p-2 rounded appearance-none outline-none"
+                >
+                  <option value="">{t("All")} {t("Driver")}</option>
+                  {driverList.map((driver, idx) => (
+                    <option key={idx} value={driver.driver_name}>
+                      {driver.driver_name}
+                    </option>
+                  ))}
+                </select>
 
                 <MdOutlineArrowDropDown className="absolute top-[35px] right-2 pointer-events-none text-xl text-gray-500" />
               </div>
@@ -583,15 +584,15 @@ const toNumber = (val) => {
             </div> */}
             <div className="w-xs mt-7">
               <button
-                 onClick={() => {
-    setSelectedDriver("");
-    setSelectedHelper("");
-    setSelectedMonth("");   
-    setShowFilter(false);    
-  }}
+                onClick={() => {
+                  setSelectedDriver("");
+                  setSelectedHelper("");
+                  setSelectedMonth("");
+                  setShowFilter(false);
+                }}
                 className="w-full bg-gradient-to-r from-primary to-[#115e15] text-white px-4 py-1.5 rounded-md shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer"
               >
-                 {t("Clear")}
+                {t("Clear")}
               </button>
             </div>
           </div>
@@ -610,6 +611,58 @@ const toNumber = (val) => {
           </div>
         )}
         {/* Table with scroll */}
+        {/* ===== Driver Ledger Summary Cards ===== */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-5">
+
+          {/* Driver Commission */}
+          <div className="bg-white shadow border-l-4 border-blue-500 rounded p-4">
+            <p className="text-xs text-gray-500">{t("Total")} {t("Driver")} {t("Commission")}</p>
+            <h3 className="text-lg font-bold text-gray-800">
+              ৳{footerTotals.commission}
+            </h3>
+          </div>
+
+          {/* Advance */}
+          <div className="bg-white shadow border-l-4 border-green-500 rounded p-4">
+            <p className="text-xs text-gray-500">{t("Total")} {t("Advance")}</p>
+            <h3 className="text-lg font-bold text-gray-800">
+              ৳{footerTotals.advance}
+            </h3>
+          </div>
+
+          {/* Total Expense */}
+          <div className="bg-white shadow border-l-4 border-purple-500 rounded p-4">
+            <p className="text-xs text-gray-500">{t("Total Expense")}</p>
+            <h3 className="text-lg font-bold text-gray-800">
+              ৳{footerTotals.totalExpense}
+            </h3>
+          </div>
+
+          {/* Final Balance */}
+          <div className="bg-white shadow border-l-4 border-red-500 rounded p-4">
+            <p className="text-xs text-gray-500">{t("Final Balance")}</p>
+            <h3 className={`text-lg font-bold ${finalBalance < 0 ? "text-red-600" : "text-gray-800"}`}>
+              {finalBalance < 0 ? `৳(${Math.abs(finalBalance)})` : `৳${finalBalance}`}
+            </h3>
+          </div>
+
+          {/* TADA Amount (if driver selected) */}
+          {selectedDriver && tadaAmounts[selectedDriver] ? (
+            <div className="bg-white shadow border-l-4 border-orange-500 rounded p-4">
+              <p className="text-xs text-gray-500">{t("Total")} {t("TADA Amount")}</p>
+              <h3 className="text-lg font-bold text-gray-800">
+                ৳{tadaAmounts[selectedDriver].amount}
+              </h3>
+            </div>
+          ) : (
+            <div className="bg-white shadow border-l-4 border-gray-300 rounded p-4">
+              <p className="text-xs text-gray-500">{t("TADA Amount")}</p>
+              <h3 className="text-lg font-bold text-gray-500">-</h3>
+            </div>
+          )}
+
+        </div>
+
         <div id="driver-ledger-table" className="overflow-x-auto">
           <table className="min-w-full text-sm text-left text-gray-900">
             <thead>
@@ -648,15 +701,15 @@ const toNumber = (val) => {
                 <th className="border px-2 py-1">{t("Police")}</th>
                 <th className="border px-2 py-1">{t("Chada")}</th>
                 <th className="border px-2 py-1">{t("Fuel")}</th>
-<th className="border px-2 py-1">{t("Callan")}</th>
-<th className="border px-2 py-1">{t("Others")}</th>
+                <th className="border px-2 py-1">{t("Callan")}</th>
+                <th className="border px-2 py-1">{t("Others")}</th>
                 <th className="border px-2 py-1">{t("Total")}</th>
               </tr>
             </thead>
             <tbody className="overflow-x-auto">
               {rowsWithBalance.map((item, index) => (
                 <tr key={index}>
-                  <td className="border px-2 py-1">{item.date}</td>
+                  <td className="border px-2 py-1">{tableFormatDate(item.date)}</td>
                   <td className="border px-2 py-1">{item.load_point}</td>
                   <td className="border px-2 py-1">{item.unload_point}</td>
                   <td className="border px-2 py-1">{toNumber(item.driver_commission)}</td>
@@ -669,8 +722,8 @@ const toNumber = (val) => {
                   <td className="border px-2 py-1">{toNumber(item.police_cost)}</td>
                   <td className="border px-2 py-1">{toNumber(item.chada)}</td>
                   <td className="border px-2 py-1">{item.fuel_cost}</td>
-<td className="border px-2 py-1">{item.challan_cost}</td>
-<td className="border px-2 py-1">{item.others_cost}</td>
+                  <td className="border px-2 py-1">{item.challan_cost}</td>
+                  <td className="border px-2 py-1">{item.others_cost}</td>
                   <td className="border px-2 py-1">{item.totalExpense}</td>
                   <td className="border px-2 py-1">
                     <span className={item.balance < 0 ? "text-red-500" : ""}>
@@ -780,7 +833,7 @@ const toNumber = (val) => {
             </tfoot>
           </table>
         </div>
-    </div>
+      </div>
     </div>
   );
 };

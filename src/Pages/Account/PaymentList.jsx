@@ -230,13 +230,13 @@ const PaymentList = () => {
         <table>
           <thead>
             <tr>
-              <th>SL</th>
-              <th>Date</th>
-              <th>Supplier</th>
-              <th>Category</th>
-              <th>Item name</th>
-              <th>Quantity</th>
-              <th>Rate</th>
+              <th>${t("SL")}</th>
+              <th>${t("Date")}</th>
+              <th>${t("Supplier")}</th>
+              <th>${t("Category")}</th>
+              <th>${t("Item name")}</th>
+              <th>${t("Quantity")}</th>
+              <th>${t("Rate")}</th>
               <th>Service Charge</th>
               <th>Total Amount</th>
               <th>Payment</th>
@@ -497,7 +497,7 @@ const PaymentList = () => {
                 <th className="px-1 py-4">{t("Unit Price")}</th>
                 <th className="px-1 py-4">{t("Service Charge")}</th>
                 <th className="px-1 py-4">{t("Total")} {t("Amount")}</th>
-                <th className="px-1 py-4">{t("Pay Amount")}</th>
+                <th className="px-1 py-4">{t("Paid Amount")}</th>
                 <th className="px-1 py-4">{t("Due Amount")}</th>
                 <th className="px-1 py-4">{t("Status")}</th>
                 <th className="px-1 py-4">{t("Action")}</th>

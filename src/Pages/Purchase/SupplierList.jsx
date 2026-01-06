@@ -139,7 +139,7 @@ const SupplierList = () => {
         <th>${t("Date")}</th>
         <th>${t("Supplier")}</th>
         <th>${t("Business Category")}</th>
-        <th>${t("Phone")}</th>
+        <th>${t("Mobile No")}</th>
         <th>${t("Address")}</th>
         <th>${t("Opening Balance")}</th>
         <th>${t("Status")}</th>
@@ -298,7 +298,7 @@ const SupplierList = () => {
                 <th className="p-2">{t("Date")}</th>
                 <th className="p-2">{t("Supplier")}</th>
                 <th className="p-2">{t("Business Category")}</th>
-                <th className="p-2">{t("Phone")}</th>
+                <th className="p-2">{t("Mobile No")}</th>
                 <th className="p-2">{t("Address")}</th>
                 <th className="p-2">{t("Opening Balance")}</th>
                 <th className="p-2">{t("Status")}</th>

@@ -32,10 +32,9 @@ const Login = () => {
 
      try {
     const res = await login(email, password); 
-    console.log(res)
 if (res.success) {
       // লগইন সফল, Active ইউজার
-      toast.success("Login successful!");
+      toast.success(t("Login successful!"));
       navigate("/tramessy");
     } else {
       // লগইন ব্যর্থ বা Inactive

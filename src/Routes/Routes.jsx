@@ -381,19 +381,19 @@ export const router = createBrowserRouter([
         element: <Office />,
       },
       {
-        path: "/tramessy/HR/salary-dispatch",
+        path: "/tramessy/salary-expense",
         element: <SalaryExpense />,
       },
       {
-        path: "/tramessy/HR/HRM/office-expense",
+        path: "/tramessy/office-expense",
         element: <OfficialExpense />,
       },
         {
-        path: "/tramessy/HR/advance-requisition",
+        path: "/tramessy/advance-requisition",
         element: <Requisition />,
       },
       {
-        path: "/tramessy/HR/advance-requisition-form",
+        path: "/tramessy/advance-requisition-form",
         element: <RequisitionForm />,
       },
       {

@@ -236,7 +236,7 @@ const AllUsers = () => {
         {/* Table */}
         <div className="mt-5 overflow-x-auto rounded-md border border-gray-200">
           <table className="min-w-full text-sm text-left">
-            <thead className="bg-gray-200 text-primary capitalize text-sm">
+            <thead className="bg-gray-200 text-primary capitalize text-xs">
               <tr>
                 <th className="px-2 py-4">{t("SL.")}</th>
                 <th className="px-2 py-4">{t("Name")}</th>

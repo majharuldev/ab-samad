@@ -212,74 +212,6 @@ const VendorLedger = () => {
   };
 
 
-  // Export to PDF
-  const exportToPDF = () => {
-    const doc = new jsPDF("landscape");
-
-    // Title
-    doc.setFontSize(16);
-    doc.text(`Vendor Ledger: ${selectedVendor || "All Vendors"}`, 14, 15);
-
-    if (selectedVendor) {
-      doc.setFontSize(10);
-      doc.text(`Opening Balance: ${openingBalance.toFixed(2)}`, 14, 22);
-    }
-
-    const columns = [
-      "SL.",
-      "Date",
-      "Vendor",
-      "Load",
-      "Unload",
-      "Vehicle",
-      "Driver",
-      "Trip Rent",
-      "Advance",
-      "Pay Amount",
-      "Due",
-    ];
-
-    const rows = rowsWithRunningBalance.map((item, idx) => {
-      return [
-        idx + 1,
-        item.date || "",
-        item.vendor_name || "",
-        item.load_point || "--",
-        item.unload_point || "--",
-        item.vehicle_no || "--",
-        item.driver_name || "--",
-        item.trip_rent ? toNumber(item.trip_rent) : "--",
-        item.advance ? toNumber(item.advance) : "--",
-        item.pay_amount ? toNumber(item.pay_amount) : "--",
-        item.running_balance,
-      ];
-    });
-
-    // Add totals row
-    rows.push([
-      "",
-      "",
-      "TOTAL",
-      "",
-      "",
-      "",
-      "",
-      totals.rent,
-      totals.advance,
-      totals.pay_amount,
-      grandDue,
-    ]);
-
-    autoTable(doc, {
-      head: [columns],
-      body: rows,
-      startY: selectedVendor ? 25 : 20,
-      styles: { fontSize: 9 },
-      headStyles: { fillColor: [17, 55, 91], textColor: [255, 255, 255] },
-    });
-    doc.save(`Vendor_Ledger_${selectedVendor || "All"}.pdf`);
-  };
-
   // print function
   const printTable = () => {
     const content = document.getElementById("vendor-ledger-table").innerHTML;
@@ -453,31 +385,63 @@ const VendorLedger = () => {
               </div>
             )}
           </div>
-          <div id="vendor-ledger-table" className="overflow-x-auto">
+          {/* ===== Total Summary Cards ===== */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-5">
+
+              {/* Trip Rent */}
+              <div className="bg-white shadow border-l-4 border-blue-500 rounded p-4">
+                <p className="text-xs text-gray-500">{t("Total Trip Rent Till Now")}</p>
+                <h3 className="text-lg font-bold text-gray-800">
+                  ৳{totals.rent}
+                </h3>
+              </div>
+
+              {/* Demurrage */}
+              <div className="bg-white shadow border-l-4 border-orange-500 rounded p-4">
+                <p className="text-xs text-gray-500">{t("Total Demurrage Till Now")}</p>
+                <h3 className="text-lg font-bold text-gray-800">
+                  ৳{totals.demurrage}
+                </h3>
+              </div>
+
+              {/* Bill Amount */}
+              <div className="bg-white shadow border-l-4 border-purple-500 rounded p-4">
+                <p className="text-xs text-gray-500">{t("Total Bill Till Now")}</p>
+                <h3 className="text-lg font-bold text-gray-800">
+                  ৳{totals.total}
+                </h3>
+              </div>
+
+              {/* advanced */}
+              <div className="bg-white shadow border-l-4 border-green-500 rounded p-4">
+                <p className="text-xs text-gray-500">{t("Total Advance Till Now")}</p>
+                <h3 className="text-lg font-bold text-gray-800">
+                  ৳{totals.advance}
+                </h3>
+              </div>
+              {/* pay amount */}
+              <div className="bg-white shadow border-l-4 border-green-500 rounded p-4">
+                <p className="text-xs text-gray-500">{t("Total Paid Amount Till Now")}</p>
+                <h3 className="text-lg font-bold text-gray-800">
+                  ৳{totals.pay_amount}
+                </h3>
+              </div>
+
+              {/* Due */}
+              <div className="bg-white shadow border-l-4 border-red-500 rounded p-4">
+                <p className="text-xs text-gray-500">{t("Currently Due")}</p>
+                <h3
+                  className={`text-lg font-bold ${grandDue < 0 ? "text-red-600" : "text-gray-800"
+                    }`}
+                >
+                  {grandDue < 0 ? `৳(${Math.abs(grandDue)})` : `৳${grandDue}`}
+                </h3>
+              </div>
+
+            </div>
+          <div id="vendor-ledger-table" className="overflow-x-auto">             
             <table className="min-w-full text-sm text-left text-gray-900">
               <thead className="bg-gray-100">
-                <tr className="font-bold bg-gray-100">
-                  <td colSpan={7} className="border px-2 py-1 text-right">
-                    {t("Total")}:
-                  </td>
-                  <td className="border px-2 py-1">{totals.rent}</td>
-                   <td className="border px-2 py-1">{totals.demurrage}</td>
-                   <td className="border px-2 py-1">{totals.total}</td>
-                  <td className="border px-2 py-1">{totals.advance}</td>
-                  <td className="border px-2 py-1">{totals.pay_amount}</td>
-                  <td className="border px-2 py-1">
-                    <span className={grandDue < 0 ? "text-red-500" : ""}>
-                      {grandDue < 0
-                        ? `(${Math.abs(grandDue)})`
-                        : grandDue}
-                    </span>
-                    {selectedVendor && (
-                      <p className="text-xs text-gray-600 font-normal">
-                        {t("Including") + " " + t("Opening Balance")}
-                      </p>
-                    )}
-                  </td>
-                </tr>
                 <tr>
                   <th className="border px-2 py-1">{t("SL.")}</th>
                   <th className="border px-2 py-1">{t("Date")}</th>
@@ -490,7 +454,7 @@ const VendorLedger = () => {
                   <th className="border px-2 py-1">{t("Demurrage")}</th>
                    <th className="border px-2 py-1">{t("Total")}</th>
                   <th className="border px-2 py-1">{t("Advance")}</th>
-                  <th className="border px-2 py-1">{t("Pay Amount")}</th>
+                  <th className="border px-2 py-1">{t("Paid Amount")}</th>
                   <th className="border px-2 py-1">
                     {t("Due")}{" "}
                     {selectedVendor && (
@@ -571,7 +535,30 @@ const VendorLedger = () => {
                   );
                 }))}
               </tbody>
-              <tfoot></tfoot>
+              <tfoot>
+                <tr className="font-bold bg-gray-100">
+                  <td colSpan={7} className="border px-2 py-1 text-right">
+                    {t("Total")}:
+                  </td>
+                  <td className="border px-2 py-1">{totals.rent}</td>
+                   <td className="border px-2 py-1">{totals.demurrage}</td>
+                   <td className="border px-2 py-1">{totals.total}</td>
+                  <td className="border px-2 py-1">{totals.advance}</td>
+                  <td className="border px-2 py-1">{totals.pay_amount}</td>
+                  <td className="border px-2 py-1">
+                    <span className={grandDue < 0 ? "text-red-500" : ""}>
+                      {grandDue < 0
+                        ? `(${Math.abs(grandDue)})`
+                        : grandDue}
+                    </span>
+                    {selectedVendor && (
+                      <p className="text-xs text-gray-600 font-normal">
+                        {t("Including") + " " + t("Opening Balance")}
+                      </p>
+                    )}
+                  </td>
+                </tr>
+              </tfoot>
             </table>
           </div>
         </div>

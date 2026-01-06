@@ -20,9 +20,11 @@ import { PiUsersFour } from "react-icons/pi";
 import { RiLuggageCartLine } from "react-icons/ri";
 import { HiCurrencyBangladeshi } from "react-icons/hi2";
 import { useTranslation } from "react-i18next";
+import { BsExplicitFill, BsFuelPumpDiesel } from "react-icons/bs";
+
 
 const Sidebar = () => {
-   const {t} = useTranslation();
+  const { t } = useTranslation();
   const [openMenu, setOpenMenu] = useState({
     fleet: false,
     business: false,
@@ -72,8 +74,8 @@ const Sidebar = () => {
             {/* Dashboard */}
             <li
               className={`py-3 px-2 rounded-sm cursor-pointer ${isActive("/tramessy")
-                  ? "text-gray-700 bg-gray-200"
-                  : "text-gray-700 "
+                ? "text-gray-700 bg-gray-200"
+                : "text-gray-700 "
                 }`}
             >
               <Link
@@ -91,8 +93,8 @@ const Sidebar = () => {
                   <Link
                     to="/tramessy/TripList"
                     className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/TripList")
-                        ? "text-gray-700 bg-gray-200"
-                        : "text-gray-700 hover:text-primary"
+                      ? "text-gray-700 bg-gray-200"
+                      : "text-gray-700 hover:text-primary"
                       }`}
                   >
                     <FaTruckPickup />
@@ -103,8 +105,8 @@ const Sidebar = () => {
                   <Link
                     to="/tramessy/CarList"
                     className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/CarList")
-                        ? "text-gray-700 bg-gray-200"
-                        : "text-gray-700 hover:text-primary"
+                      ? "text-gray-700 bg-gray-200"
+                      : "text-gray-700 hover:text-primary"
                       }`}
                   >
                     <FaCarRear />
@@ -164,8 +166,8 @@ const Sidebar = () => {
                       <Link
                         to="/tramessy/VendorList"
                         className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/VendorList")
-                            ? "text-gray-700 bg-gray-200"
-                            : "text-gray-500 hover:text-primary"
+                          ? "text-gray-700 bg-gray-200"
+                          : "text-gray-500 hover:text-primary"
                           }`}
                       >
 
@@ -176,8 +178,8 @@ const Sidebar = () => {
                       <Link
                         to="/tramessy/RentList"
                         className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/RentList")
-                            ? "text-gray-700 bg-gray-200"
-                            : "text-gray-500 hover:text-primary"
+                          ? "text-gray-700 bg-gray-200"
+                          : "text-gray-500 hover:text-primary"
                           }`}
                       >
 
@@ -228,6 +230,75 @@ const Sidebar = () => {
                     </ul>
                   </div>
                 </li> */}
+              {/* Expense */}
+              <li className="text-gray-700 font-medium rounded-sm">
+                <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => toggleMenu("expense")}
+                  onKeyDown={(e) =>
+                    (e.key === "Enter" || e.key === " ") &&
+                    toggleMenu("expense")
+                  }
+                  className="flex justify-between items-center py-3 px-2 cursor-pointer hover:bg-primary hover:text-white hover:rounded-sm duration-300 outline-none"
+                >
+                  <span className="flex items-center gap-2">
+                    <BsExplicitFill />
+                    <span>{t("Expense")}</span>
+                  </span>
+                  <span
+                    className={`transform transition-transform duration-500 ${openMenu.expense ? "rotate-180" : ""
+                      }`}
+                  >
+                    <FaChevronDown />
+                  </span>
+                </div>
+
+                {/* Dropdown container with smooth expand/collapse */}
+                <div
+                  className={`transition-all duration-700 ease-in-out overflow-hidden ${openMenu.expense ? "max-h-[500px]" : "max-h-0"
+                    }`}
+                >
+                  <ul className="space-y-3 px-2 text-sm mt-2">
+                    <li>
+                      <Link
+                        to="/tramessy/office-expense"
+                        className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/office-expense")
+                          ? "text-gray-700 bg-gray-200"
+                          : "text-gray-500 hover:text-primary"
+                          }`}
+                      >
+
+                        <span>{t("Office")} {t("Expense")}</span>
+                      </Link>
+                    </li>
+                    {isAdmin && <li>
+                      <Link
+                        to="/tramessy/salary-expense"
+                        className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/salary-expense")
+                          ? "text-gray-700 bg-gray-200"
+                          : "text-gray-500 hover:text-primary"
+                          }`}
+                      >
+
+                        <span>{t("Salary")} {t("Expense")}</span>
+                      </Link>
+                    </li>}
+                    <li>
+                      <Link
+                        to="/tramessy/advance-requisition"
+                        className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/advance-requisition")
+                          ? "text-gray-700 bg-gray-200"
+                          : "text-gray-500 hover:text-primary"
+                          }`}
+                      >
+
+                        <span>{t("Requisition")}</span>
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+              </li>
               {/* HR management */}
               <li className="text-gray-700 font-medium rounded-sm">
                 {/* HR main toggle */}
@@ -282,8 +353,8 @@ const Sidebar = () => {
                           <Link
                             to="/tramessy/HR/HRM/employee-list"
                             className={`flex gap-2 items-center block p-2 rounded-sm ${isActive("/tramessy/HR/HRM/employee-list")
-                                ? "text-gray-700 bg-gray-200"
-                                : "text-gray-500 hover:text-primary"
+                              ? "text-gray-700 bg-gray-200"
+                              : "text-gray-500 hover:text-primary"
                               }`}
                           >
 
@@ -294,8 +365,8 @@ const Sidebar = () => {
                           <Link
                             to="/tramessy/DriverList"
                             className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/DriverList")
-                                ? "text-gray-700 bg-gray-200"
-                                : "text-gray-500 hover:text-primary"
+                              ? "text-gray-700 bg-gray-200"
+                              : "text-gray-500 hover:text-primary"
                               }`}
                           >
 
@@ -306,8 +377,8 @@ const Sidebar = () => {
                           <Link
                             to="/tramessy/HelperList"
                             className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/HelperList")
-                                ? "text-gray-700 bg-gray-200"
-                                : "text-gray-500 hover:text-primary"
+                              ? "text-gray-700 bg-gray-200"
+                              : "text-gray-500 hover:text-primary"
                               }`}
                           >
 
@@ -318,48 +389,12 @@ const Sidebar = () => {
                           <Link
                             to="/tramessy/HR/HRM/Office"
                             className={`flex gap-2 items-center p-2 rounded-sm ${isActive("/tramessy/HR/HRM/Office")
-                                ? "text-gray-700 bg-gray-200"
-                                : "text-gray-500 hover:text-primary"
+                              ? "text-gray-700 bg-gray-200"
+                              : "text-gray-500 hover:text-primary"
                               }`}
                           >
 
                             {t("Office")}
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            to="/tramessy/HR/salary-dispatch"
-                            className={`flex gap-2 items-center block p-2 rounded-sm ${isActive("/tramessy/HR/salary-dispatch")
-                                ? "text-gray-700 bg-gray-200"
-                                : "text-gray-500 hover:text-primary"
-                              }`}
-                          >
-
-                            {t("Salary Expense")}
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            to="/tramessy/HR/HRM/office-expense"
-                            className={`flex gap-2 items-center block p-2 rounded-sm ${isActive("/tramessy/HR/HRM/office-expense")
-                                ? "text-gray-700 bg-gray-200"
-                                : "text-gray-500 hover:text-primary"
-                              }`}
-                          >
-
-                            {t("Office Expense")}
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            to="/tramessy/HR/advance-requisition"
-                            className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/HR/advance-requisition")
-                                ? "text-gray-700 bg-gray-200"
-                                : "text-gray-500 hover:text-primary"
-                              }`}
-                          >
-
-                            <span>{t("Requisition")}</span>
                           </Link>
                         </li>
                       </ul>
@@ -508,8 +543,8 @@ const Sidebar = () => {
                             <Link
                               to="/tramessy/HR/Payroll/Attendance"
                               className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/HR/Payroll/Attendance")
-                                  ? "text-gray-700 bg-gray-200"
-                                  : "text-gray-500 hover:text-primary"
+                                ? "text-gray-700 bg-gray-200"
+                                : "text-gray-500 hover:text-primary"
                                 }`}
                             >
 
@@ -522,8 +557,8 @@ const Sidebar = () => {
                               className={`block p-2 rounded-sm ${isActive(
                                 "/tramessy/HR/payroll/bonus"
                               )
-                                  ? "text-gray-700 bg-gray-200"
-                                  : "text-gray-500 hover:text-primary"
+                                ? "text-gray-700 bg-gray-200"
+                                : "text-gray-500 hover:text-primary"
                                 }`}
                             >
                               {t("Bonus")}
@@ -535,8 +570,8 @@ const Sidebar = () => {
                               className={`flex items-center gap-2 p-2 rounded-sm ${isActive(
                                 "/tramessy/HR/Payroll/Advance-Salary"
                               )
-                                  ? "text-gray-700 bg-gray-200"
-                                  : "text-gray-500 hover:text-primary"
+                                ? "text-gray-700 bg-gray-200"
+                                : "text-gray-500 hover:text-primary"
                                 }`}
                             >
                               {t("Salary Advance")}
@@ -549,8 +584,8 @@ const Sidebar = () => {
                               className={`block p-2 rounded-sm ${isActive(
                                 "/tramessy/HR/payroll/loan"
                               )
-                                  ? "text-gray-700 bg-gray-200"
-                                  : "text-gray-500 hover:text-primary"
+                                ? "text-gray-700 bg-gray-200"
+                                : "text-gray-500 hover:text-primary"
                                 }`}
                             >
                               {t("Loan")}
@@ -562,8 +597,8 @@ const Sidebar = () => {
                               className={`flex items-center gap-2 p-2 rounded-sm ${isActive(
                                 "/tramessy/HR/payroll/generate-salary"
                               )
-                                  ? "text-gray-700 bg-gray-200"
-                                  : "text-gray-500 hover:text-primary"
+                                ? "text-gray-700 bg-gray-200"
+                                : "text-gray-500 hover:text-primary"
                                 }`}
                             >
                               {t("Generate Salary")}
@@ -665,7 +700,7 @@ const Sidebar = () => {
                     </ul>
                   </div>
                 </li> */}
-                {/* Fuel */}
+              {/* Fuel */}
               <li className="text-gray-700 font-medium rounded-sm">
                 <div
                   role="button"
@@ -678,7 +713,7 @@ const Sidebar = () => {
                   className="flex justify-between items-center py-3 px-2 cursor-pointer hover:bg-primary hover:text-white hover:rounded-sm duration-300 outline-none"
                 >
                   <span className="flex items-center gap-2">
-                    <PiUsersFour />
+                    <BsFuelPumpDiesel />
                     <span>{t("Fuel")} {t("Management")}</span>
                   </span>
                   <span
@@ -699,20 +734,20 @@ const Sidebar = () => {
                       <Link
                         to="/tramessy/fuel"
                         className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/fuel")
-                            ? "text-gray-700 bg-gray-200"
-                            : "text-gray-500 hover:text-primary"
+                          ? "text-gray-700 bg-gray-200"
+                          : "text-gray-500 hover:text-primary"
                           }`}
                       >
 
                         <span>{t("Tanki Load")}</span>
                       </Link>
                     </li>
-                     <li>
+                    <li>
                       <Link
                         to="/tramessy/fuel-odit"
                         className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/route-pricing")
-                            ? "text-gray-700 bg-gray-200"
-                            : "text-gray-500 hover:text-primary"
+                          ? "text-gray-700 bg-gray-200"
+                          : "text-gray-500 hover:text-primary"
                           }`}
                       >
 
@@ -723,8 +758,8 @@ const Sidebar = () => {
                       <Link
                         to="/tramessy/fuel-ledger"
                         className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/fuel-ledger")
-                            ? "text-gray-700 bg-gray-200"
-                            : "text-gray-500 hover:text-primary"
+                          ? "text-gray-700 bg-gray-200"
+                          : "text-gray-500 hover:text-primary"
                           }`}
                       >
 
@@ -762,8 +797,8 @@ const Sidebar = () => {
                       <Link
                         to="/tramessy/Purchase/maintenance"
                         className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/Purchase/maintenance")
-                            ? "text-gray-700 bg-gray-200"
-                            : "text-gray-500 hover:text-primary"
+                          ? "text-gray-700 bg-gray-200"
+                          : "text-gray-500 hover:text-primary"
                           }`}
                       >
 
@@ -774,8 +809,8 @@ const Sidebar = () => {
                       <Link
                         to="/tramessy/Purchase/official-product"
                         className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/Purchase/official-product")
-                            ? "text-gray-700 bg-gray-200"
-                            : "text-gray-500 hover:text-primary"
+                          ? "text-gray-700 bg-gray-200"
+                          : "text-gray-500 hover:text-primary"
                           }`}
                       >
 
@@ -786,8 +821,8 @@ const Sidebar = () => {
                       <Link
                         to="/tramessy/Purchase/SupplierList"
                         className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/Purchase/SupplierList")
-                            ? "text-gray-700 bg-gray-200"
-                            : "text-gray-500 hover:text-primary"
+                          ? "text-gray-700 bg-gray-200"
+                          : "text-gray-500 hover:text-primary"
                           }`}
                       >
 
@@ -831,8 +866,8 @@ const Sidebar = () => {
                       <Link
                         to="/tramessy/Customer"
                         className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/Customer")
-                            ? "text-gray-700 bg-gray-200"
-                            : "text-gray-500 hover:text-primary"
+                          ? "text-gray-700 bg-gray-200"
+                          : "text-gray-500 hover:text-primary"
                           }`}
                       >
 
@@ -843,8 +878,8 @@ const Sidebar = () => {
                       <Link
                         to="/tramessy/route-pricing"
                         className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/route-pricing")
-                            ? "text-gray-700 bg-gray-200"
-                            : "text-gray-500 hover:text-primary"
+                          ? "text-gray-700 bg-gray-200"
+                          : "text-gray-500 hover:text-primary"
                           }`}
                       >
 
@@ -889,8 +924,8 @@ const Sidebar = () => {
                         <Link
                           to="/tramessy/DailyIncome"
                           className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/DailyIncome")
-                              ? "text-gray-700 bg-gray-200"
-                              : "text-gray-500 hover:text-primary"
+                            ? "text-gray-700 bg-gray-200"
+                            : "text-gray-500 hover:text-primary"
                             }`}
                         >
 
@@ -902,8 +937,8 @@ const Sidebar = () => {
                         <Link
                           to="/tramessy/monthly-statement"
                           className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/monthly-statement")
-                              ? "text-gray-700 bg-gray-200"
-                              : "text-gray-500 hover:text-primary"
+                            ? "text-gray-700 bg-gray-200"
+                            : "text-gray-500 hover:text-primary"
                             }`}
                         >
 
@@ -933,8 +968,8 @@ const Sidebar = () => {
                         <Link
                           to="/tramessy/Reports/vehicle-report"
                           className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/Reports/vehicle-report")
-                              ? "text-gray-700 bg-gray-200"
-                              : "text-gray-500 hover:text-primary"
+                            ? "text-gray-700 bg-gray-200"
+                            : "text-gray-500 hover:text-primary"
                             }`}
                         >
 
@@ -945,8 +980,8 @@ const Sidebar = () => {
                         <Link
                           to="/tramessy/Reports/Driver-Report"
                           className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/Reports/Driver-Report")
-                              ? "text-gray-700 bg-gray-200"
-                              : "text-gray-500 hover:text-primary"
+                            ? "text-gray-700 bg-gray-200"
+                            : "text-gray-500 hover:text-primary"
                             }`}
                         >
 
@@ -957,8 +992,8 @@ const Sidebar = () => {
                         <Link
                           to="/tramessy/Reports/Fuel-Report"
                           className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/Reports/Fuel-Report")
-                              ? "text-gray-700 bg-gray-200"
-                              : "text-gray-500 hover:text-primary"
+                            ? "text-gray-700 bg-gray-200"
+                            : "text-gray-500 hover:text-primary"
                             }`}
                         >
 
@@ -969,8 +1004,8 @@ const Sidebar = () => {
                         <Link
                           to="/tramessy/Reports/Purchase-Report"
                           className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/Reports/Purchase-Report")
-                              ? "text-gray-700 bg-gray-200"
-                              : "text-gray-500 hover:text-primary"
+                            ? "text-gray-700 bg-gray-200"
+                            : "text-gray-500 hover:text-primary"
                             }`}
                         >
 
@@ -1052,8 +1087,8 @@ const Sidebar = () => {
                         <Link
                           to="/tramessy/account/CashDispatch"
                           className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/account/CashDispatch")
-                              ? "text-gray-700 bg-gray-200"
-                              : "text-gray-500 hover:text-primary"
+                            ? "text-gray-700 bg-gray-200"
+                            : "text-gray-500 hover:text-primary"
                             }`}
                         >
 
@@ -1064,8 +1099,8 @@ const Sidebar = () => {
                         <Link
                           to="/tramessy/account/PaymentList"
                           className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/account/PaymentList")
-                              ? "text-gray-700 bg-gray-200"
-                              : "text-gray-500 hover:text-primary"
+                            ? "text-gray-700 bg-gray-200"
+                            : "text-gray-500 hover:text-primary"
                             }`}
                         >
 
@@ -1076,8 +1111,8 @@ const Sidebar = () => {
                         <Link
                           to="/tramessy/account/PaymentReceive"
                           className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/account/PaymentReceive")
-                              ? "text-gray-700 bg-gray-200"
-                              : "text-gray-500 hover:text-primary"
+                            ? "text-gray-700 bg-gray-200"
+                            : "text-gray-500 hover:text-primary"
                             }`}
                         >
 
@@ -1088,8 +1123,8 @@ const Sidebar = () => {
                         <Link
                           to="/tramessy/account/vendor-payment"
                           className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/account/vendor-payment")
-                              ? "text-gray-700 bg-gray-200"
-                              : "text-gray-500 hover:text-primary"
+                            ? "text-gray-700 bg-gray-200"
+                            : "text-gray-500 hover:text-primary"
                             }`}
                         >
 
@@ -1100,8 +1135,8 @@ const Sidebar = () => {
                         <Link
                           to="/tramessy/account/SupplierLedger"
                           className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/account/SupplierLedger")
-                              ? "text-gray-700 bg-gray-200"
-                              : "text-gray-500 hover:text-primary"
+                            ? "text-gray-700 bg-gray-200"
+                            : "text-gray-500 hover:text-primary"
                             }`}
                         >
                           {/* <div
@@ -1118,8 +1153,8 @@ const Sidebar = () => {
                         <Link
                           to="/tramessy/account/DriverLedger"
                           className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/account/DriverLedger")
-                              ? "text-gray-700 bg-gray-200"
-                              : "text-gray-500 hover:text-primary"
+                            ? "text-gray-700 bg-gray-200"
+                            : "text-gray-500 hover:text-primary"
                             }`}
                         >
 
@@ -1130,8 +1165,8 @@ const Sidebar = () => {
                         <Link
                           to="/tramessy/account/VendorLedger"
                           className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/account/VendorLedger")
-                              ? "text-gray-700 bg-gray-200"
-                              : "text-gray-500 hover:text-primary"
+                            ? "text-gray-700 bg-gray-200"
+                            : "text-gray-500 hover:text-primary"
                             }`}
                         >
 
@@ -1142,8 +1177,8 @@ const Sidebar = () => {
                         <Link
                           to="/tramessy/account/CustomerLedger"
                           className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/account/CustomerLedger")
-                              ? "text-gray-700 bg-gray-200"
-                              : "text-gray-500 hover:text-primary"
+                            ? "text-gray-700 bg-gray-200"
+                            : "text-gray-500 hover:text-primary"
                             }`}
                         >
 
@@ -1154,8 +1189,8 @@ const Sidebar = () => {
                         <Link
                           to="/tramessy/account/OfficeLedger"
                           className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/account/OfficeLedger")
-                              ? "text-gray-700 bg-gray-200"
-                              : "text-gray-500 hover:text-primary"
+                            ? "text-gray-700 bg-gray-200"
+                            : "text-gray-500 hover:text-primary"
                             }`}
                         >
 
@@ -1191,8 +1226,8 @@ const Sidebar = () => {
                         <Link
                           to="/tramessy/billing/bill"
                           className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/billing/bill")
-                              ? "text-gray-700 bg-gray-200"
-                              : "text-gray-500 hover:text-primary"
+                            ? "text-gray-700 bg-gray-200"
+                            : "text-gray-500 hover:text-primary"
                             }`}
                         >
 
@@ -1229,8 +1264,8 @@ const Sidebar = () => {
                         <Link
                           to="/tramessy/AllUsers"
                           className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/AllUsers")
-                              ? "text-gray-700 bg-gray-200"
-                              : "text-gray-500 hover:text-primary"
+                            ? "text-gray-700 bg-gray-200"
+                            : "text-gray-500 hover:text-primary"
                             }`}
                         >
 

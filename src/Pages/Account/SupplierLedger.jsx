@@ -267,13 +267,15 @@ const SupplierLedger = () => {
   };
 
   const ledgerWithBalance = calculateRunningBalance();
-
+ // Card totals
+  const totalPurchase = ledgerWithBalance.reduce((sum, item) => sum + (toNumber(item.purchase_amount) || 0), 0);
+  const totalPayment = ledgerWithBalance.reduce((sum, item) => sum + (toNumber(item.pay_amount) || 0), 0);
   // Closing balance 
   const closingBalance =
     ledgerWithBalance.length > 0
       ? ledgerWithBalance[ledgerWithBalance.length - 1].runningBalance
       : openingBalance;
-
+const balanceStatus = closingBalance < 0 ? t("Negative") : t("Positive");
   // if (loading) return <p className="text-center mt-16">Loading...</p>;
 
   return (
@@ -371,19 +373,60 @@ const SupplierLedger = () => {
           </div>
 
         )}
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-5">
 
+          {/* Opening Balance */}
+          <div className="bg-white border-l-4 border-blue-500 shadow rounded p-4">
+            <p className="text-xs text-gray-500">{t("Opening Balance")}</p>
+            <h3 className="text-lg font-bold text-gray-800">
+              {openingBalance}
+            </h3>
+          </div>
+
+          {/* Total Cash In */}
+          <div className="bg-white border-l-4 border-green-500 shadow rounded p-4">
+            <p className="text-xs text-gray-500">{t("Total")} {t("Purchase Amount")}</p>
+            <h3 className="text-lg font-bold text-gray-800">
+              {totalPurchase}
+            </h3>
+          </div>
+
+          {/* Total Cash Out */}
+          <div className="bg-white border-l-4 border-red-500 shadow rounded p-4">
+            <p className="text-xs text-gray-500">{t("Total")} {t("Payment")} {t("Amount")}</p>
+            <h3 className="text-lg font-bold text-gray-800">
+              {totalPayment}
+            </h3>
+          </div>
+
+          {/* Closing Balance */}
+          <div className="bg-white border-l-4 border-purple-500 shadow rounded p-4">
+            <p className="text-xs text-gray-500">{t("Closing")} {t("Balance")}</p>
+            <h3
+              className={`text-lg font-bold ${closingBalance < 0 ? "text-red-600" : "text-gray-800"
+                }`}
+            >
+              {closingBalance < 0 ? `(${Math.abs(closingBalance)})` : closingBalance}
+            </h3>
+          </div>
+
+          {/* Net Balance Status */}
+          <div className="bg-white border-l-4 border-gray-800 shadow rounded p-4">
+            <p className="text-xs text-gray-500">{t("Balance Status")}</p>
+            <h3
+              className={`text-lg font-bold ${closingBalance < 0 ? "text-red-600" : "text-green-600"
+                }`}
+            >
+              {closingBalance < 0 ? t("Negative") : t("Positive")}
+            </h3>
+          </div>
+
+        </div>
         {/* Table */}
         <div className="w-full mt-5 overflow-x-auto border border-gray-200">
           <table className="w-full text-sm text-left">
             <thead className="text-black capitalize font-bold">
-              <tr>
-                <td colSpan="7" className="text-right border border-gray-700 px-2 py-2">
-                  {t("Closing")} {t("Balance")}:
-                </td>
-                <td className="border border-gray-700 px-2 py-2">
-                  {closingBalance < 0 ? `(${Math.abs(closingBalance)})` : closingBalance}
-                </td>
-              </tr>
               <tr>
                 <th className="border border-gray-700 px-2 py-1">{t("SL.")}</th>
                 <th className="border border-gray-700 px-2 py-1">{t("Date")}</th>
@@ -444,6 +487,22 @@ const SupplierLedger = () => {
                     </tr>
                   ))}
             </tbody>
+            <tfoot>
+              <tr>
+                <td colSpan="5" className="text-right border border-gray-700 px-2 py-2">
+                  {t("Closing")} {t("Balance")}:
+                </td>
+                <td className="border border-gray-700 px-2 py-2">
+                  {ledgerWithBalance.reduce((sum, item) => sum + (toNumber(item.purchase_amount) || 0), 0)}
+                </td>
+                <td className="border border-gray-700 px-2 py-2">
+                  {ledgerWithBalance.reduce((sum, item) => sum + (toNumber(item.pay_amount) || 0), 0)}
+                </td>
+                <td className="border border-gray-700 px-2 py-2">
+                  {closingBalance < 0 ? `(${Math.abs(closingBalance)})` : closingBalance}
+                </td>
+              </tr>
+            </tfoot>
           </table>
         </div>
       </div>

@@ -453,8 +453,8 @@ const normalizeDate = (dateStr) => {
               <th>${t("Date")}</th>
               <th>${t("Vehicle No")}</th>
               <th>${t("Trips")}</th>
-              <th>${t("TripRent")}</th>
-              <th>${t("TripCost")}</th>
+              <th>${t("Trip Rent")}</th>
+              <th>${t("Trip Cost")}</th>
               <th>${t("Parts Cost")}</th>
               <th>${t("Fuel Cost")}</th>
               <th>${t("Engine Oil")}</th>
@@ -593,8 +593,8 @@ const normalizeDate = (dateStr) => {
                 <th className="px-4 py-3">{t("Date")}</th>
                 <th className="px-4 py-3">{t("Vehicle No")}</th>
                 <th className="px-4 py-3">{t("Trips")}</th>
-                <th className="px-4 py-3">{t("TripRent")}</th>
-                <th className="px-4 py-3">{t("TripCost")}</th>
+                <th className="px-4 py-3">{t("Trip Rent")}</th>
+                <th className="px-4 py-3">{t("Trip Cost")}</th>
                 <th className="px-4 py-3">{t("Parts Cost")}</th>
                 <th className="px-4 py-3">{t("Fuel Cost")}</th>
                 <th className="px-4 py-3">{t("Engine Oil")}</th>

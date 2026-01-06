@@ -335,7 +335,7 @@ const EmployeeList = () => {
                         </td>
                         <td className="px-2 py-1">
                           <img
-                            src={`https://ajenterprise.tramessy.com/backend/uploads/employee/${dt.image}`}
+                            src={`${import.meta.env.VITE_IMAGE_URL}/employee/${dt.image}`}
                             alt=""
                             className="w-20 h-20 rounded-full"
                           />
@@ -444,7 +444,7 @@ const EmployeeList = () => {
               <img
                 src={
                   selectedEmployee.image
-                    ? `https://ajenterprise.tramessy.com/backend/uploads/employee/${selectedEmployee.image}`
+                    ? `${import.meta.env.VITE_IMAGE_URL}/employee/${selectedEmployee.image}`
                     : "https://i.ibb.co.com/CsSbwNvk/download.png"
                 }
                 // src="https://i.ibb.co.com/CsSbwNvk/download.png"

@@ -85,9 +85,9 @@ const OfficeForm = () => {
         <FormProvider {...methods}>
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className="space-y-3 mx-auto rounded-md shadow"
+            className="space-y-3 mx-auto "
           >
-            <div className="border border-gray-300 p-3 md:p-5 rounded-b-md">
+            <div className=" p-3 ">
               <div className="mt-5 md:mt-1 md:flex justify-between gap-3">
                 <div className="w-full">
                   <InputField name="branch_name" label={`${t("Branch")} ${t("Name")}`} required />

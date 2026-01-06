@@ -256,7 +256,7 @@ const Requisition = () => {
             <FaUserSecret className="text-gray-800 text-xl" />
             {t("Requisition")} {t("list")}
           </h1>
-          <Link to="/tramessy/HR/advance-requisition-form">
+          <Link to="/tramessy/advance-requisition-form">
             <button className="bg-gradient-to-r from-primary to-green-700 text-white px-4 py-2 rounded-md flex items-center gap-2 shadow hover:scale-105 transition-all">
               <FaPlus /> {t("Add Requisition")}
             </button>
@@ -343,7 +343,7 @@ const Requisition = () => {
                       <td className="p-2">{item.status}</td>
                       <td className="p-2 flex gap-2">
                         <div className="w-7">
-                          {item.status === "Pending" && <Link to={`/tramessy/HR/update-advance-requisition/${item.id}`}>
+                          {item.status === "Pending" && <Link to={`/tramessy/update-advance-requisition/${item.id}`}>
                             <button className=" text-primary px-2 py-1 rounded hover:bg-primary hover:text-white transition bg-white shadow">
                               <FaPen size={12} />
                             </button>

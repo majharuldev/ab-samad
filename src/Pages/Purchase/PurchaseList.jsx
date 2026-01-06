@@ -742,7 +742,7 @@ const PurchaseList = () => {
                 </span>
               </div>
               <a
-                href={`https://ajenterprise.tramessy.com/backend/uploads/purchase/${selectedPurchase.image}`}
+                href={`${import.meta.env.VITE_IMAGE_URL}/purchase/${selectedPurchase.image}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-600 hover:text-blue-800 text-sm underline"
