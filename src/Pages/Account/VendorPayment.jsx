@@ -10,6 +10,7 @@ import { IoMdClose } from "react-icons/io";
 import toast from "react-hot-toast";
 import * as XLSX from "xlsx";
 import { useTranslation } from "react-i18next";
+import toNumber from "../../hooks/toNumber";
 
 const VendorPayment = () => {
   const {t} = useTranslation();
@@ -321,7 +322,7 @@ const exportToExcel = () => {
                       <td className="p-2">{tableFormatDate(dt.date)}</td>
                       <td className="p-2">{dt.vendor_name}</td>
                       <td className="p-2">{dt.bill_ref}</td>
-                      <td className="p-2">{dt.amount}</td>
+                      <td className="p-2">{toNumber(dt.amount)}</td>
                       <td className="p-2">{dt.cash_type}</td>
                       {/* <td className="p-2">{dt.created_by}</td> */}
                       <td className="p-2">{dt.status}</td>
@@ -352,7 +353,7 @@ const exportToExcel = () => {
               <tfoot className="bg-gray-100 font-bold">
                 <tr>
                   <td colSpan="4" className="text-right p-2">{t("Total")}:</td>
-                  <td className="p-2">{totalAmount}</td>
+                  <td className="p-2">{toNumber(totalAmount)}</td>
                   <td colSpan="3"></td>
                 </tr>
               </tfoot>

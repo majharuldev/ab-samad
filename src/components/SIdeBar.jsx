@@ -45,6 +45,7 @@ const Sidebar = () => {
 
   const isActive = (path) => location.pathname === path;
   const isAdmin = useAdmin();
+  const isHRSubMenuDisabled = true;
 
   return (
     <div className="overflow-y-scroll hide-scrollbar">
@@ -106,81 +107,6 @@ const Sidebar = () => {
                 </li>
               </ul>
 
-              {/* Setup */}
-              <li className="text-gray-700 font-medium rounded-sm">
-                <div
-                  onClick={() => toggleMenu("setup")}
-                  className="flex justify-between items-center py-3 px-2 cursor-pointer hover:bg-primary hover:text-white hover:rounded-sm duration-300"
-                >
-                  <span className="flex items-center gap-2">
-                    <FiSettings />
-                    <span>{t("Set Up")}</span>
-                  </span>
-                  <span
-                    className={`transform transition-transform duration-900 ${openMenu.setup ? "rotate-180" : ""
-                      }`}
-                  >
-                    <FaChevronDown />
-                  </span>
-                </div>
-
-                <div
-                  className={`transition-all duration-900 ease-in-out overflow-hidden ${openMenu.setup ? "max-h-[200px]" : "max-h-0"
-                    }`}
-                >
-                  <ul className="space-y-3 px-2 text-sm mt-2">
-                    <li>
-                      <Link
-                        to="/tramessy/DriverList"
-                        className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/DriverList")
-                          ? "text-gray-700 bg-gray-200"
-                          : "text-gray-500 hover:text-primary"
-                          }`}
-                      >
-                        <RiIdCardLine />
-                        <span>{t("Driver Information")}</span>
-                      </Link>
-                    </li>
-                     <li>
-                      <Link
-                        to="/tramessy/CarList"
-                        className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/CarList")
-                          ? "text-gray-700 bg-gray-200"
-                          : "text-gray-700 hover:text-primary"
-                          }`}
-                      >
-                        <FaCarRear />
-                        <span>{t("vehicles")} {t("info")}</span>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        to="/tramessy/HelperList"
-                        className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/HelperList")
-                          ? "text-gray-700 bg-gray-200"
-                          : "text-gray-500 hover:text-primary"
-                          }`}
-                      >
-                        <FaHireAHelper/>
-                        <span>{t("Helper Info")}</span>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        to="/tramessy/HR/HRM/Office"
-                        className={`flex gap-2 items-center p-2 rounded-sm ${isActive("/tramessy/HR/HRM/Office")
-                          ? "text-gray-700 bg-gray-200"
-                          : "text-gray-500 hover:text-primary"
-                          }`}
-                      >
-                        <PiBuildingOfficeBold />
-                        {t("Office")}
-                      </Link>
-                    </li>
-
-                  </ul>
-                </div>
-              </li>
               {/* Vendor management */}
               <li className="text-gray-700 font-medium rounded-sm">
                 <div
@@ -287,11 +213,17 @@ const Sidebar = () => {
                     </li>}
                     <li>
                       <Link
-                        to="/tramessy/advance-requisition"
-                        className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/advance-requisition")
-                          ? "text-gray-700 bg-gray-200"
-                          : "text-gray-500 hover:text-primary"
-                          }`}
+                        // to="/tramessy/advance-requisition"
+                        // className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/advance-requisition")
+                        //   ? "text-gray-700 bg-gray-200"
+                        //   : "text-gray-500 hover:text-primary"
+                        //   }`}
+                        to={isHRSubMenuDisabled ? "#" : "/tramessy/advance-requisition"}
+                              onClick={(e) => isHRSubMenuDisabled && e.preventDefault()}
+                              className={`p-2 rounded-sm ${isHRSubMenuDisabled
+                                ? "text-gray-400 cursor-not-allowed"
+                                : "text-gray-500 hover:text-primary"
+                                }`}
                       >
 
                         <span>{t("Requisition")}</span>
@@ -301,7 +233,7 @@ const Sidebar = () => {
                 </div>
               </li>
               {/* HR management */}
-              <li className="text-gray-700 font-medium rounded-sm">
+              <li className="text-gray-700 font-medium rounded-sm disabled">
                 {/* HR main toggle */}
                 <div
                   onClick={() => toggleMenu("hrManagement")}
@@ -326,39 +258,24 @@ const Sidebar = () => {
                 >
                   <ul className="space-y-2 px-2 text-sm mt-2">
                     <li>
-                      {/* HRM toggle inside HR */}
-                      {/* <div
-                          onClick={() => toggleMenu("hrm")}
-                          className="flex justify-between items-center p-2 cursor-pointer hover:text-primary rounded-sm"
-                        >
-                          <span className="flex gap-2 items-center">
-                            
-                            <span>HRM</span>
-                          </span>
-                          <span
-                            className={`transform transition-transform duration-900 ${
-                              openMenu.hrm ? "rotate-180" : ""
-                            }`}
-                          >
-                            <FaChevronDown />
-                          </span>
-                        </div> */}
-                      {/* Animate HRM nested submenu */}
-                      {/* <div
-                          className={`transition-all duration-900 overflow-hidden ${
-                            openMenu.hrm ? "max-h-[500px]" : "max-h-0"
-                          }`}
-                        > */}
                       <ul className="pl-6 space-y-2 mt-1">
                         <li>
                           <Link
-                            to="/tramessy/HR/HRM/employee-list"
-                            className={`flex gap-2 items-center block p-2 rounded-sm ${isActive("/tramessy/HR/HRM/employee-list")
-                              ? "text-gray-700 bg-gray-200"
+                            // to="/tramessy/HR/HRM/employee-list"
+                            to={isHRSubMenuDisabled ? "#" : "/tramessy/HR/HRM/employee-list"}
+                            onClick={(e) => {
+                              if (isHRSubMenuDisabled) e.preventDefault(); // click disable
+                            }}
+                            // className={`flex gap-2 items-center block p-2 rounded-sm ${isActive("/tramessy/HR/HRM/employee-list")
+                            //   ? "text-gray-700 bg-gray-200"
+                            //   : "text-gray-500 hover:text-primary"
+                            //   }`}
+                            className={`flex gap-2 items-center p-2 rounded-sm ${isHRSubMenuDisabled
+                              ? "text-gray-400 cursor-not-allowed"  // disabled look
                               : "text-gray-500 hover:text-primary"
                               }`}
                           >
-                          <FaPeopleCarryBox />
+                            <FaPeopleCarryBox />
                             {t("Employee Information")}
                           </Link>
                         </li>
@@ -369,115 +286,6 @@ const Sidebar = () => {
                   </ul>
                 </div>
 
-                {/* Animate HR submenu attendance*/}
-                {/* <div
-                    className={`transition-all duration-300 overflow-hidden px-1 ${
-                      openMenu.hrManagement ? "max-h-[200px]" : "max-h-0"
-                    }`}
-                  >
-                    <ul className="space-y-2 px-2 text-sm mt-2">
-                      <li>
-                     
-                        <div
-                          onClick={() => toggleMenu("attendance")}
-                          className="flex justify-between items-center p-2 cursor-pointer hover:text-primary rounded-sm"
-                        >
-                          <span className="flex gap-2 items-center">
-                            
-                            <span>Attendance</span>
-                          </span>
-                          <span
-                            className={`transform transition-transform duration-900 ${
-                              openMenu.attendance ? "rotate-180" : ""
-                            }`}
-                          >
-                            <FaChevronDown />
-                          </span>
-                        </div>
-                       
-                        <div
-                          className={`transition-all duration-900 overflow-hidden px-1 ${
-                            openMenu.attendance ? "max-h-[500px]" : "max-h-0"
-                          }`}
-                        >
-                          <ul className="pl-6 space-y-2 mt-1">
-                            <li>
-                              <Link
-                                to="/tramessy/HR/Attendance/AttendanceList"
-                                className={`block p-2 rounded-sm ${
-                                  isActive(
-                                    "/tramessy/HR/Attendance/AttendanceList"
-                                  )
-                                    ? "text-white bg-primary"
-                                    : "text-gray-500 hover:text-primary"
-                                }`}
-                              >
-                                <span className="flex gap-2 items-center">
-                                 
-                                  <span>Attendance</span>
-                                </span>
-                              </Link>
-                            </li>
-                          </ul>
-                        </div>
-                      </li>
-                    </ul>
-                  </div> */}
-                {/* Animate HR submenu leave*/}
-                {/* <div
-                    className={`transition-all duration-300 overflow-hidden px-1 ${
-                      openMenu.hrManagement ? "max-h-[200px]" : "max-h-0"
-                    }`}
-                  >
-                    <ul className="space-y-2 px-2 text-sm mt-2">
-                      <li>
-                      
-                        <div
-                          onClick={() => toggleMenu("leave")}
-                          className="p-2 cursor-pointer hover:text-primary rounded-sm"
-                        >
-                          <li>
-                            <Link
-                              to="/tramessy/HR/HRM/Leave"
-                              className={`flex gap-2 items-center p-2 rounded-sm font-medium ${
-                                isActive("/tramessy/HR/HRM/Leave")
-                                  ? "text-white bg-primary"
-                                  : "text-gray-500 hover:text-primary"
-                              }`}
-                            >
-                              <div
-                                className={`w-[6px] h-[6px] rounded-full bg-primary ${
-                                  isActive("/tramessy/HR/HRM/Leave")
-                                    ? "bg-white"
-                                    : "bg-primary"
-                                }`}
-                              ></div>
-                              <span>Leave Request</span>
-                            </Link>
-                          </li>
-                          <li>
-                            <Link
-                              to="/tramessy/HR/HRM/MonthAttendance"
-                              className={`flex gap-2 items-center p-2 rounded-sm font-medium ${
-                                isActive("/tramessy/HR/HRM/MonthAttendance")
-                                  ? "text-white bg-primary"
-                                  : "text-gray-500 hover:text-primary"
-                              }`}
-                            >
-                              <div
-                                className={`w-[6px] h-[6px] rounded-full bg-primary ${
-                                  isActive("/tramessy/HR/HRM/MonthAttendance")
-                                    ? "bg-white"
-                                    : "bg-primary"
-                                }`}
-                              ></div>
-                              <span>Month Attendance</span>
-                            </Link>
-                          </li>
-                        </div>
-                      </li>
-                    </ul>
-                  </div> */}
                 {/* Animate HR submenu Payroll*/}
                 <div
                   className={`transition-all duration-300 overflow-hidden px-1 ${openMenu.hrManagement ? "max-h-[400px]" : "max-h-0"
@@ -507,9 +315,15 @@ const Sidebar = () => {
                         <ul className="pl-6 space-y-2 mt-1">
                           <li>
                             <Link
-                              to="/tramessy/HR/Payroll/Attendance"
-                              className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/HR/Payroll/Attendance")
-                                ? "text-gray-700 bg-gray-200"
+                              // to="/tramessy/HR/Payroll/Attendance"
+                              // className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/HR/Payroll/Attendance")
+                              //   ? "text-gray-700 bg-gray-200"
+                              //   : "text-gray-500 hover:text-primary"
+                              //   }`}
+                              to={isHRSubMenuDisabled ? "#" : "/tramessy/HR/Payroll/Attendance"}
+                              onClick={(e) => isHRSubMenuDisabled && e.preventDefault()}
+                              className={`p-2 rounded-sm ${isHRSubMenuDisabled
+                                ? "text-gray-400 cursor-not-allowed"
                                 : "text-gray-500 hover:text-primary"
                                 }`}
                             >
@@ -519,11 +333,17 @@ const Sidebar = () => {
                           </li>
                           <li>
                             <Link
-                              to="/tramessy/HR/payroll/bonus"
-                              className={`block p-2 rounded-sm ${isActive(
-                                "/tramessy/HR/payroll/bonus"
-                              )
-                                ? "text-gray-700 bg-gray-200"
+                              // to="/tramessy/HR/payroll/bonus"
+                              // className={`block p-2 rounded-sm ${isActive(
+                              //   "/tramessy/HR/payroll/bonus"
+                              // )
+                              //   ? "text-gray-700 bg-gray-200"
+                              //   : "text-gray-500 hover:text-primary"
+                              //   }`}
+                              to={isHRSubMenuDisabled ? "#" : "/tramessy/HR/payroll/bonus"}
+                              onClick={(e) => isHRSubMenuDisabled && e.preventDefault()}
+                              className={`p-2 rounded-sm ${isHRSubMenuDisabled
+                                ? "text-gray-400 cursor-not-allowed"
                                 : "text-gray-500 hover:text-primary"
                                 }`}
                             >
@@ -532,11 +352,17 @@ const Sidebar = () => {
                           </li>
                           <li>
                             <Link
-                              to="/tramessy/HR/Payroll/Advance-Salary"
-                              className={`flex items-center gap-2 p-2 rounded-sm ${isActive(
-                                "/tramessy/HR/Payroll/Advance-Salary"
-                              )
-                                ? "text-gray-700 bg-gray-200"
+                              // to="/tramessy/HR/Payroll/Advance-Salary"
+                              // className={`flex items-center gap-2 p-2 rounded-sm ${isActive(
+                              //   "/tramessy/HR/Payroll/Advance-Salary"
+                              // )
+                              //   ? "text-gray-700 bg-gray-200"
+                              //   : "text-gray-500 hover:text-primary"
+                              //   }`}
+                              to={isHRSubMenuDisabled ? "#" : "/tramessy/HR/Payroll/Advance-Salary"}
+                              onClick={(e) => isHRSubMenuDisabled && e.preventDefault()}
+                              className={`p-2 rounded-sm ${isHRSubMenuDisabled
+                                ? "text-gray-400 cursor-not-allowed"
                                 : "text-gray-500 hover:text-primary"
                                 }`}
                             >
@@ -546,12 +372,18 @@ const Sidebar = () => {
 
                           <li>
                             <Link
-                              to="/tramessy/HR/payroll/loan"
-                              className={`block p-2 rounded-sm ${isActive(
-                                "/tramessy/HR/payroll/loan"
-                              )
-                                ? "text-gray-700 bg-gray-200"
-                                : "text-gray-500 hover:text-primary"
+                              // to="/tramessy/HR/payroll/loan"
+                              // className={`block p-2 rounded-sm ${isActive(
+                              //   "/tramessy/HR/payroll/loan"
+                              // )
+                              //   ? "text-gray-700 bg-gray-200"
+                              //   : "text-gray-500 hover:text-primary"
+                              //   }`}
+                              to={isHRSubMenuDisabled ? "#" : "/tramessy/HR/payroll/loan"}
+                              onClick={(e) => isHRSubMenuDisabled && e.preventDefault()}
+                              className={`p-2 rounded-sm ${isHRSubMenuDisabled
+                                  ? "text-gray-400 cursor-not-allowed"
+                                  : "text-gray-500 hover:text-primary"
                                 }`}
                             >
                               {t("Loan")}
@@ -559,28 +391,23 @@ const Sidebar = () => {
                           </li>
                           <li>
                             <Link
-                              to="/tramessy/HR/payroll/generate-salary"
-                              className={`flex items-center gap-2 p-2 rounded-sm ${isActive(
-                                "/tramessy/HR/payroll/generate-salary"
-                              )
-                                ? "text-gray-700 bg-gray-200"
-                                : "text-gray-500 hover:text-primary"
+                              // to="/tramessy/HR/payroll/generate-salary"
+                              // className={`flex items-center gap-2 p-2 rounded-sm ${isActive(
+                              //   "/tramessy/HR/payroll/generate-salary"
+                              // )
+                              //   ? "text-gray-700 bg-gray-200"
+                              //   : "text-gray-500 hover:text-primary"
+                              //   }`}
+                              to={isHRSubMenuDisabled ? "#" : "/tramessy/HR/payroll/generate-salary"}
+                              onClick={(e) => isHRSubMenuDisabled && e.preventDefault()}
+                              className={`p-2 rounded-sm ${isHRSubMenuDisabled
+                                  ? "text-gray-400 cursor-not-allowed"
+                                  : "text-gray-500 hover:text-primary"
                                 }`}
                             >
                               {t("Generate Salary")}
                             </Link>
                           </li>
-                          {/* <li>
-                            <Link
-                              to="/tramessy/HR/payrol/salary-sheet"
-                              className={`block p-2 rounded-sm ${isActive("/HR/salary-sheet")
-                                  ? "text-white bg-primary"
-                                  : "text-gray-500 hover:text-primary"
-                                }`}
-                            >
-                              Salary Sheet
-                            </Link>
-                          </li> */}
                         </ul>
                       </div>
                     </li>
@@ -1051,11 +878,17 @@ const Sidebar = () => {
                     <ul className="space-y-3 px-2 text-sm mt-2">
                       <li>
                         <Link
-                          to="/tramessy/account/CashDispatch"
-                          className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/account/CashDispatch")
-                            ? "text-gray-700 bg-gray-200"
-                            : "text-gray-500 hover:text-primary"
-                            }`}
+                          // to="/tramessy/account/CashDispatch"
+                          // className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/account/CashDispatch")
+                          //   ? "text-gray-700 bg-gray-200"
+                          //   : "text-gray-500 hover:text-primary"
+                          //   }`}
+                          to={isHRSubMenuDisabled ? "#" : "/tramessy/account/CashDispatch"}
+                              onClick={(e) => isHRSubMenuDisabled && e.preventDefault()}
+                              className={`p-2 rounded-sm flex items-center gap-2 ${isHRSubMenuDisabled
+                                ? "text-gray-400 cursor-not-allowed"
+                                : "text-gray-500 hover:text-primary"
+                                }`}
                         >
 
                           <span>{t("Fund Transfer")}</span>
@@ -1198,6 +1031,87 @@ const Sidebar = () => {
                         >
 
                           <span>{t("Bill")}</span>
+                        </Link>
+                      </li>
+
+                    </ul>
+                  </div>
+                </li>
+                {/* Setup */}
+                <li className="text-gray-700 font-medium rounded-sm">
+                  <div
+                    onClick={() => toggleMenu("setup")}
+                    className="flex justify-between items-center py-3 px-2 cursor-pointer hover:bg-primary hover:text-white hover:rounded-sm duration-300"
+                  >
+                    <span className="flex items-center gap-2">
+                      <FiSettings />
+                      <span>{t("Set Up")}</span>
+                    </span>
+                    <span
+                      className={`transform transition-transform duration-900 ${openMenu.setup ? "rotate-180" : ""
+                        }`}
+                    >
+                      <FaChevronDown />
+                    </span>
+                  </div>
+
+                  <div
+                    className={`transition-all duration-900 ease-in-out overflow-hidden ${openMenu.setup ? "max-h-[200px]" : "max-h-0"
+                      }`}
+                  >
+                    <ul className="space-y-3 px-2 text-sm mt-2">
+                      <li>
+                        <Link
+                          to="/tramessy/DriverList"
+                          className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/DriverList")
+                            ? "text-gray-700 bg-gray-200"
+                            : "text-gray-500 hover:text-primary"
+                            }`}
+                        >
+                          <RiIdCardLine />
+                          <span>{t("Driver Information")}</span>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/tramessy/CarList"
+                          className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/CarList")
+                            ? "text-gray-700 bg-gray-200"
+                            : "text-gray-700 hover:text-primary"
+                            }`}
+                        >
+                          <FaCarRear />
+                          <span>{t("vehicles")} {t("info")}</span>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          // to="/tramessy/HelperList"
+                          // className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/HelperList")
+                          //   ? "text-gray-700 bg-gray-200"
+                          //   : "text-gray-500 hover:text-primary"
+                          //   }`}
+                           to={isHRSubMenuDisabled ? "#" : "/tramessy/HelperList"}
+                              onClick={(e) => isHRSubMenuDisabled && e.preventDefault()}
+                              className={`p-2 rounded-sm flex items-center gap-2 ${isHRSubMenuDisabled
+                                ? "text-gray-400 cursor-not-allowed"
+                                : "text-gray-500 hover:text-primary"
+                                }`}
+                        >
+                          <FaHireAHelper />
+                          <span>{t("Helper Info")}</span>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/tramessy/HR/HRM/Office"
+                          className={`flex gap-2 items-center p-2 rounded-sm ${isActive("/tramessy/HR/HRM/Office")
+                            ? "text-gray-700 bg-gray-200"
+                            : "text-gray-500 hover:text-primary"
+                            }`}
+                        >
+                          <PiBuildingOfficeBold />
+                          {t("Office")}
                         </Link>
                       </li>
 

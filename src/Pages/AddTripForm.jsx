@@ -58,7 +58,7 @@ export default function AddTripForm() {
       others_cost: "",
       d_day: "",
       d_amount: "",
-      d_total: 0,
+      d_total: "",
       customer: "",
       parking_cost: "",
       night_guard: "",
@@ -83,10 +83,11 @@ export default function AddTripForm() {
       sms_sent: "yes",
       challan_cost: "",
       remarks: "",
-      status: "pending",
+      status: "Pending",
       helper_name: "",
       v_d_day: "",
-      v_d_total: ""
+      v_d_total: "",
+      chalan_rec: "Pending"
     },
   })
 
@@ -202,7 +203,7 @@ export default function AddTripForm() {
     setValue,
     selectedTransport,
   ])
-// demurrage + rent  total
+  // demurrage + rent  total
   useEffect(() => {
     const transport = selectedTransport;
 
@@ -216,7 +217,7 @@ export default function AddTripForm() {
 
     if (transport === "vendor_transport") {
       // Vendor transport: vehicle_rent = total_exp (vendor rent) + v_d_total (vendor demurrage)
-      const totalExp = Number(watch("total_exp")) || 0;
+      const totalExp = Number(watch("total_exp"));
       const vDemurrage = Number(watch("v_d_total")) || 0;
 
       setValue("vehicle_rent", totalExp + vDemurrage);
@@ -333,6 +334,7 @@ export default function AddTripForm() {
               advance: Number(tripData.advance) || 0,
               due_amount: Number(tripData.due_amount) || 0,
               driver_adv: Number(tripData.driver_adv) || 0,
+              chalan_rec: tripData.chalan_rec,
             }
 
             reset(parsedTripData)
@@ -442,10 +444,10 @@ export default function AddTripForm() {
       setValue("driver_mobile", vData.mobile || "");
       setValue("helper_name", vData.helper || "");
       //  Vehicle Category & Size auto fill
-    setValue("vehicle_category", vData.vehicle_category || "")
-    setValue("vehicle_size", vData.vehicle_size || "")
+      setValue("vehicle_category", vData.vehicle_category || "")
+      setValue("vehicle_size", vData.vehicle_size || "")
     }
-     
+
   }, [selectedVehicle, selectedTransport]);
 
   // Fixed rate calculation based on load point, unload point, vehicle category and size
@@ -640,7 +642,7 @@ export default function AddTripForm() {
                   </div>
                 </div>
                 <div className="flex gap-x-6 mt-2">
-                  <div className="w-full">
+                  {/* <div className="w-full">
                     <SelectField
                       name="trip_type"
                       label={t("Trip Type")}
@@ -654,13 +656,13 @@ export default function AddTripForm() {
                   </div>
                   <div className="w-full">
                     <InputField name="additional_load" label={t("Additional Load Point")} />
-                  </div>
+                  </div> */}
 
-                  <div className="w-full">
+                  {/* <div className="w-full">
                     <InputField name="buyar_name" label={t("Buyar Name")} required={false} />
-                  </div>
+                  </div> */}
                 </div>
-                <div className="flex gap-x-6">
+                {/* <div className="flex gap-x-6">
                   <div className="w-full">
                     <InputField name="invoice_no" label={t("Invoice No")} required={false} />
                   </div>
@@ -670,7 +672,7 @@ export default function AddTripForm() {
                     required={false}
                   // placeholder="Enter product details here..."
                   />
-                </div>
+                </div> */}
               </div>
 
               {/* Vehicle & Driver Information */}
@@ -752,7 +754,7 @@ export default function AddTripForm() {
                       control={control}
                     />
                   )}
-                  {
+                  {/* {
                     selectedTransport === "own_transport" ? (
                       <InputField
                         name="helper_name"
@@ -762,7 +764,7 @@ export default function AddTripForm() {
                         control={control}
                       />
                     ) : ""
-                  }
+                  } */}
 
                   {(selectedTransport === "own_transport") && (
                     <>
@@ -784,7 +786,7 @@ export default function AddTripForm() {
                       />
                     </>
                   )}
-                   {(selectedTransport==="vendor_transport") && (
+                  {(selectedTransport === "vendor_transport") && (
                     <>
                       <InputField
                         name="vehicle_category"
@@ -811,8 +813,19 @@ export default function AddTripForm() {
                       label={t("Total Rent/Bill Amount")}
                       type="number"
                       required={false}
-                      // readOnly={isRateFound}
-                      className={`${isRateFound ? "bg-gray-100" : ""}`}
+                    // readOnly={isRateFound}
+                    // className={`${isRateFound ? "bg-gray-100" : ""}`}
+                    />
+                  </div>
+                  <div className="">
+                    <SelectField
+                      name="chalan_rec"
+                      label={`${t("Challan")} ${t("Receive")} ${t("Status")}`}
+                  required={false}
+                      options={[
+                        { value: "Pending", label: "Pending" },
+                        { value: "Received", label: "Received" },
+                      ]}
                     />
                   </div>
                 </div>
@@ -944,7 +957,6 @@ export default function AddTripForm() {
                     <InputField name="driver_commission" label={`${t("Driver")} ${t("Commission")}`} type="number" />
                     <InputField name="labor" label={t("Labour Cost")} type="number" />
                     <InputField name="fuel_cost" label={t("Fuel Cost")} type="number" />
-                    <InputField name="night_guard" label={t("Night Guard")} type="number" />
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
@@ -958,10 +970,11 @@ export default function AddTripForm() {
                     <InputField name="parking_cost" label={t("Parking Cost")} type="number" />
                     <InputField name="challan_cost" label={t("Challan Cost")} type="number" />
                     <InputField name="food_cost" label={t("Food Cost")} type="number" />
-                    <InputField name="others_cost" label={t("Others Cost")} type="number" />
+                    <InputField name="night_guard" label={t("Night Guard")} type="number" />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
-                    <InputField name="additional_cost" label={t("Additional Load Cost")} type="number" />
+                    {/* <InputField name="additional_cost" label={t("Additional Load Cost")} type="number" /> */}
+                    <InputField name="others_cost" label={t("Others Cost")} type="number" />
                     <InputField name="total_exp" label={t("Total Expense")} readOnly />
 
                     <InputField name="remarks" label={t("Remarks")} required={false} />

@@ -17,6 +17,7 @@ export const SelectField = ({
   onSelectChange,
   isCreatable = true,
   isMulti = false,
+  // disabled = false,
 }) => {
   const {
     formState: { errors },

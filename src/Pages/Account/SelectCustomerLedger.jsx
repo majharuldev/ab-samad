@@ -111,11 +111,14 @@ const SelectCustomerLadger = ({ customer, selectedCustomerName }) => {
 
       return {
         SL: index + 1,
-        Date: tableFormatDate(dt.working_date),
+        "Working Date": tableFormatDate(dt.working_date),
+        "Bill Date": tableFormatDate(dt.bill_date),
+        "Challn No": dt.chalan,
         Customer: dt.customer_name,
         Load: dt.load_point || "--",
         Unload: dt.unload_point || "--",
         Vehicle: dt.vehicle_no || "--",
+        "Challan Receive Status": dt.challan_rec,
         "Trip Rent": tripRent,
         Demurrage: dem,
         "Bill Amount": billAmount,
@@ -130,11 +133,14 @@ const SelectCustomerLadger = ({ customer, selectedCustomerName }) => {
     //  Total row
     rows.push({
       SL: "Total",
-      Date: "",
+      "Work Date": "",
+      "Bill Date": "",
+      "Challan No": "",
       Customer: "",
       Load: "",
       Unload: "",
       Vehicle: "",
+      "Challan Receive Status": "",
       "Trip Rent": totals.tripRent,
       Demurrage: totals.demurrage,
       "Bill Amount": totals.billAmount,
@@ -177,7 +183,7 @@ const SelectCustomerLadger = ({ customer, selectedCustomerName }) => {
 
   return (
     <div className="md:p-4">
-      <div className="w-[23rem] md:w-full overflow-x-auto">
+      <div className="overflow-x-auto">
         <div className="md:flex items-center justify-between mb-6">
           <h1 className="text-xl font-extrabold text-[#11375B]">
             {filteredLedger.length > 0
@@ -318,11 +324,13 @@ const SelectCustomerLadger = ({ customer, selectedCustomerName }) => {
                     <th className="border px-2 py-1">{t("SL.")}</th>
                     <th className="border px-2 py-1">{t("Working Date")}</th>
                     <th className="border px-2 py-1">{t("Bill Date")}</th>
+                    <th className="border px-2 py-1">{t("Challan No")}</th>
                     <th className="border px-2 py-1">{t("Customer")}</th>
                     <th className="border px-2 py-1">{t("Load")}</th>
                     <th className="border px-2 py-1">{t("Unload")}</th>
                     <th className="border px-2 py-1">{t("Vehicle")}</th>
                     {/* <th className="border px-2 py-1">Driver</th> */}
+                    <th className="border px-2 py-1">{t("Challan")} {t("Receive")} {t("Status")}</th>
                     <th className="border px-2 py-1">{t("Trip Rent")}</th>
                     <th className="border px-2 py-1">{t("Demurrage")}</th>
                     <th className="border px-2 py-1">{t("Bill Amount")}</th>
@@ -354,6 +362,7 @@ const SelectCustomerLadger = ({ customer, selectedCustomerName }) => {
                           <td className="border px-2 py-1">{idx + 1}</td>
                           <td className="border px-2 py-1">{tableFormatDate(item.working_date)}</td>
                           <td className="border px-2 py-1">{tableFormatDate(item.bill_date)}</td>
+                          <td className="border px-2 py-1">{item.chalan}</td>
                           <td className="border px-2 py-1">{item.customer_name}</td>
                           <td className="border px-2 py-1">
                             {item.load_point || <span className="flex justify-center items-center">--</span>}
@@ -367,9 +376,12 @@ const SelectCustomerLadger = ({ customer, selectedCustomerName }) => {
                           {/* <td className="border px-2 py-1">
                           {item.driver_name || <span className="flex justify-center items-center">--</span>}
                         </td> */}
+                        <td className="border px-2 py-1">
+                          {item.chalan_rec || <span className="flex justify-center items-center">--</span>}
+                        </td>
                           <td className="border px-2 py-1">
                             {tripRent ? tripRent : "--"}
-                          </td>
+                          </td>                         
                           <td className="border px-2 py-1">
                             {demurageTotal ? demurageTotal : "--"}
                           </td>
@@ -390,7 +402,7 @@ const SelectCustomerLadger = ({ customer, selectedCustomerName }) => {
 
                 <tfoot>
                   <tr className="font-bold bg-gray-50">
-                    <td colSpan={7} className="border px-2 py-1 text-right">
+                    <td colSpan={9} className="border px-2 py-1 text-right">
                       {t("Total")}
                     </td>
 

@@ -14,7 +14,7 @@ import axios from "axios";
 import { useTranslation } from "react-i18next";
 
 const PurchaseForm = () => {
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams();
   const isEditMode = Boolean(id);
@@ -63,7 +63,7 @@ const PurchaseForm = () => {
     const grandTotal = totalItemsAmount + (parseFloat(serviceCharge) || 0);
     setValue("purchase_amount", grandTotal);
   }, [items, serviceCharge, setValue]);
-// set category
+  // set category
   useEffect(() => {
     if (watch("vehicle_no")) {
       const selectedVehicleData = vehicle.find(
@@ -177,41 +177,41 @@ const PurchaseForm = () => {
     value: supply.supplier_name,
     label: supply.supplier_name,
   }));
-useEffect(() => {
-  return () => {
-    // প্রিভিউ URL মেমরি লিক এড়াতে
-    if (previewImage) {
-      URL.revokeObjectURL(previewImage);
-    }
-  };
-}, [previewImage]);
+  useEffect(() => {
+    return () => {
+      // প্রিভিউ URL মেমরি লিক এড়াতে
+      if (previewImage) {
+        URL.revokeObjectURL(previewImage);
+      }
+    };
+  }, [previewImage]);
   // Preview image or PDF remove
   const removePreview = () => {
-  setPreviewImage(null);
-  setExistingImage(null);
-  setValue("bill_image", null);
-};
-// handleFileChange ফাংশন আপডেট করুন
-const handleFileChange = (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    // react-hook-form এ ফাইল সেট করুন
-    setValue("bill_image", file);
-    
-    // প্রিভিউ তৈরি করুন
-    if (file.type === "application/pdf") {
-      const pdfURL = URL.createObjectURL(file);
-      setPreviewImage(pdfURL);
-    } else if (file.type.startsWith("image/")) {
-      const imageURL = URL.createObjectURL(file);
-      setPreviewImage(imageURL);
-    } else {
-      // অন্য ফাইল টাইপের ক্ষেত্রে
-      setPreviewImage(null);
-      toast.error("Please upload only images or PDF files");
+    setPreviewImage(null);
+    setExistingImage(null);
+    setValue("bill_image", null);
+  };
+  // handleFileChange ফাংশন আপডেট করুন
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // react-hook-form এ ফাইল সেট করুন
+      setValue("bill_image", file);
+
+      // প্রিভিউ তৈরি করুন
+      if (file.type === "application/pdf") {
+        const pdfURL = URL.createObjectURL(file);
+        setPreviewImage(pdfURL);
+      } else if (file.type.startsWith("image/")) {
+        const imageURL = URL.createObjectURL(file);
+        setPreviewImage(imageURL);
+      } else {
+        // অন্য ফাইল টাইপের ক্ষেত্রে
+        setPreviewImage(null);
+        toast.error("Please upload only images or PDF files");
+      }
     }
-  }
-};
+  };
 
   // Handle form submission for both add and update
   const onSubmit = async (data) => {
@@ -450,10 +450,10 @@ const handleFileChange = (e) => {
                   const quantity = watch(`items.${index}.quantity`) || 0;
                   const unitPrice = parseFloat(watch(`items.${index}.unit_price`)) || 0;
                   const total = quantity * unitPrice;
-useEffect(() => {
-    const total = Number(quantity) * Number(unitPrice);
-    setValue(`items.${index}.total`, total, { shouldValidate: false });
-  }, [quantity, unitPrice, index, setValue]);
+                  useEffect(() => {
+                    const total = Number(quantity) * Number(unitPrice);
+                    setValue(`items.${index}.total`, total, { shouldValidate: false });
+                  }, [quantity, unitPrice, index, setValue]);
                   return (
                     <div key={field.id} className="flex flex-col md:flex-row gap-3 border border-gray-300 p-3 rounded-md relative">
                       <InputField name={`items.${index}.item_name`} label={`${t("Item")} ${t("Name")}`} required={!isEditMode} className="!w-full" />
@@ -598,96 +598,41 @@ useEffect(() => {
               </div>
             </div>} */}
 
-            {/* <div className="md:flex justify-between gap-3">
-              <div className="w-full">
+            <div className="md:flex justify-between gap-3">
+              <div className="w-[50%]">
                 <label className="text-gray-700 text-sm font-semibold">
-                  Bill Image {!isEditMode && "(Required)"}
+                  {t("Bill Documents")}
                 </label>
                 <Controller
                   name="bill_image"
                   control={control}
-                  rules={isEditMode ? {} : { required: "This field is required" }}
-                  render={({
-                    field: { onChange, ref },
-                    fieldState: { error },
-                  }) => (
-                    <div className="relative">
-                      <label
-                        htmlFor="bill_image"
-                        className="border p-2 rounded w-[50%] block bg-white text-gray-300 text-sm cursor-pointer"
-                      >
-                        {previewImage ? "Image selected" : "Choose image"}
-                      </label>
+                  // rules={isEditMode ? {} : { required: "This field is required" }}
+                  render={({ field: { onChange, ref }, fieldState: { error } }) => (
+                    <div>
                       <input
-                        id="bill_image"
                         type="file"
-                        // accept="image/*"
-                         accept="image/*,application/pdf" 
+                        accept="image/*,application/pdf"
                         ref={ref}
-                        className="hidden"
-                        // onChange={(e) => {
-                        //   const file = e.target.files[0];
-                        //   if (file) {
-                        //     const url = URL.createObjectURL(file);
-                        //     setPreviewImage(url);
-                        //     onChange(file);
-                        //   } else {
-                        //     setPreviewImage(null);
-                        //     onChange(null);
-                        //   }
-                        // }}
-                         onChange={handleFileChange}
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          handleFileChange(e);
+                          onChange(file);
+                        }}
+                        className="border p-2 rounded w-full"
                       />
                       {error && (
-                        <span className="text-red-600 text-sm">
-                          {error.message}
-                        </span>
+                        <span className="text-red-600 text-sm">{error.message}</span>
                       )}
-                      {isEditMode && existingImage && (
-                        <span className="text-green-600 text-sm">
-                          Current image: {existingImage}
-                        </span>
+                      {isEditMode && existingImage && !previewImage && (
+                        <p className="text-green-600 text-sm mt-1">
+                          {t("Current file")}: {existingImage}
+                        </p>
                       )}
                     </div>
                   )}
                 />
               </div>
-            </div> */}
-            <div className="md:flex justify-between gap-3">
-  <div className="w-[50%]">
-    <label className="text-gray-700 text-sm font-semibold">
-      {t("Bill Documents")}
-    </label>
-    <Controller
-      name="bill_image"
-      control={control}
-      // rules={isEditMode ? {} : { required: "This field is required" }}
-      render={({ field: { onChange, ref }, fieldState: { error } }) => (
-        <div>
-          <input
-            type="file"
-            accept="image/*,application/pdf"
-            ref={ref}
-            onChange={(e) => {
-              const file = e.target.files[0];
-              handleFileChange(e);
-              onChange(file);
-            }}
-            className="border p-2 rounded w-full"
-          />
-          {error && (
-            <span className="text-red-600 text-sm">{error.message}</span>
-          )}
-          {isEditMode && existingImage && !previewImage && (
-            <p className="text-green-600 text-sm mt-1">
-              {t("Current file")}: {existingImage}
-            </p>
-          )}
-        </div>
-      )}
-    />
-  </div>
-</div>
+            </div>
 
             {/* Preview */}
             {/* {previewImage && (
@@ -716,63 +661,63 @@ useEffect(() => {
                 />
               </div>
             )} */}
-           {previewImage && (
-  <div className="mt-3 relative  flex !justify-end">
-    <button
-      type="button"
-      onClick={() => {
-        setPreviewImage(null);
-        setValue("bill_image", null);
-        removePreview()
-        // ফাইল ইনপুট রিসেট করুন
-        const fileInput = document.querySelector('input[type="file"]');
-        if (fileInput) fileInput.value = "";
-        
-        if (isEditMode && existingImage) {
-          // এডিট মোডে থাকলে এক্সিস্টিং ইমেজ দেখান
-          const imageUrl = `https://soinik.tramessy.com/backend/uploads/purchase/${existingImage}`;
-          setPreviewImage(imageUrl);
-        } else {
-          setExistingImage(null);
-        }
-      }}
-      className="absolute top-2 right-2 text-red-600 bg-white shadow rounded-sm hover:text-white hover:bg-secondary transition-all duration-300 cursor-pointer font-bold text-xl p-[2px] z-10"
-      title="Remove preview"
-      
-    >
-      <IoMdClose />
-    </button>
-    
-    {/* PDF বা ইমেজ প্রিভিউ */}
-    {previewImage.includes("application/pdf") || previewImage.endsWith(".pdf") ? (
-      <div className="border rounded p-2 bg-gray-50">
-        <p className="text-sm text-gray-600 mb-2">{t("PDF Preview")}:</p>
-        <iframe
-          src={previewImage}
-          className="w-full h-64 border"
-          title="PDF Preview"
-        />
-        <a
-          href={previewImage}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-600 text-sm mt-2 inline-block"
-        >
-          {t("Open PDF in new tab")}
-        </a>
-      </div>
-    ) : (
-      <div className="border rounded p-2 bg-gray-50">
-        <p className="text-sm text-gray-600 mb-2">{t("Image Preview")}:</p>
-        <img
-          src={previewImage}
-          alt="Bill Preview"
-          className="max-w-full h-auto max-h-64 object-contain rounded"
-        />
-      </div>
-    )}
-  </div>
-)}
+            {previewImage && (
+              <div className="mt-3 relative  flex !justify-end">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPreviewImage(null);
+                    setValue("bill_image", null);
+                    removePreview()
+                    // ফাইল ইনপুট রিসেট করুন
+                    const fileInput = document.querySelector('input[type="file"]');
+                    if (fileInput) fileInput.value = "";
+
+                    if (isEditMode && existingImage) {
+                      // এডিট মোডে থাকলে এক্সিস্টিং ইমেজ দেখান
+                      const imageUrl = `https://soinik.tramessy.com/backend/uploads/purchase/${existingImage}`;
+                      setPreviewImage(imageUrl);
+                    } else {
+                      setExistingImage(null);
+                    }
+                  }}
+                  className="absolute top-2 right-2 text-red-600 bg-white shadow rounded-sm hover:text-white hover:bg-secondary transition-all duration-300 cursor-pointer font-bold text-xl p-[2px] z-10"
+                  title="Remove preview"
+
+                >
+                  <IoMdClose />
+                </button>
+
+                {/* PDF বা ইমেজ প্রিভিউ */}
+                {previewImage.includes("application/pdf") || previewImage.endsWith(".pdf") ? (
+                  <div className="border rounded p-2 bg-gray-50">
+                    <p className="text-sm text-gray-600 mb-2">{t("PDF Preview")}:</p>
+                    <iframe
+                      src={previewImage}
+                      className="w-full h-64 border"
+                      title="PDF Preview"
+                    />
+                    <a
+                      href={previewImage}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 text-sm mt-2 inline-block"
+                    >
+                      {t("Open PDF in new tab")}
+                    </a>
+                  </div>
+                ) : (
+                  <div className="border rounded p-2 bg-gray-50">
+                    <p className="text-sm text-gray-600 mb-2">{t("Image Preview")}:</p>
+                    <img
+                      src={previewImage}
+                      alt="Bill Preview"
+                      className="max-w-full h-auto max-h-64 object-contain rounded"
+                    />
+                  </div>
+                )}
+              </div>
+            )}
 
             <BtnSubmit type="submit">{isEditMode ? "Update Purchase" : "Submit"}</BtnSubmit>
           </form>)}

@@ -23,7 +23,7 @@ import { useTranslation } from "react-i18next"
 import toNumber from "../hooks/toNumber"
 import { Spin } from "antd"
 const TripList = () => {
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const [trip, setTrip] = useState([])
   const [loading, setLoading] = useState(true)
   const [showFilter, setShowFilter] = useState(false)
@@ -453,117 +453,117 @@ const TripList = () => {
     )
   })
 
-// EXPORT TRIPS TO EXCEL
-const exportTripsToExcel = async () => {
-  try {
-    if (!filteredTripList || filteredTripList.length === 0) {
-      toast.error("No filtered trip data found!");
-      return;
-    }
+  // EXPORT TRIPS TO EXCEL
+  const exportTripsToExcel = async () => {
+    try {
+      if (!filteredTripList || filteredTripList.length === 0) {
+        toast.error("No filtered trip data found!");
+        return;
+      }
 
-    // EXCEL HEADERS (INSIDE FUNCTION)
-    const headers = [
-      { label: "SL", key: "sl" },
-      { label: "Date", key: "start_date" },
-      { label: "Customer", key: "customer" },
-      { label: "Driver", key: "driver_name" },
-      { label: "Vehicle No", key: "vehicle_no" },
-      { label: "Vendor Name", key: "vendor_name" },
-      { label: "Load Point", key: "load_point" },
-      { label: "Unload Point", key: "unload_point" },
-      { label: "Trip Rent", key: "total_rent" },
-      { label: "C.Demurrage", key: "d_total" },
-      { label: "Food Cost", key: "food_cost" },
-      { label: "Fuel Cost", key: "fuel_cost" },
-      { label: "Challan Cost", key: "challan_cost" },
-      { label: "Parking Cost", key: "parking_cost" },
-      { label: "Night Gurad", key: "night_guard" },
-      { label: "Toll Cost", key: "toll_cost" },
-      { label: "Feri Cost", key: "feri_cost" },
-      { label: "Police Cost", key: "police_cost" },
-      { label: "Labour Cost", key: "labor" },
-      { label: "Chada", key: "chada" },
-      { label: "Additional Cost", key: "additional_cost" },
-      { label: "Others Cost", key: "others_cost" },
-      { label: "Total Trip Cost", key: "total_cost" },
-      { label: "Profit", key: "profit" },
-      { label: "Driver Advance", key: "driver_adv" },
-      { label: "Buyer Name", key: "buyer_name" },
-      { label: "Challan No", key: "challan" },
-      { label: "Invoice No", key: "invoice_no" },
-      { label: "Branch", key: "branch_name" },
-      { label: "Additional load", key: "additional_load" },
-      { label: "Transport Type", key: "transport_type" },
-      { label: "Trip Type", key: "trip_type" },
-      { label: "Vehicle Category", key: "vehicle_category" },
-      { label: "Vehicle Size", key: "vehicle_size" },
-      { label: "Product Details", key: "product_details" },
-      { label: "Driver Mobile", key: "driver_mobile" },
-      { label: "Helper Name", key: "helper_name" },
-      { label: "Remarks", key: "remarks" },
-    ];
+      // EXCEL HEADERS (INSIDE FUNCTION)
+      const headers = [
+        { label: "SL", key: "sl" },
+        { label: "Date", key: "start_date" },
+        { label: "Customer", key: "customer" },
+        { label: "Driver", key: "driver_name" },
+        { label: "Vehicle No", key: "vehicle_no" },
+        { label: "Vendor Name", key: "vendor_name" },
+        { label: "Load Point", key: "load_point" },
+        { label: "Unload Point", key: "unload_point" },
+        { label: "Trip Rent", key: "total_rent" },
+        { label: "C.Demurrage", key: "d_total" },
+        { label: "Food Cost", key: "food_cost" },
+        { label: "Fuel Cost", key: "fuel_cost" },
+        { label: "Challan Cost", key: "challan_cost" },
+        { label: "Parking Cost", key: "parking_cost" },
+        { label: "Night Gurad", key: "night_guard" },
+        { label: "Toll Cost", key: "toll_cost" },
+        { label: "Feri Cost", key: "feri_cost" },
+        { label: "Police Cost", key: "police_cost" },
+        { label: "Labour Cost", key: "labor" },
+        { label: "Chada", key: "chada" },
+        { label: "Additional Cost", key: "additional_cost" },
+        { label: "Others Cost", key: "others_cost" },
+        { label: "Total Trip Cost", key: "total_cost" },
+        { label: "Profit", key: "profit" },
+        { label: "Driver Advance", key: "driver_adv" },
+        { label: "Buyer Name", key: "buyer_name" },
+        { label: "Challan No", key: "challan" },
+        { label: "Invoice No", key: "invoice_no" },
+        { label: "Branch", key: "branch_name" },
+        { label: "Additional load", key: "additional_load" },
+        { label: "Transport Type", key: "transport_type" },
+        { label: "Trip Type", key: "trip_type" },
+        { label: "Vehicle Category", key: "vehicle_category" },
+        { label: "Vehicle Size", key: "vehicle_size" },
+        { label: "Product Details", key: "product_details" },
+        { label: "Driver Mobile", key: "driver_mobile" },
+        { label: "Helper Name", key: "helper_name" },
+        { label: "Remarks", key: "remarks" },
+      ];
 
-    // PREPARE EXCEL DATA
-    const excelData = filteredTripList.map((dt, index) => {
-      const rent = toNumber(dt.total_rent || 0);
-      const demurrage = toNumber(dt.d_total || 0);
-      const expense =
-        toNumber(dt.total_exp || 0) + toNumber(dt.v_d_total || 0);
+      // PREPARE EXCEL DATA
+      const excelData = filteredTripList.map((dt, index) => {
+        const rent = toNumber(dt.total_rent || 0);
+        const demurrage = toNumber(dt.d_total || 0);
+        const expense =
+          toNumber(dt.total_exp || 0) + toNumber(dt.v_d_total || 0);
 
-      return {
-        sl: index + 1,
-        start_date: dt.start_date || "",
-        customer: (dt.customer || "") + " " + (dt.transport_type || ""),
-        driver_name: dt.driver_name || "",
-        vehicle_no: dt.vehicle_no || "",
-        vendor_name: dt.vendor_name || "",
-        load_point: dt.load_point || "",
-        unload_point: dt.unload_point || "",
-        total_rent: rent,
-        d_total: demurrage,
-        food_cost: toNumber(dt.food_cost),
-        fuel_cost: toNumber(dt.fuel_cost),
-        challan_cost: toNumber(dt.challan_cost),
-        parking_cost: toNumber(dt.parking_cost),
-        night_guard: toNumber(dt.night_guard),
-        toll_cost: toNumber(dt.toll_cost),
-        feri_cost: toNumber(dt.feri_cost),
-        police_cost: toNumber(dt.police_cost),
-        labor: toNumber(dt.labor),
-        chada: toNumber(dt.chada),
-        additional_cost: toNumber(dt.additional_cost),
-        others_cost: toNumber(dt.others_cost),
-        total_cost: expense,
-        profit: rent + demurrage - expense,
-        driver_adv: dt.driver_adv,
-        buyer_name: dt.buyer_name,
-        challan: toNumber(dt.challan),
-        invoice_no: dt.invoice_no,
-        branch_name: dt.branch_name,
-        additional_load: dt.additional_load,
-        transport_type: dt.transport_type,
-        trip_type: dt.trip_type,
-        vehicle_category: dt.vehicle_category,
-        vehicle_size: dt.vehicle_size,
-        product_details: dt.product_details,
-        driver_mobile: dt.driver_mobile,
-        helper_name: dt.helper_name,
-        remarks: dt.remarks
-      };
-    });
+        return {
+          sl: index + 1,
+          start_date: dt.start_date || "",
+          customer: (dt.customer || "") + " " + (dt.transport_type || ""),
+          driver_name: dt.driver_name || "",
+          vehicle_no: dt.vehicle_no || "",
+          vendor_name: dt.vendor_name || "",
+          load_point: dt.load_point || "",
+          unload_point: dt.unload_point || "",
+          total_rent: rent,
+          d_total: demurrage,
+          food_cost: toNumber(dt.food_cost),
+          fuel_cost: toNumber(dt.fuel_cost),
+          challan_cost: toNumber(dt.challan_cost),
+          parking_cost: toNumber(dt.parking_cost),
+          night_guard: toNumber(dt.night_guard),
+          toll_cost: toNumber(dt.toll_cost),
+          feri_cost: toNumber(dt.feri_cost),
+          police_cost: toNumber(dt.police_cost),
+          labor: toNumber(dt.labor),
+          chada: toNumber(dt.chada),
+          additional_cost: toNumber(dt.additional_cost),
+          others_cost: toNumber(dt.others_cost),
+          total_cost: expense,
+          profit: rent + demurrage - expense,
+          driver_adv: dt.driver_adv,
+          buyer_name: dt.buyer_name,
+          challan: toNumber(dt.challan),
+          invoice_no: dt.invoice_no,
+          branch_name: dt.branch_name,
+          additional_load: dt.additional_load,
+          transport_type: dt.transport_type,
+          trip_type: dt.trip_type,
+          vehicle_category: dt.vehicle_category,
+          vehicle_size: dt.vehicle_size,
+          product_details: dt.product_details,
+          driver_mobile: dt.driver_mobile,
+          helper_name: dt.helper_name,
+          remarks: dt.remarks
+        };
+      });
 
-    // TOTAL ROW
-    const totalRow = {
-      sl: "",
-      start_date: "",
-      customer: "TOTAL",
-      driver_name: "",
-      vehicle_no: "",
-      vendor_name: "",
-      load_point: "",
-      unload_point: "",
-      total_rent: 0,
-       d_total: 0,
+      // TOTAL ROW
+      const totalRow = {
+        sl: "",
+        start_date: "",
+        customer: "TOTAL",
+        driver_name: "",
+        vehicle_no: "",
+        vendor_name: "",
+        load_point: "",
+        unload_point: "",
+        total_rent: 0,
+        d_total: 0,
         food_cost: 0,
         fuel_cost: 0,
         challan_cost: 0,
@@ -576,9 +576,9 @@ const exportTripsToExcel = async () => {
         chada: 0,
         additional_cost: 0,
         others_cost: 0,
-      total_cost: 0,
-      profit: 0,
-      driver_adv: 0,
+        total_cost: 0,
+        profit: 0,
+        driver_adv: 0,
         buyer_name: "",
         challan: "",
         invoice_no: "",
@@ -593,54 +593,54 @@ const exportTripsToExcel = async () => {
         helper_name: "",
         remarks: ""
 
-    };
+      };
 
-    excelData.forEach((row) => {
-      totalRow.total_rent += row.total_rent || 0;
-      totalRow.d_total += row.d_total || 0;
-      totalRow.food_cost += row.food_cost || 0;
-      totalRow.fuel_cost += row.fuel_cost || 0;
-      totalRow.challan_cost += row.challan_cost || 0;
-      totalRow.parking_cost += row.parking_cost || 0;
-      totalRow.night_guard += row.night_guard || 0;
-      totalRow.toll_cost += row.toll_cost || 0;
-      totalRow.feri_cost += row.feri_cost || 0;
-      totalRow.police_cost += row.police_cost || 0;
-      totalRow.labor += row.labor || 0;
-      totalRow.chada += row.chada || 0;
-      totalRow.additional_cost += row.additional_cost || 0;
-      totalRow.others_cost += row.others_cost || 0;
-      totalRow.total_cost += row.total_cost || 0;
-      totalRow.profit += row.profit || 0;
-      totalRow.driver_adv += driver_adv || 0
-    });
+      excelData.forEach((row) => {
+        totalRow.total_rent += row.total_rent || 0;
+        totalRow.d_total += row.d_total || 0;
+        totalRow.food_cost += row.food_cost || 0;
+        totalRow.fuel_cost += row.fuel_cost || 0;
+        totalRow.challan_cost += row.challan_cost || 0;
+        totalRow.parking_cost += row.parking_cost || 0;
+        totalRow.night_guard += row.night_guard || 0;
+        totalRow.toll_cost += row.toll_cost || 0;
+        totalRow.feri_cost += row.feri_cost || 0;
+        totalRow.police_cost += row.police_cost || 0;
+        totalRow.labor += row.labor || 0;
+        totalRow.chada += row.chada || 0;
+        totalRow.additional_cost += row.additional_cost || 0;
+        totalRow.others_cost += row.others_cost || 0;
+        totalRow.total_cost += row.total_cost || 0;
+        totalRow.profit += row.profit || 0;
+        totalRow.driver_adv += driver_adv || 0
+      });
 
-    excelData.push(totalRow);
+      excelData.push(totalRow);
 
-    // CREATE WORKSHEET
-    const worksheet = XLSX.utils.json_to_sheet(excelData, {
-      header: headers.map((h) => h.key),
-    });
+      // CREATE WORKSHEET
+      const worksheet = XLSX.utils.json_to_sheet(excelData, {
+        header: headers.map((h) => h.key),
+      });
 
 
-    // SET HEADER LABELS
-    headers.forEach((h, index) => {
-      const cellAddress = XLSX.utils.encode_cell({ r: 0, c: index });
-      worksheet[cellAddress].v = h.label;
-    });
+      // SET HEADER LABELS
+      headers.forEach((h, index) => {
+        const cellAddress = XLSX.utils.encode_cell({ r: 0, c: index });
+        worksheet[cellAddress].v = h.label;
+      });
 
-    // CREATE & DOWNLOAD FILE
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Filtered Trips");
+      // CREATE & DOWNLOAD FILE
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Filtered Trips");
 
-    XLSX.writeFile(workbook, "filtered_trip_report.xlsx");
+      XLSX.writeFile(workbook, "filtered_trip_report.xlsx");
 
-    toast.success("Filtered trip data downloaded successfully!");
-  } catch (error) {
-    console.error("Excel export error:", error);
-    toast.error("Failed to download Excel file!");
-  }
-};
+      toast.success("Filtered trip data downloaded successfully!");
+    } catch (error) {
+      console.error("Excel export error:", error);
+      toast.error("Failed to download Excel file!");
+    }
+  };
 
 
 
@@ -661,7 +661,7 @@ const exportTripsToExcel = async () => {
           <th>${t("Load Point")}</th>
           <th>${t("Unload Point")}</th>
           <th>${t("Trip Rent")}</th>
-          <th>${t("C.Demurrage")}</th>
+          <th>${t("Customer")} ${t("Demurrage")}</th>
           <th>${t("Trip Cost")}</th>
           <th>${t("Profit")}</th>
         </tr>
@@ -669,13 +669,13 @@ const exportTripsToExcel = async () => {
       <tbody>
         ${filteredTripList
         .map(
-          (dt, index) =>{ 
-             const rent = toNumber(dt.total_rent || 0);
-  const demurrage = toNumber(dt.d_total || 0);
-  const expense =
-    toNumber(dt.total_exp || 0) + toNumber(dt.v_d_total || 0);
+          (dt, index) => {
+            const rent = toNumber(dt.total_rent || 0);
+            const demurrage = toNumber(dt.d_total || 0);
+            const expense =
+              toNumber(dt.total_exp || 0) + toNumber(dt.v_d_total || 0);
 
-  const profit = rent + demurrage - expense;
+            const profit = rent + demurrage - expense;
             return `
         <tr>
             <td>${index + 1}</td>
@@ -687,11 +687,11 @@ const exportTripsToExcel = async () => {
             <td>${dt.unload_point}</td>
             <td>${dt.total_rent}</td>
            <td>${dt.d_total || 0}</td>
-        <td>${toNumber(dt.total_exp || 0) + toNumber(dt.v_d_total ||0)}</td>
+        <td>${toNumber(dt.total_exp || 0) + toNumber(dt.v_d_total || 0)}</td>
         <td>${profit}</td>
         </tr>
         `
-        })
+          })
         .join("")}
       </tbody>
     </table>
@@ -861,14 +861,14 @@ const exportTripsToExcel = async () => {
   const currentTrip = filteredTripList.slice(indexOfFirstItem, indexOfLastItem)
   const totalPages = Math.ceil(filteredTripList.length / itemsPerPage)
 
-   // Filtered & paginated trips
+  // Filtered & paginated trips
   const totalTripRent = currentTrip.reduce((sum, dt) => sum + toNumber(dt.total_rent || 0), 0);
   const totalDemurrage = currentTrip.reduce((sum, dt) => sum + toNumber(dt.d_total || 0), 0);
   // const totalTripCost = currentTrip.reduce((sum, dt) => sum + toNumber(dt.total_exp || 0), 0);
   const totalTripCost = (currentTrip || []).reduce(
-  (sum, dt) => sum + Number(dt.total_exp || 0) + Number(dt.v_d_total || 0),
-  0
-);
+    (sum, dt) => sum + Number(dt.total_exp || 0) + Number(dt.v_d_total || 0),
+    0
+  );
   const totalProfit = currentTrip.reduce((sum, dt) => {
     const rent = toNumber(dt.total_rent || 0);
     const demurrage = toNumber(dt.d_total || 0);
@@ -1045,132 +1045,144 @@ const exportTripsToExcel = async () => {
                 {/* <th className="p-2">{t("Vendor")}</th> */}
                 <th className="px-2 py-4">{t("Trip")}{t("&")}{t("Destination")}</th>
                 <th className="px-2 py-4">{t("Trip Rent")}</th>
-                <th className="p-2">{t("C.Demurrage")}</th>
+                <th className="p-2">{t("Customer")} {t("Demurrage")}</th>
                 <th className="p-2">{t("Trip Cost")}</th>
                 <th className="p-2">{t("Profit")}</th>
-                <th className="p-2">{t("Status")}</th>
+                <th className="p-2">{t("Bill")} {t("Status")}</th>
+                <th className="p-2">{t("Challan")} {t("Receive")} {t("Status")}</th>
                 <th className="p-2 action_column">{t("Action")}</th>
               </tr>
             </thead>
             <tbody className="text-gray-700">
-              { loading ? (
-                 <tr>
+              {loading ? (
+                <tr>
                   <td colSpan={12} className="text-center py-20"><Spin /></td>
                 </tr>
               )
-              :currentTrip.length === 0 ? (
-                <tr>
-                  <td colSpan="10" className="text-center p-4 text-gray-500 ">
-                    {t("No trip found")}
-                  </td>
-                </tr>
-              ) : (
-                currentTrip?.map((dt, index) => {
-                  const rowIndex = indexOfFirstItem + index + 1
-                  const isOpen = openDropdown === rowIndex
-                  const totalRent = toNumber(dt.total_rent || 0);
+                : currentTrip.length === 0 ? (
+                  <tr>
+                    <td colSpan="10" className="text-center p-4 text-gray-500 ">
+                      {t("No trip found")}
+                    </td>
+                  </tr>
+                ) : (
+                  currentTrip?.map((dt, index) => {
+                    const rowIndex = indexOfFirstItem + index + 1
+                    const isOpen = openDropdown === rowIndex
+                    const totalRent = toNumber(dt.total_rent || 0);
                     const demurrage = toNumber(dt.d_total || 0);
                     const vendorDemurrage = toNumber(dt.v_d_total || 0);
                     const totalExpenses = toNumber(dt.total_exp || 0) + toNumber(dt.v_d_total || 0);
                     const profit = (totalRent + demurrage) - totalExpenses;
-                  return (
-                    <tr
-                      key={index}
-                      className="hover:bg-gray-50 transition-all border-b border-gray-300"
-                      data-row={rowIndex}
-                    >
-                      <td className="p-2 font-bold">{indexOfFirstItem + index + 1}</td>
-                      <td className="p-2">{formatDate(dt?.start_date)}</td>
-                      <td className="p-2">{dt?.id}</td>
-                      <td className="p-2">
-                        <p>
-                          <strong className="">name:</strong> {dt.customer}
-                        </p>
-                        <p>
-                          <strong className="">Type:</strong> {dt?.transport_type?.replace("_", " ")}
-                        </p>
-                      </td>
-                      <td className="p-2">
-                        <p>
-                          <strong className="">name:</strong> {dt.driver_name}
-                        </p>
-                        <p>
-                          <strong className="">vehicle:</strong> {dt.vehicle_no}
-                        </p>
-                      </td>
-                       {/* <td className="p-2">
+                    return (
+                      <tr
+                        key={index}
+                        className="hover:bg-gray-50 transition-all border-b border-gray-300"
+                        data-row={rowIndex}
+                      >
+                        <td className="p-2 font-bold">{indexOfFirstItem + index + 1}</td>
+                        <td className="p-2">{formatDate(dt?.start_date)}</td>
+                        <td className="p-2">{dt?.id}</td>
+                        <td className="p-2">
+                          <p>
+                            <strong className="">name:</strong> {dt.customer}
+                          </p>
+                          <p>
+                            <strong className="">Type:</strong> {dt?.transport_type?.replace("_", " ")}
+                          </p>
+                        </td>
+                        <td className="p-2">
+                          <p>
+                            <strong className="">name:</strong> {dt.driver_name}
+                          </p>
+                          <p>
+                            <strong className="">vehicle:</strong> {dt.vehicle_no}
+                          </p>
+                        </td>
+                        {/* <td className="p-2">
                         <p>
                           <strong className=""></strong> {dt.vendor_name}
                         </p>
                       </td> */}
-                      <td className="p-2">
-                        <p><strong>Load:</strong> {dt.load_point}</p>
-                        <p><strong>Unload:</strong> {dt.unload_point}</p>
-                      </td>
+                        <td className="p-2">
+                          <p><strong>Load:</strong> {dt.load_point}</p>
+                          <p><strong>Unload:</strong> {dt.unload_point}</p>
+                        </td>
 
-                      <td className="p-2">{isAdmin ? (dt.total_rent) : "hide"}</td>
-                      <td className="p-2">{dt.d_total}</td>
-                      <td className="p-2">{dt.transport_type === "vendor_transport"
-                            ? totalExpenses 
-                            : toNumber(dt.total_exp) 
-                          }</td>
-                      <td className="p-2">
-                        {profit}
-                      </td>
-                      <td className="p-2">
-                        <span
-                          className={`px-3 py-1 rounded text-xs font-semibold
+                        <td className="p-2">{isAdmin ? (dt.total_rent) : "hide"}</td>
+                        <td className="p-2">{dt.d_total}</td>
+                        <td className="p-2">{dt.transport_type === "vendor_transport"
+                          ? totalExpenses
+                          : toNumber(dt.total_exp)
+                        }</td>
+                        <td className="p-2">
+                          {profit}
+                        </td>
+                        <td className="p-2">
+                          <span
+                            className={`px-3 py-1 rounded text-xs font-semibold
             ${dt.status === "Approved"
-                              ? "bg-green-50 text-green-700  border-green-300"
-                              : dt.status === "Pending"
-                                ? "bg-yellow-50 text-yellow-700  border-yellow-300"
-                                : dt.status === "Rejected"
-                                  ? "bg-red-50 text-red-700  border-red-300"
-                                  : "bg-blue-50 text-blue-700  border-gray-300"
-                            }`}
-                        >
-                          {dt.status || "Pending"}
-                        </span>
-                      </td>
-                      <td className="p-2 action_column relative">
-                        <div className="flex gap-1">
-                          {/* Dropdown toggle button */}
-                          <button
-                            onClick={() => {
-                              toggleDropdown(rowIndex)
-                            }}
-                            className="text-primary hover:bg-primary hover:text-white px-2 py-1 rounded shadow-md transition-all cursor-pointer"
+                                ? "bg-green-50 text-green-700  border-green-300"
+                                : dt.status === "Pending"
+                                  ? "bg-yellow-50 text-yellow-700  border-yellow-300"
+                                  : dt.status === "Rejected"
+                                    ? "bg-red-50 text-red-700  border-red-300"
+                                    : "bg-blue-50 text-blue-700  border-gray-300"
+                              }`}
                           >
-                            <BsThreeDotsVertical />
-                          </button>
-
-                          {isOpen && <div className="fixed inset-0 z-[9999]" onClick={() => setOpenDropdown(null)} />}
-
-                          {isOpen && (
-                            <div
-                              ref={(el) => (dropdownRefs.current[rowIndex] = el)}
-                              // style={{position: "absolute"}}
-                              className="fixed right-0 w-40 bg-white rounded-md shadow-lg !z-[9999] border border-gray-200 dropdown-menu"
-                              onClick={(e) => e.stopPropagation()}
+                            {dt.status || "Pending"}
+                          </span>
+                        </td>
+                        <td className="p-2">
+                          <span
+                            className={`px-3 py-1 rounded text-xs font-semibold
+            ${dt.chalan_rec === "Received" ?
+                                "bg-green-50 text-green-700  border-green-300"
+                                : "bg-yellow-50 text-yellow-700  border-yellow-300"
+                              }`}
+                          >
+                            {dt.chalan_rec || "Pending"}
+                          </span>
+                        </td>
+                        <td className="p-2 action_column relative">
+                          <div className="flex gap-1">
+                            {/* Dropdown toggle button */}
+                            <button
+                              onClick={() => {
+                                toggleDropdown(rowIndex)
+                              }}
+                              className="text-primary hover:bg-primary hover:text-white px-2 py-1 rounded shadow-md transition-all cursor-pointer"
                             >
-                              <div className="py-1">
-                                {(( dt.status !== "Approved" && dt.status !== "Submitted") ) && (<Link to={`/tramessy/UpdateTripForm/${dt.id}`} onClick={() => setOpenDropdown(null)}>
-                                  <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                    <FaPen className="mr-2 text-[12px]" />
-                                    {t("Edit")}
+                              <BsThreeDotsVertical />
+                            </button>
+
+                            {isOpen && <div className="fixed inset-0 z-[9999]" onClick={() => setOpenDropdown(null)} />}
+
+                            {isOpen && (
+                              <div
+                                ref={(el) => (dropdownRefs.current[rowIndex] = el)}
+                                // style={{position: "absolute"}}
+                                className="fixed right-0 w-40 bg-white rounded-md shadow-lg !z-[9999] border border-gray-200 dropdown-menu"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <div className="py-1">
+                                  {((dt.status !== "Approved" && dt.status !== "Submitted")) && (<Link to={`/tramessy/UpdateTripForm/${dt.id}`} onClick={() => setOpenDropdown(null)}>
+                                    <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                      <FaPen className="mr-2 text-[12px]" />
+                                      {t("Edit")}
+                                    </button>
+                                  </Link>)}
+                                  <button
+                                    onClick={() => {
+                                      handleView(dt.id)
+                                      setOpenDropdown(null)
+                                    }}
+                                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                  >
+                                    <FaEye className="mr-2 text-[12px]" />
+                                    {t("View")}
                                   </button>
-                                </Link>)}
-                                <button
-                                  onClick={() => {
-                                    handleView(dt.id)
-                                    setOpenDropdown(null)
-                                  }}
-                                  className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                >
-                                  <FaEye className="mr-2 text-[12px]" />
-                                  {t("View")}
-                                </button>
-                                <button
+                                  {/* <button
                                   onClick={() => {
                                     setSelectedInvoice(dt)
                                     handlePrintClick(dt)
@@ -1180,8 +1192,8 @@ const exportTripsToExcel = async () => {
                                 >
                                   <BiPrinter className="mr-2 h-4 w-4" />
                                   {t("Challan")}
-                                </button>
-                                {/* {isAdmin && dt.status !== "Approved" && (
+                                </button> */}
+                                  {/* {isAdmin && dt.status !== "Approved" && (
                                   <button
                                     onClick={(e) => {
                                       e.preventDefault()
@@ -1195,22 +1207,22 @@ const exportTripsToExcel = async () => {
                                     <FcApproval className="mr-2 h-4 w-4" />{isApproving ? "Approving..." : "Approved"}
                                   </button>
                                 )} */}
-                                <button
-                                  onClick={() => {
-                                    setselectedTripId(dt.id);
-                                    setIsOpen(true);
-                                  }}
-                                  className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"                                >
-                                  <FaTrashAlt className="mr-2 h-4 w-3 text-red-500" /> {t("Delete")}  </button>
+                                  <button
+                                    onClick={() => {
+                                      setselectedTripId(dt.id);
+                                      setIsOpen(true);
+                                    }}
+                                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"                                >
+                                    <FaTrashAlt className="mr-2 h-4 w-3 text-red-500" /> {t("Delete")}  </button>
+                                </div>
                               </div>
-                            </div>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  )
-                })
-              )}             
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  })
+                )}
             </tbody>
             <tfoot className="bg-gray-100 font-bold text-sm">
               <tr>
@@ -1221,6 +1233,7 @@ const exportTripsToExcel = async () => {
                 <td className="p-2">{totalProfit}</td>
                 <td className="p-2"></td>
                 <td className="p-2"></td>
+                 <td className="p-2"></td>
               </tr>
             </tfoot>
           </table>
@@ -1353,6 +1366,7 @@ const exportTripsToExcel = async () => {
                   <div><strong>{t("Additional Load Cost")}:</strong> {selectedTrip.additional_cost || 0}</div>
                   <div><strong>{t("Total Expense")}:</strong> {selectedTrip.total_exp || 0}</div>
                   <div><strong>{t("Driver Advance")}:</strong> {selectedTrip.driver_adv || 0}</div>
+                  <div><strong>{t("Vendor")} {t("Advance")}:</strong> {selectedTrip.advance || 0}</div>
                   <div>{selectedTrip.transport_type === "vendor_transport" && (<><strong>{t("Vendor Rent")}:</strong>{selectedTrip.total_exp || 0}</>)}</div>
                 </div>
 
@@ -1361,15 +1375,15 @@ const exportTripsToExcel = async () => {
                 </h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                  <div><strong>{t("Total Rent")}:</strong> { selectedTrip.total_rent || 0 }</div>
+                  <div><strong>{t("Total Rent")}:</strong> {selectedTrip.total_rent || 0}</div>
                   <div><strong>{t("Demurrage Days")}:</strong> {selectedTrip.d_day || 0}</div>
                   {/* <div><strong>{t("Demurrage Amount")}:</strong> {selectedTrip.d_amount || 0}</div> */}
                   <div><strong>{t("Total Demurrage")}:</strong> {selectedTrip.d_total || 0}</div>
                   <div><strong>{t("Profit")}:</strong>
-                  { toNumber(selectedTrip.total_rent || 0) +
-  toNumber(selectedTrip.d_total || 0) -
-  (toNumber(selectedTrip.total_exp || 0) +
-   toNumber(selectedTrip.v_d_total || 0))}
+                    {toNumber(selectedTrip.total_rent || 0) +
+                      toNumber(selectedTrip.d_total || 0) -
+                      (toNumber(selectedTrip.total_exp || 0) +
+                        toNumber(selectedTrip.v_d_total || 0))}
                   </div>
                   {/* <div><strong>{t("Status")}:</strong>
                     <span

@@ -11,9 +11,10 @@ import api from "../../../utils/axiosConfig";
 import { tableFormatDate } from "../../hooks/formatDate";
 import { useTranslation } from "react-i18next";
 import { Spin } from "antd";
+import Select from "react-select";
 
 const VendorLedger = () => {
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const [vendorData, setVendorData] = useState([]);
   const [selectedVendor, setSelectedVendor] = useState("");
   const [loading, setLoading] = useState(true);
@@ -84,7 +85,14 @@ const VendorLedger = () => {
     ),
   ].sort();
 
-  const vendorNames = [...new Set(vendorData.map((v) => v.vendor_name))];
+  const sortedVendors = [...vendorList]
+  .map(v => v.vendor_name)
+  .filter(Boolean)
+  .sort((a, b) => a.localeCompare(b));
+  const vendorOptions = sortedVendors.map(name => ({
+  value: name,
+  label: name,
+}));
 
   // Filter data based on selected vendor and month, then sort by date
   const filteredVendors = vendorData.filter((v) => {
@@ -150,7 +158,7 @@ const VendorLedger = () => {
     if (selectedVendor) {
       dataToExport.push({
         Date: "",
-        "Trip Id" : "",
+        "Trip Id": "",
         Vendor: "Opening Balance",
         Load: "",
         Unload: "",
@@ -350,7 +358,7 @@ const VendorLedger = () => {
                   </div>
                 </div>
                 {/* select vendor */}
-                <div className="mt-3 md:mt-0 relative w-[50%]">
+                {/* <div className="mt-3 md:mt-0 relative w-[50%]">
                   <label className="text-gray-700 text-sm font-semibold">
                     {t("Vendor")}
                   </label>
@@ -369,6 +377,27 @@ const VendorLedger = () => {
                     ))}
                   </select>
                   <MdOutlineArrowDropDown className="absolute top-[35px] right-2 pointer-events-none text-xl text-gray-500" />
+                </div> */}
+                <div className="mt-3 md:mt-0 w-[50%]">
+                  <label className="text-gray-700 text-sm font-semibold">
+                    {t("Vendor")}
+                  </label>
+
+                  <Select
+                    options={vendorOptions}
+                    value={
+                      selectedVendor
+                        ? { value: selectedVendor, label: selectedVendor }
+                        : null
+                    }
+                    onChange={(option) => {
+                      setSelectedVendor(option ? option.value : "");
+                    }}
+                    isClearable
+                    isSearchable
+                    placeholder={`${t("Vendor")} ${t("search")}`}
+                    className="mt-1 text-sm"
+                  />
                 </div>
                 <div className="w-xs mt-7">
                   <button
@@ -386,60 +415,60 @@ const VendorLedger = () => {
             )}
           </div>
           {/* ===== Total Summary Cards ===== */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-5">
 
-              {/* Trip Rent */}
-              <div className="bg-white shadow border-l-4 border-blue-500 rounded p-4">
-                <p className="text-xs text-gray-500">{t("Total Trip Rent Till Now")}</p>
-                <h3 className="text-lg font-bold text-gray-800">
-                  ৳{totals.rent}
-                </h3>
-              </div>
-
-              {/* Demurrage */}
-              <div className="bg-white shadow border-l-4 border-orange-500 rounded p-4">
-                <p className="text-xs text-gray-500">{t("Total Demurrage Till Now")}</p>
-                <h3 className="text-lg font-bold text-gray-800">
-                  ৳{totals.demurrage}
-                </h3>
-              </div>
-
-              {/* Bill Amount */}
-              <div className="bg-white shadow border-l-4 border-purple-500 rounded p-4">
-                <p className="text-xs text-gray-500">{t("Total Bill Till Now")}</p>
-                <h3 className="text-lg font-bold text-gray-800">
-                  ৳{totals.total}
-                </h3>
-              </div>
-
-              {/* advanced */}
-              <div className="bg-white shadow border-l-4 border-green-500 rounded p-4">
-                <p className="text-xs text-gray-500">{t("Total Advance Till Now")}</p>
-                <h3 className="text-lg font-bold text-gray-800">
-                  ৳{totals.advance}
-                </h3>
-              </div>
-              {/* pay amount */}
-              <div className="bg-white shadow border-l-4 border-green-500 rounded p-4">
-                <p className="text-xs text-gray-500">{t("Total Paid Amount Till Now")}</p>
-                <h3 className="text-lg font-bold text-gray-800">
-                  ৳{totals.pay_amount}
-                </h3>
-              </div>
-
-              {/* Due */}
-              <div className="bg-white shadow border-l-4 border-red-500 rounded p-4">
-                <p className="text-xs text-gray-500">{t("Currently Due")}</p>
-                <h3
-                  className={`text-lg font-bold ${grandDue < 0 ? "text-red-600" : "text-gray-800"
-                    }`}
-                >
-                  {grandDue < 0 ? `৳(${Math.abs(grandDue)})` : `৳${grandDue}`}
-                </h3>
-              </div>
-
+            {/* Trip Rent */}
+            <div className="bg-white shadow border-l-4 border-blue-500 rounded p-4">
+              <p className="text-xs text-gray-500">{t("Total Trip Rent Till Now")}</p>
+              <h3 className="text-lg font-bold text-gray-800">
+                ৳{totals.rent}
+              </h3>
             </div>
-          <div id="vendor-ledger-table" className="overflow-x-auto">             
+
+            {/* Demurrage */}
+            <div className="bg-white shadow border-l-4 border-orange-500 rounded p-4">
+              <p className="text-xs text-gray-500">{t("Total Demurrage Till Now")}</p>
+              <h3 className="text-lg font-bold text-gray-800">
+                ৳{totals.demurrage}
+              </h3>
+            </div>
+
+            {/* Bill Amount */}
+            <div className="bg-white shadow border-l-4 border-purple-500 rounded p-4">
+              <p className="text-xs text-gray-500">{t("Total Bill Till Now")}</p>
+              <h3 className="text-lg font-bold text-gray-800">
+                ৳{totals.total}
+              </h3>
+            </div>
+
+            {/* advanced */}
+            <div className="bg-white shadow border-l-4 border-green-500 rounded p-4">
+              <p className="text-xs text-gray-500">{t("Total Advance Till Now")}</p>
+              <h3 className="text-lg font-bold text-gray-800">
+                ৳{totals.advance}
+              </h3>
+            </div>
+            {/* pay amount */}
+            <div className="bg-white shadow border-l-4 border-green-500 rounded p-4">
+              <p className="text-xs text-gray-500">{t("Total Paid Amount Till Now")}</p>
+              <h3 className="text-lg font-bold text-gray-800">
+                ৳{totals.pay_amount}
+              </h3>
+            </div>
+
+            {/* Due */}
+            <div className="bg-white shadow border-l-4 border-red-500 rounded p-4">
+              <p className="text-xs text-gray-500">{t("Currently Due")}</p>
+              <h3
+                className={`text-lg font-bold ${grandDue < 0 ? "text-red-600" : "text-gray-800"
+                  }`}
+              >
+                {grandDue < 0 ? `৳(${Math.abs(grandDue)})` : `৳${grandDue}`}
+              </h3>
+            </div>
+
+          </div>
+          <div id="vendor-ledger-table" className="overflow-x-auto">
             <table className="min-w-full text-sm text-left text-gray-900">
               <thead className="bg-gray-100">
                 <tr>
@@ -452,7 +481,7 @@ const VendorLedger = () => {
                   <th className="border px-2 py-1">{t("Driver")}</th>
                   <th className="border px-2 py-1">{t("Trip Rent")}</th>
                   <th className="border px-2 py-1">{t("Demurrage")}</th>
-                   <th className="border px-2 py-1">{t("Total")}</th>
+                  <th className="border px-2 py-1">{t("Total")}</th>
                   <th className="border px-2 py-1">{t("Advance")}</th>
                   <th className="border px-2 py-1">{t("Paid Amount")}</th>
                   <th className="border px-2 py-1">
@@ -469,71 +498,71 @@ const VendorLedger = () => {
                 {
                   loading ? (
                     <tr>
-                  <td colSpan={12} className="text-center py-20"><Spin /></td>
-                </tr>
-                  )
-                :(rowsWithRunningBalance.map((item, idx) => {
-                  const total = toNumber(item.total_rent || 0) + toNumber(item.v_d_total || 0);
-                  return (
-                    <tr key={idx}>
-                      <td className="border px-2 py-1">{idx + 1}</td>
-                      <td className="border px-2 py-1">{tableFormatDate(item.date)}</td>
-                      <td className="border px-2 py-1">{item.vendor_name}</td>
-                      <td className="border px-2 py-1">
-                        {item?.load_point || (
-                          <span className="flex justify-center items-center">
-                            --
-                          </span>
-                        )}
-                      </td>
-                      <td className="border px-2 py-1">
-                        {item.unload_point || (
-                          <span className="flex justify-center items-center">
-                            --
-                          </span>
-                        )}
-                      </td>
-                      <td className="border px-2 py-1">
-                        {item.vehicle_no || (
-                          <span className="flex justify-center items-center">
-                            --
-                          </span>
-                        )}
-                      </td>
-                      <td className="border px-2 py-1">
-                        {item.driver_name || (
-                          <span className="flex justify-center items-center">
-                            --
-                          </span>
-                        )}
-                      </td>
-                      <td className="border px-2 py-1">
-                        {item.total_rent ? toNumber(item.total_rent) : "--"}
-                      </td>
-                      <td className="border px-2 py-1">
-                        {item.v_d_total ? toNumber(item.v_d_total) : "--"}
-                      </td>
-                      <td className="border px-2 py-1">
-                        {total || "--"}
-                      </td>
-                      <td className="border px-2 py-1">
-                        {item.advance ? toNumber(item.advance) : "--"}
-                      </td>
-                      <td className="border px-2 py-1">
-                        {item.pay_amount ? toNumber(item.pay_amount) : "--"}
-                      </td>
-                      <td className="border px-2 py-1">
-                        <span
-                          className={item.running_balance < 0 ? "text-red-500" : ""}
-                        >
-                          {item.running_balance < 0
-                            ? `(${Math.abs(item.running_balance)})`
-                            : item.running_balance}
-                        </span>
-                      </td>
+                      <td colSpan={12} className="text-center py-20"><Spin /></td>
                     </tr>
-                  );
-                }))}
+                  )
+                    : (rowsWithRunningBalance.map((item, idx) => {
+                      const total = toNumber(item.total_rent || 0) + toNumber(item.v_d_total || 0);
+                      return (
+                        <tr key={idx}>
+                          <td className="border px-2 py-1">{idx + 1}</td>
+                          <td className="border px-2 py-1">{tableFormatDate(item.date)}</td>
+                          <td className="border px-2 py-1">{item.vendor_name}</td>
+                          <td className="border px-2 py-1">
+                            {item?.load_point || (
+                              <span className="flex justify-center items-center">
+                                --
+                              </span>
+                            )}
+                          </td>
+                          <td className="border px-2 py-1">
+                            {item.unload_point || (
+                              <span className="flex justify-center items-center">
+                                --
+                              </span>
+                            )}
+                          </td>
+                          <td className="border px-2 py-1">
+                            {item.vehicle_no || (
+                              <span className="flex justify-center items-center">
+                                --
+                              </span>
+                            )}
+                          </td>
+                          <td className="border px-2 py-1">
+                            {item.driver_name || (
+                              <span className="flex justify-center items-center">
+                                --
+                              </span>
+                            )}
+                          </td>
+                          <td className="border px-2 py-1">
+                            {item.total_rent ? toNumber(item.total_rent) : "--"}
+                          </td>
+                          <td className="border px-2 py-1">
+                            {item.v_d_total ? toNumber(item.v_d_total) : "--"}
+                          </td>
+                          <td className="border px-2 py-1">
+                            {total || "--"}
+                          </td>
+                          <td className="border px-2 py-1">
+                            {item.advance ? toNumber(item.advance) : "--"}
+                          </td>
+                          <td className="border px-2 py-1">
+                            {item.pay_amount ? toNumber(item.pay_amount) : "--"}
+                          </td>
+                          <td className="border px-2 py-1">
+                            <span
+                              className={item.running_balance < 0 ? "text-red-500" : ""}
+                            >
+                              {item.running_balance < 0
+                                ? `(${Math.abs(item.running_balance)})`
+                                : item.running_balance}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    }))}
               </tbody>
               <tfoot>
                 <tr className="font-bold bg-gray-100">
@@ -541,8 +570,8 @@ const VendorLedger = () => {
                     {t("Total")}:
                   </td>
                   <td className="border px-2 py-1">{totals.rent}</td>
-                   <td className="border px-2 py-1">{totals.demurrage}</td>
-                   <td className="border px-2 py-1">{totals.total}</td>
+                  <td className="border px-2 py-1">{totals.demurrage}</td>
+                  <td className="border px-2 py-1">{totals.total}</td>
                   <td className="border px-2 py-1">{totals.advance}</td>
                   <td className="border px-2 py-1">{totals.pay_amount}</td>
                   <td className="border px-2 py-1">
