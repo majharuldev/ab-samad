@@ -18,7 +18,7 @@ import toNumber from "../hooks/toNumber"
 import { useTranslation } from "react-i18next"
 
 const DailyIncome = () => {
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const [trips, setTrips] = useState([])
   const [showFilter, setShowFilter] = useState(false)
   // Date filter state
@@ -133,46 +133,46 @@ const DailyIncome = () => {
 
   // Print function
   const printTable = () => {
-  const doc = new jsPDF("landscape"); // landscape হলে বড় table সুন্দর দেখায়
+    const doc = new jsPDF("landscape"); // landscape হলে বড় table সুন্দর দেখায়
 
-  const tableColumn = headers.map((h) => h.label);
-  const tableRows = csvData.map((row) =>
-    headers.map((h) => row[h.key])
-  );
+    const tableColumn = headers.map((h) => h.label);
+    const tableRows = csvData.map((row) =>
+      headers.map((h) => row[h.key])
+    );
 
-  autoTable(doc, {
-    head: [tableColumn],
-    body: tableRows,
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
 
-    theme: "grid", // 🔥 এটা দিলেই full border আসে
+      theme: "grid", // 🔥 এটা দিলেই full border আসে
 
-    styles: {
-      font: "helvetica",
-      fontSize: 8,
-      textColor: [0, 0, 0],
-      lineWidth: 0.3,          // 🔥 border thickness
-      lineColor: [0, 0, 0],    // 🔥 border color
-    },
+      styles: {
+        font: "helvetica",
+        fontSize: 8,
+        textColor: [0, 0, 0],
+        lineWidth: 0.3,          // 🔥 border thickness
+        lineColor: [0, 0, 0],    // 🔥 border color
+      },
 
-    headStyles: {
-      fillColor: [230, 230, 230],
-      textColor: [0, 0, 0],
-      lineWidth: 0.4,
-      lineColor: [0, 0, 0],
-      fontStyle: "bold",
-    },
+      headStyles: {
+        fillColor: [230, 230, 230],
+        textColor: [0, 0, 0],
+        lineWidth: 0.4,
+        lineColor: [0, 0, 0],
+        fontStyle: "bold",
+      },
 
-    bodyStyles: {
-      lineWidth: 0.3,
-      lineColor: [0, 0, 0],
-    },
+      bodyStyles: {
+        lineWidth: 0.3,
+        lineColor: [0, 0, 0],
+      },
 
-    margin: { top: 15 },
-  });
+      margin: { top: 15 },
+    });
 
-  doc.autoPrint();
-  window.open(doc.output("bloburl"), "_blank");
-};
+    doc.autoPrint();
+    window.open(doc.output("bloburl"), "_blank");
+  };
 
 
   // মোট যোগফল বের করা
@@ -349,10 +349,10 @@ const DailyIncome = () => {
                 <th className="px-4 py-3">{t("Vehicle")}</th>
                 <th className="px-4 py-3">{t("Load Point")}</th>
                 <th className="px-4 py-3">{t("Unload Point")}</th>
-                {/* <th className="px-4 py-3">Customer</th> */}
                 <th className="px-4 py-3">{t("Trip Price")}</th>
-                {/* <th className="px-4 py-3">Fine</th> */}
+                <th className="px-4 py-3">{t("Customer")} {t("Demurrage")}</th>
                 <th className="px-4 py-3">{t("Ongoing Expense")}</th>
+                <th className="px-4 py-3">{t("Vendor")} {t("Demurrage")}</th>
                 <th className="px-4 py-3">{t("Profit")}</th>
                 {/* <th className="px-4 py-3 action_column">Action</th> */}
               </tr>
@@ -380,25 +380,39 @@ const DailyIncome = () => {
                   </td>
                 </tr>
               ) : (
-                currentTrips.map((trip, index) => (
-                  <tr key={trip.id || index} className="hover:bg-gray-50 transition-all">
-                    <td className="px-4 py-4 font-bold border border-gray-300">{indexOfFirstItem + index + 1}</td>
-                    <td className="px-4 py-4 border border-gray-300">
-                      {tableFormatDate(trip.start_date)}
-                    </td>
-                    <td className="px-4 py-4 border border-gray-300">{trip.customer}</td>
-                    <td className="px-4 py-4 border border-gray-300">{trip.vehicle_no}</td>
-                    <td className="px-4 py-4 border border-gray-300">{trip.load_point}</td>
-                    <td className="px-4 py-4 border border-gray-300">{trip.unload_point}</td>
-                    <td className="px-4 py-4 border border-gray-300">{trip.total_rent}</td>
-                    <td className="px-4 py-4 border border-gray-300">
-                      {Number(trip.total_exp || 0)}
-                    </td>
-                    <td className="px-4 py-4 border border-gray-300">
-                      {(Number(trip.total_rent || 0) - Number(trip.total_exp || 0))}{" "}
-                      {/* Corrected profit calculation */}
-                    </td>
-                    {/* <td className="action_column">
+                currentTrips.map((trip, index) => {
+                  const rent = toNumber(trip.total_rent);
+                  const customerDemurrage = toNumber(trip.d_total);
+                  const totalIncome = rent + customerDemurrage;
+
+                  const vendorExpense = toNumber(trip.total_exp) + toNumber(trip.v_d_total);
+                  const ownExpense = toNumber(trip.total_exp);
+
+                  const profit =
+                    trip.transport_type === "vendor_transport"
+                      ? totalIncome - vendorExpense
+                      : totalIncome - ownExpense;
+                  return (
+                    <tr key={trip.id || index} className="hover:bg-gray-50 transition-all">
+                      <td className="px-4 py-4 font-bold border border-gray-300">{indexOfFirstItem + index + 1}</td>
+                      <td className="px-4 py-4 border border-gray-300">
+                        {tableFormatDate(trip.start_date)}
+                      </td>
+                      <td className="px-4 py-4 border border-gray-300">{trip.customer}</td>
+                      <td className="px-4 py-4 border border-gray-300">{trip.vehicle_no}</td>
+                      <td className="px-4 py-4 border border-gray-300">{trip.load_point}</td>
+                      <td className="px-4 py-4 border border-gray-300">{trip.unload_point}</td>
+                      <td className="px-4 py-4 border border-gray-300">{trip.total_rent}</td>
+                      <td className="px-4 py-4 border border-gray-300">{trip.d_total}</td>
+                      <td className="px-4 py-4 border border-gray-300">
+                        {Number(trip.total_exp || 0)}
+                      </td>
+                      <td className="px-4 py-4 border border-gray-300">{trip.v_d_total}</td>
+                      <td className="px-4 py-4 border border-gray-300">
+                        {profit}{" "}
+                        {/* Corrected profit calculation */}
+                      </td>
+                      {/* <td className="action_column">
                       <div className="flex justify-center">
                         <Link to={`/UpdateDailyIncomeForm/${trip.id}`}>
                           <button className="text-primary hover:bg-primary hover:text-white px-2 py-1 rounded shadow-md transition-all cursor-pointer">
@@ -407,8 +421,9 @@ const DailyIncome = () => {
                         </Link>
                       </div>
                     </td> */}
-                  </tr>
-                ))
+                    </tr>
+                  )
+                })
               )}
             </tbody>
             {/* ✅ মোট যোগফল row */}

@@ -1109,7 +1109,7 @@ const TripList = () => {
                           <p><strong>Unload:</strong> {dt.unload_point}</p>
                         </td>
 
-                        <td className="p-2">{isAdmin ? (dt.total_rent) : "hide"}</td>
+                        <td className="p-2">{dt.total_rent}</td>
                         <td className="p-2">{dt.d_total}</td>
                         <td className="p-2">{dt.transport_type === "vendor_transport"
                           ? totalExpenses
