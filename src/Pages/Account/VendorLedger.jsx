@@ -86,13 +86,13 @@ const VendorLedger = () => {
   ].sort();
 
   const sortedVendors = [...vendorList]
-  .map(v => v.vendor_name)
-  .filter(Boolean)
-  .sort((a, b) => a.localeCompare(b));
+    .map(v => v.vendor_name)
+    .filter(Boolean)
+    .sort((a, b) => a.localeCompare(b));
   const vendorOptions = sortedVendors.map(name => ({
-  value: name,
-  label: name,
-}));
+    value: name,
+    label: name,
+  }));
 
   // Filter data based on selected vendor and month, then sort by date
   const filteredVendors = vendorData.filter((v) => {
@@ -164,6 +164,7 @@ const VendorLedger = () => {
         Unload: "",
         Vehicle: "",
         Driver: "",
+        "Challan Received Status":"",
         "Trip Rent": "",
         Demurrage: "",
         Total: "",
@@ -183,6 +184,7 @@ const VendorLedger = () => {
         Unload: item.unload_point || "--",
         Vehicle: item.vehicle_no || "--",
         Driver: item.driver_name || "--",
+        "Challan Received Status": item.chalan_rec || "--",
         "Trip Rent": item.total_rent ? toNumber(item.total_rent) : "--",
         Demurrage: item.v_d_total ? toNumber(item.v_d_total) : "--",
         Total:
@@ -203,6 +205,7 @@ const VendorLedger = () => {
       Unload: "",
       Vehicle: "",
       Driver: "",
+      "Challan Received Status": "",
       "Trip Rent": toNumber(totals.rent),
       Demurrage: toNumber(totals.demurrage),
       Total: toNumber(totals.total),
@@ -479,6 +482,7 @@ const VendorLedger = () => {
                   <th className="border px-2 py-1">{t("Unload")}</th>
                   <th className="border px-2 py-1">{t("Vehicle")}</th>
                   <th className="border px-2 py-1">{t("Driver")}</th>
+                  <th className="border px-2 py-1">{t("Challan")} {t("Receive")} {t("Status")}</th>
                   <th className="border px-2 py-1">{t("Trip Rent")}</th>
                   <th className="border px-2 py-1">{t("Demurrage")}</th>
                   <th className="border px-2 py-1">{t("Total")}</th>
@@ -537,6 +541,13 @@ const VendorLedger = () => {
                             )}
                           </td>
                           <td className="border px-2 py-1">
+                            <span className={`px-3 py-1 rounded text-xs font-semibold
+            ${item.chalan_rec === "Received" ?
+                                "bg-green-50 text-green-700  border-green-300"
+                                : "text-black"
+                              }`}>{item.chalan_rec || "--"}</span>
+                          </td>
+                          <td className="border px-2 py-1">
                             {item.total_rent ? toNumber(item.total_rent) : "--"}
                           </td>
                           <td className="border px-2 py-1">
@@ -566,7 +577,7 @@ const VendorLedger = () => {
               </tbody>
               <tfoot>
                 <tr className="font-bold bg-gray-100">
-                  <td colSpan={7} className="border px-2 py-1 text-right">
+                  <td colSpan={8} className="border px-2 py-1 text-right">
                     {t("Total")}:
                   </td>
                   <td className="border px-2 py-1">{totals.rent}</td>

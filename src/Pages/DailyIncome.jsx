@@ -98,7 +98,9 @@ const DailyIncome = () => {
     { label: "Load", key: "load_point" },
     { label: "Unload", key: "unload_point" },
     { label: "Trip Rent", key: "total_rent" },
+    { label: "CustomerDemurrage", key: "d_total" },
     { label: "Expense", key: "total_exp" },
+    { label: "VendorDemurrage", key: "v_d_total" },
     { label: "Profit", key: "profit" },
   ]
 
@@ -107,7 +109,9 @@ const DailyIncome = () => {
   const csvData = filteredIncome.map((dt, index) => {
     const totalRent = Number.parseFloat(dt.total_rent ?? "0") || 0
     const totalExp = Number.parseFloat(dt.total_exp ?? "0") || 0
-    const profit = (totalRent - totalExp)
+    const totalCusDemurrage = Number.parseFloat(dt.d_total ?? "0") || 0
+    const totalVenDemurrage = Number.parseFloat(dt.v_d_total ?? "0") || 0
+    const profit = (totalRent + totalCusDemurrage) - (totalExp + totalVenDemurrage)
 
     return {
       index: index + 1,
@@ -117,7 +121,9 @@ const DailyIncome = () => {
       load_point: dt.load_point,
       unload_point: dt.unload_point,
       total_rent: totalRent,
+      d_total: totalCusDemurrage,
       total_exp: totalExp,
+      v_d_total: totalVenDemurrage,
       profit: toNumber(profit),
     }
   })
@@ -185,8 +191,17 @@ const DailyIncome = () => {
     (sum, trip) => sum + Number(trip.total_exp || 0),
     0
   );
+  const totalCusDemurrage = filteredIncome.reduce(
+    (sum, trip) => sum + Number(trip.d_total || 0),
+    0
+  );
 
-  const totalProfit = totalRent - totalExpense;
+  const totalVenDemurrage = filteredIncome.reduce(
+    (sum, trip) => sum + Number(trip.v_d_total || 0),
+    0
+  );
+
+  const totalProfit = (totalRent + totalCusDemurrage) - (totalExpense + totalVenDemurrage);
 
   // pagination
   const itemsPerPage = 10
@@ -432,7 +447,9 @@ const DailyIncome = () => {
                 <tr>
                   <td colSpan="6" className="text-right px-4 py-3">{t("Total")}:</td>
                   <td className="px-4 py-3">{totalRent}</td>
+                  <td className="px-4 py-3">{totalCusDemurrage}</td>
                   <td className="px-4 py-3">{totalExpense}</td>
+                  <td className="px-4 py-3">{totalVenDemurrage}</td>
                   <td className="px-4 py-3">{totalProfit}</td>
                 </tr>
               </tfoot>

@@ -377,7 +377,11 @@ const SelectCustomerLadger = ({ customer, selectedCustomerName }) => {
                           {item.driver_name || <span className="flex justify-center items-center">--</span>}
                         </td> */}
                         <td className="border px-2 py-1">
-                          {item.chalan_rec || <span className="flex justify-center items-center">--</span>}
+                          <span className={`px-3 py-1 rounded text-xs font-semibold
+            ${item.chalan_rec === "Received" ?
+                                "bg-green-50 text-green-700  border-green-300"
+                                : "text-black"
+                              }`}>{item.chalan_rec ||  "--"}</span>
                         </td>
                           <td className="border px-2 py-1">
                             {tripRent ? tripRent : "--"}

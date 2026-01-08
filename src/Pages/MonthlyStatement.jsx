@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
 import { SlCalender } from "react-icons/sl";
-import { GrFormNext, GrFormPrevious } from "react-icons/gr";
 import { FaFileExcel, FaFilePdf, FaFilter, FaPrint } from "react-icons/fa";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
@@ -50,15 +49,18 @@ const trips = (tripsRes.data || [])
         if (!monthlyData[month]) {
           monthlyData[month] = {
             ownTripIncome: 0,
-            vendorTripIncome: 0,
+            vendorTripIncome: 0, 
+            customerDemurrageIncome: 0,
             ownTripCost: 0,
             vendorTripCost: 0,
+             vendorDemurrageCost: 0,  
             purchaseCost: 0,
             salaryExpense: 0,
             officeExpense: 0
           };
         }
-
+ monthlyData[month].customerDemurrageIncome +=
+    toNumber(trip.d_total);
         if (trip.transport_type === "own_transport") {
           monthlyData[month].ownTripIncome += parseFloat(trip.total_rent) || 0;
           // monthlyData[month].ownTripCost += 
@@ -78,6 +80,9 @@ const trips = (tripsRes.data || [])
         } else if (trip.transport_type === "vendor_transport") {
           monthlyData[month].vendorTripIncome += parseFloat(trip.total_rent) || 0;
           monthlyData[month].vendorTripCost += parseFloat(trip.total_exp) || 0;
+           // Vendor Demurrage (Cost)
+    monthlyData[month].vendorDemurrageCost +=
+      toNumber(trip.v_d_total);
         }
       });
 
@@ -87,8 +92,10 @@ const trips = (tripsRes.data || [])
           monthlyData[month] = {
             ownTripIncome: 0,
             vendorTripIncome: 0,
+             customerDemurrageIncome: 0,   
             ownTripCost: 0,
             vendorTripCost: 0,
+             vendorDemurrageCost: 0,  
             purchaseCost: 0,
             salaryExpense: 0,
             officeExpense: 0
@@ -103,8 +110,10 @@ const trips = (tripsRes.data || [])
           monthlyData[month] = {
             ownTripIncome: 0,
             vendorTripIncome: 0,
+            customerDemurrageIncome: 0,  
             ownTripCost: 0,
             vendorTripCost: 0,
+            vendorDemurrageCost: 0, 
             purchaseCost: 0,
             salaryExpense: 0,
             officeExpense: 0
@@ -129,12 +138,13 @@ const trips = (tripsRes.data || [])
           totalExpense: 
             values.ownTripCost + 
             values.vendorTripCost + 
+             values.vendorDemurrageCost + 
             values.purchaseCost + 
             values.salaryExpense + 
             values.officeExpense,
           netProfit: 
-            (values.ownTripIncome + values.vendorTripIncome) - 
-            (values.ownTripCost + values.vendorTripCost + values.purchaseCost + values.salaryExpense + values.officeExpense)
+            (values.ownTripIncome + values.vendorTripIncome + values.customerDemurrageIncome) - 
+            (values.ownTripCost + values.vendorTripCost + values.vendorDemurrageCost + values.purchaseCost + values.salaryExpense + values.officeExpense)
         }));
 
       setAllData(result);
@@ -170,8 +180,10 @@ const trips = (tripsRes.data || [])
       "Month": item.month,
       "Own Trip Income": toNumber(item.ownTripIncome),
       "Vendor Trip Income": toNumber(item.vendorTripIncome),
+      "Customer Demurrage Income": toNumber(item.customerDemurrageIncome),
       "Own Trip Cost": toNumber(item.ownTripCost),
       "Vendor Trip Cost": toNumber(item.vendorTripCost),
+      "Vendor Demurrage Cost": toNumber(item.vendorDemurrageCost),
       "Purchase Cost": toNumber(item.purchaseCost),
       "Salary Expense": toNumber(item.salaryExpense),
       "Office Expense": toNumber(item.officeExpense),
@@ -346,10 +358,12 @@ const trips = (tripsRes.data || [])
                 <tr>
                   <th className="p-2 border">{t("SL.")}</th>
                   <th className="p-2 border">{t("Month")}</th>
-                  <th className="p-2 border"> {t("Own Trip Income")}</th>
+                  <th className="p-2 border"> {t("Own Trip Income")}</th>                 
                   <th className="p-2 border">{t("Vendor Trip Income")}</th>
+                  <th className="p-2 border"> {t("Customer")} {t("Demurrage")} {t("Income")}</th>
                   <th className="p-2 border">{t("Own Trip Cost")}</th>
                   <th className="p-2 border">{t("Vendor Trip Cost")}</th>
+                  <th className="p-2 border">{t("Vendor")} {t("Demurrage")} {t("Cost")}</th>
                   <th className="p-2 border">{t("Purchase Cost")}</th>
                   <th className="p-2 border">{t("Salary Expense")}</th>
                   <th className="p-2 border">{t("Office Expense")}</th>
@@ -364,8 +378,10 @@ const trips = (tripsRes.data || [])
                     <td className="p-2 border border-gray-400">{item.month}</td>
                     <td className="p-2 border border-gray-400 text-right">{item.ownTripIncome}</td>
                     <td className="p-2 border border-gray-400 text-right">{item.vendorTripIncome}</td>
+                    <td className="p-2 border border-gray-400 text-right">{item.customerDemurrageIncome}</td>
                     <td className="p-2 border border-gray-400 text-right ">{item.ownTripCost}</td>
                     <td className="p-2 border border-gray-400 text-right ">{item.vendorTripCost}</td>
+                    <td className="p-2 border border-gray-400 text-right ">{item.vendorDemurrageCost}</td>
                     <td className="p-2 border border-gray-400 text-right ">{item.purchaseCost}</td>
                     <td className="p-2 border border-gray-400 text-right ">{item.salaryExpense}</td>
                     <td className="p-2 border border-gray-400 text-right ">{item.officeExpense}</td>
@@ -384,8 +400,10 @@ const trips = (tripsRes.data || [])
                   <td className="p-2 border border-gray-400 text-center" colSpan={2}>Total</td>
                   <td className="p-2 border border-gray-400 text-right">{calculateTotal('ownTripIncome')}</td>
                   <td className="p-2 border border-gray-400 text-right">{calculateTotal('vendorTripIncome')}</td>
+                  <td className="p-2 border border-gray-400 text-right">{calculateTotal('customerDemurrageIncome')}</td>
                   <td className="p-2 border border-gray-400 text-right ">{calculateTotal('ownTripCost')}</td>
                   <td className="p-2 border border-gray-400 text-right ">{calculateTotal('vendorTripCost')}</td>
+                  <td className="p-2 border border-gray-400 text-right ">{calculateTotal('vendorDemurrageCost')}</td>
                   <td className="p-2 border border-gray-400 text-right ">{calculateTotal('purchaseCost')}</td>
                   <td className="p-2 border border-gray-400 text-right ">{calculateTotal('salaryExpense')}</td>
                   <td className="p-2 border border-gray-400 text-right ">{calculateTotal('officeExpense')}</td>

@@ -1,6 +1,6 @@
 @import "tailwindcss";
 @theme {
-  --color-primary: #239230;
+  --color-primary: #0F6B9E;
   --color-secondary: #173882;
 }
 @import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");

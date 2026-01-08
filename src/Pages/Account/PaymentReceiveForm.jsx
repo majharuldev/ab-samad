@@ -11,6 +11,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../../../utils/axiosConfig";
 import { format } from "date-fns";
 import { useTranslation } from "react-i18next";
+import { IoMdClose } from "react-icons/io";
 
 const PaymentReceiveForm = () => {
   const { t } = useTranslation();
@@ -53,11 +54,11 @@ const PaymentReceiveForm = () => {
         status: data.status,
         ref_id: data.ref_id
       });
-       if (data.image) {
-            const imageUrl = `${import.meta.env.VITE_IMAGE_URL}/payment/${data.image}`
-            setPreviewImage(imageUrl)
-            setExistingImage(data.image)
-          }
+      if (data.image) {
+        const imageUrl = `${import.meta.env.VITE_IMAGE_URL}/paymentRc/${data.image}`
+        setPreviewImage(imageUrl)
+        setExistingImage(data.image)
+      }
     } catch (error) {
       console.error("Error fetching payment data:", error);
       toast.error(t("Failed to load payment data"));
@@ -95,85 +96,79 @@ const PaymentReceiveForm = () => {
   const generateRefId = useRefId();
 
   // remove image
+  // Preview image or PDF remove
   const removePreview = () => {
-  setPreviewImage(null);
-  setValue("bill_image", null);
-
-  const fileInput = document.querySelector('input[type="file"]');
-  if (fileInput) fileInput.value = "";
-};
-
-
-  // handle image change
-  const handleFileChange = (file) => {
-  if (!file) return;
-
-  // আগের preview থাকলে clear
-  setPreviewImage(null);
-
-  // PDF হলে
-  if (file.type === "application/pdf") {
-    const pdfUrl = URL.createObjectURL(file);
-    setPreviewImage(pdfUrl);
-  }
-  // Image হলে
-  else if (file.type.startsWith("image/")) {
-    const imageUrl = URL.createObjectURL(file);
-    setPreviewImage(imageUrl);
-  }
-};
-
-// handle submit
-  const onSubmit = async (data) => {
-    const refId = isEditing ? data.ref_id : generateRefId();
-    const formatDate = (date) => {
-      if (!date) return null
-      const parsed = new Date(date)
-      return isNaN(parsed) ? null : format(parsed, "yyyy-MM-dd")
-    }
-    try {
-      const payload = {
-        ...data,
-      }
-      payload.date = formatDate(data.date)
-
-      // যদি create হয়, নতুন ref_id generate করো
-      if (!isEditing) {
-        payload.ref_id = generateRefId()
-      }
-
-      // Use appropriate endpoint and method based on mode
-      const endpoint = isEditing
-        ? `/payment-recieve/${id}`
-        : `/payment-recieve`;
-
-      const method = isEditing ? "put" : "post";
-
-      const paymentResponse = await api[method](endpoint, payload);
-      const paymentData = paymentResponse.data;
-
-      if (paymentData.success) {
-        toast.success(
-          isEditing ? t("Payment updated successfully") : t("Payment saved successfully"),
-          { position: "top-right" }
-        );
-
-        if (isEditing) {
-          navigate("/tramessy/account/PaymentReceive");
-        } else {
-          reset(); // Reset form after successful creation
-          navigate("/tramessy/account/PaymentReceive");
-        }
-      } else {
-        toast.error(paymentData.message || t("Operation failed"));
-      }
-    } catch (error) {
-      console.error("Submit error:", error);
-      const errorMessage =
-        error.response?.data?.message || error.message || t("Unknown error");
-      toast.error(t("Server issue:") + errorMessage);
-    }
+    setPreviewImage(null);
+    setExistingImage(null);
+    setValue("bill_image", null);
   };
+  // handleFileChange ফাংশন আপডেট করুন
+  const handleFileChange = (e) => {
+  const file = e.target.files?.[0]
+  if (!file) return
+
+  setValue("bill_image", file)
+
+  if (
+    file.type.startsWith("image/") ||
+    file.type === "application/pdf"
+  ) {
+    setPreviewImage(URL.createObjectURL(file))
+  } else {
+    toast.error("Only image or PDF allowed")
+  }
+}
+
+
+  // submit handler
+  const onSubmit = async (data) => {
+    setLoading(true)
+  console.log(data)
+    try {
+      const formData = new FormData()
+  
+       Object.entries(data).forEach(([key, value]) => {
+        if (
+          key !== "bill_image" &&
+          value !== undefined &&
+          value !== null &&
+          value !== ""
+        ) {
+          formData.append(key, value)
+        }
+      })
+  
+      //  backend expects "image"
+      if (data.bill_image instanceof File) {
+        formData.append("image", data.bill_image)
+      } else if (isEditing && existingImage) {
+        formData.append("existing_image", existingImage)
+      }
+  
+      const res = isEditing
+        ? await api.post(`/payment-recieve/${id}`, formData)
+        : await api.post(`/payment-recieve`, formData)
+  
+      if (res.data?.success) {
+        toast.success(
+          isEditing
+            ? t("Payment updated successfully")
+            : t("Payment saved successfully")
+        )
+        navigate("/tramessy/account/PaymentReceive");
+      } else {
+        toast.error(res.data?.message || t("Something went wrong"))
+      }
+  
+    } catch (error) {
+      console.error("Submit error:", error)
+      toast.error(
+        error.response?.data?.message || t("Server error")
+      )
+    } finally {
+      setLoading(false)
+    }
+  }
 
   if (loading) {
     return <div>{t("Loading")}...</div>;
@@ -301,7 +296,7 @@ const PaymentReceiveForm = () => {
                         {error && (
                           <span className="text-red-600 text-sm">{error.message}</span>
                         )}
-                        {isEditing && existingImage && !previewImage && (
+                        {id && existingImage && !previewImage && (
                           <p className="text-green-600 text-sm mt-1">
                             {t("Current file")}: {existingImage}
                           </p>
@@ -311,7 +306,7 @@ const PaymentReceiveForm = () => {
                   />
                 </div>
               </div>
-                         {previewImage && (
+              {previewImage && (
                 <div className="mt-3 relative  flex !justify-end">
                   <button
                     type="button"
@@ -322,10 +317,10 @@ const PaymentReceiveForm = () => {
                       // ফাইল ইনপুট রিসেট করুন
                       const fileInput = document.querySelector('input[type="file"]');
                       if (fileInput) fileInput.value = "";
-                      
-                      if (isEditMode && existingImage) {
+
+                      if (id && existingImage) {
                         // এডিট মোডে থাকলে এক্সিস্টিং ইমেজ দেখান
-                        const imageUrl = `{${import.meta.env.VITE_IMAGE_URL}/payment/${existingImage}`;
+                        const imageUrl = `{${import.meta.env.VITE_IMAGE_URL}/paymentRc/${existingImage}`;
                         setPreviewImage(imageUrl);
                       } else {
                         setExistingImage(null);
@@ -333,11 +328,11 @@ const PaymentReceiveForm = () => {
                     }}
                     className="absolute top-2 right-2 text-red-600 bg-white shadow rounded-sm hover:text-white hover:bg-secondary transition-all duration-300 cursor-pointer font-bold text-xl p-[2px] z-10"
                     title="Remove preview"
-                    
+
                   >
                     <IoMdClose />
                   </button>
-                  
+
                   {/* PDF বা ইমেজ প্রিভিউ */}
                   {previewImage.includes("application/pdf") || previewImage.endsWith(".pdf") ? (
                     <div className="border rounded p-2 bg-gray-50">
@@ -368,7 +363,6 @@ const PaymentReceiveForm = () => {
                   )}
                 </div>
               )}
-              
               <div className="text-left p-5">
                 <BtnSubmit>{isEditing ? t("Update") : t("Submit")}</BtnSubmit>
               </div>

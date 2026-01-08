@@ -673,14 +673,16 @@ const numberToWords = (num) => {
               <tr>
                 <th className="border border-gray-700 px-2 py-1">{t("TripNo")}</th>
                 <th className="border border-gray-700 px-2 py-1">{t("Date")}</th>
-                <th className="border border-gray-700 px-2 py-1">{t("Driver")}</th>
-                <th className="border border-gray-700 px-2 py-1">{t("Customer")}</th>
-                <th className="border border-gray-700 px-2 py-1">{t("Truck No")}</th>
-                <th className="border border-gray-700 px-2 py-1">{t("Load Point")}</th>
-                <th className="border border-gray-700 px-2 py-1">{t("Unload Point")}</th>
+                {/* <th className="border border-gray-700 px-2 py-1">{t("Driver")}</th> */}
+                {/* <th className="border border-gray-700 px-2 py-1">{t("Customer")}</th> */}
+                {/* <th className="border border-gray-700 px-2 py-1">{t("Truck No")}</th> */}
+                {/* <th className="border border-gray-700 px-2 py-1">{t("Load Point")}</th> */}
+                {/* <th className="border border-gray-700 px-2 py-1">{t("Unload Point")}</th> */}
+                <th className="border border-gray-700 px-2 py-1">{t("Description")}</th>
                 <th className="border border-gray-700 px-2 py-1">{t("Total Rent")}</th>
-                <th className="border border-gray-700 px-2 py-1">{t("Demurrage")}</th>
+                {/* <th className="border border-gray-700 px-2 py-1">{t("Demurrage")}</th> */}
                 <th className="border border-gray-700 px-2 py-1">{t("Bill Amount")}</th>
+                <th className="border border-gray-700 px-2 py-1">{t("Remarks")}</th>
                 <th className="border border-gray-700 px-2 py-1">{t("Bill")} {t("Status")}</th>
               </tr>
             </thead>
@@ -689,16 +691,18 @@ const numberToWords = (num) => {
                 <tr key={index} className="hover:bg-gray-50 transition-all">
                   <td className="border border-gray-700 p-1 font-bold">{dt.id}.</td>
                   <td className="border border-gray-700 p-1">{tableFormatDate(dt.start_date)}</td>
-                  <td className="border border-gray-700 p-1">{dt.driver_name}</td>
-                  <td className="border border-gray-700 p-1">{dt.customer}</td>
-                  <td className="border border-gray-700 p-1">{dt.vehicle_no}</td>
-                  <td className="border border-gray-700 p-1">{dt.load_point}</td>
-                  <td className="border border-gray-700 p-1">{dt.unload_point}</td>
-                  <td className="border border-gray-700 p-1">{dt.total_rent}</td>
-                  <td className="border border-gray-700 p-1">{dt.d_total || 0}</td>
+                  <td className="border border-gray-700 p-1">{dt.vehicle_category}</td>
+                  {/* <td className="border border-gray-700 p-1">{dt.driver_name}</td> */}
+                  {/* <td className="border border-gray-700 p-1">{dt.customer}</td> */}
+                  {/* <td className="border border-gray-700 p-1">{dt.vehicle_no}</td> */}
+                  {/* <td className="border border-gray-700 p-1">{dt.load_point}</td> */}
+                  {/* <td className="border border-gray-700 p-1">{dt.unload_point}</td> */}
+                  <td className="border border-gray-700 p-1">{(Number.parseFloat(dt.total_rent) || 0) + (Number.parseFloat(dt.d_total) || 0)}</td>
+                  {/* <td className="border border-gray-700 p-1">{dt.d_total || 0}</td> */}
                   <td className="border border-gray-700 p-1">
                     {(Number.parseFloat(dt.total_rent) || 0) + (Number.parseFloat(dt.d_total) || 0)}
                   </td>
+                  <td className="border border-gray-700 p-1">{dt.remarks}</td>
                   <td className="border border-gray-700 p-1 text-center ">
                     <div className="flex items-center">
                       <input
@@ -725,13 +729,13 @@ const numberToWords = (num) => {
             </tbody>
             <tfoot>
               <tr className="font-bold">
-                <td colSpan={7} className="border border-black px-2 py-1 text-right">
+                <td colSpan={5} className="border border-black px-2 py-1 text-right">
                   {t("Total")}
                 </td>
                 <td className="border border-black px-2 py-1">{totalRent}</td>
-                <td className="border border-black px-2 py-1">{totalDemurrage}</td>
+                {/* <td className="border border-black px-2 py-1">{totalDemurrage}</td> */}
                 <td className="border border-black px-2 py-1">{grandTotal}</td>
-                <td className="border border-black px-2 py-1"></td>
+                {/* <td className="border border-black px-2 py-1"></td> */}
               </tr>
               <tr className="font-bold">
                 <td colSpan={11} className="border border-black px-2 py-1">

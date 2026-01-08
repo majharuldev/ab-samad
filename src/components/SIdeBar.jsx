@@ -13,7 +13,7 @@ import {
 } from "react-icons/fa6";
 import { FaTruckPickup, FaUsersCog } from "react-icons/fa";
 import { MdShop } from "react-icons/md";
-import logo from "../assets/tramessy.png";
+import logo from "../assets/ab-samad.jpeg";
 // import avatar from "../assets/ms.png";
 import { Link, useLocation } from "react-router-dom";
 import useAdmin from "../hooks/useAdmin";
@@ -51,9 +51,9 @@ const Sidebar = () => {
     <div className="overflow-y-scroll hide-scrollbar">
       <main>
         {/* Logo */}
-        <div className="py-[12px] flex justify-center border-b border-gray-300">
+        <div className="py-[10px] flex justify-center border-b border-gray-300">
           <Link to="/tramessy">
-            <img src={logo} alt="Logo" className="w-28" />
+            <img src={logo} alt="Logo" className="w-24" />
             <div className="text-xs text-primary">
               {/* <div className="font-semibold text-lg py-2">সৈনিক ট্রান্সপোর্ট এজেন্সি</div> */}
             </div>
@@ -759,11 +759,17 @@ const Sidebar = () => {
                     </li> */}
                       <li>
                         <Link
-                          to="/tramessy/Reports/vehicle-report"
-                          className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/Reports/vehicle-report")
-                            ? "text-gray-700 bg-gray-200"
-                            : "text-gray-500 hover:text-primary"
-                            }`}
+                          // to="/tramessy/Reports/vehicle-report"
+                          // className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/Reports/vehicle-report")
+                          //   ? "text-gray-700 bg-gray-200"
+                          //   : "text-gray-500 hover:text-primary"
+                          //   }`}
+                          to={isHRSubMenuDisabled ? "#" : "/tramessy/Reports/vehicle-report"}
+                              onClick={(e) => isHRSubMenuDisabled && e.preventDefault()}
+                              className={`p-2 rounded-sm flex items-center gap-2 ${isHRSubMenuDisabled
+                                ? "text-gray-400 cursor-not-allowed"
+                                : "text-gray-500 hover:text-primary"
+                                }`}
                         >
 
                           <span>{t("Vehicle Report")}</span>
@@ -771,11 +777,17 @@ const Sidebar = () => {
                       </li>
                       <li>
                         <Link
-                          to="/tramessy/Reports/Driver-Report"
-                          className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/Reports/Driver-Report")
-                            ? "text-gray-700 bg-gray-200"
-                            : "text-gray-500 hover:text-primary"
-                            }`}
+                          // to="/tramessy/Reports/Driver-Report"
+                          // className={`flex gap-2 items-center p-2 rounded-sm font-medium ${isActive("/tramessy/Reports/Driver-Report")
+                          //   ? "text-gray-700 bg-gray-200"
+                          //   : "text-gray-500 hover:text-primary"
+                          //   }`}
+                             to={isHRSubMenuDisabled ? "#" : "/tramessy/Reports/Driver-Report"}
+                              onClick={(e) => isHRSubMenuDisabled && e.preventDefault()}
+                              className={`p-2 rounded-sm flex items-center gap-2 ${isHRSubMenuDisabled
+                                ? "text-gray-400 cursor-not-allowed"
+                                : "text-gray-500 hover:text-primary"
+                                }`}
                         >
 
                           <span>{t("Driver Report")}</span>

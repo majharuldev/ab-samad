@@ -130,7 +130,7 @@ const VendorPaymentForm = () => {
 
 const onSubmit = async (data) => {
   setLoading(true)
-
+console.log(data)
   try {
     const formData = new FormData()
 
@@ -153,7 +153,7 @@ const onSubmit = async (data) => {
     }
 
     const res = isEditMode
-      ? await api.put(`/vendor-payment/${id}`, formData)
+      ? await api.post(`/vendor-payment/${id}`, formData)
       : await api.post(`/vendor-payment`, formData)
 
     if (res.data?.success) {

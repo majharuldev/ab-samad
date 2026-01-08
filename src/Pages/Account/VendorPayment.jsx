@@ -11,9 +11,11 @@ import toast from "react-hot-toast";
 import * as XLSX from "xlsx";
 import { useTranslation } from "react-i18next";
 import toNumber from "../../hooks/toNumber";
+import { GrView } from "react-icons/gr";
+import axios from "axios";
 
 const VendorPayment = () => {
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const [payment, setPayment] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -43,6 +45,51 @@ const VendorPayment = () => {
       .join(" ");
     return searchableText.includes(searchTerm.toLowerCase());
   });
+
+  // image modal
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const openImageModal = (image) => {
+    setSelectedImage(image);
+    setShowImageModal(true);
+  };
+
+  const closeImageModal = () => {
+    setSelectedImage(null);
+    setShowImageModal(false);
+  };
+
+  // handle download
+ 
+const handleDownload = async (imageName) => {
+  try {
+    const imageUrl = `${import.meta.env.VITE_IMAGE_URL}/payment/${imageName}`;
+
+    const response = await axios.get(imageUrl, {
+      responseType: "blob",
+    });
+
+    const blob = new Blob([response.data]);
+    const blobUrl = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = blobUrl;
+    link.download = imageName;
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(blobUrl);
+
+    toast.success("Download started");
+  } catch (error) {
+    console.error("Download error:", error);
+    toast.error("Download failed");
+  }
+};
+
+
 
   // মোট যোগফল বের করা
   const totalAmount = payment.reduce(
@@ -74,62 +121,62 @@ const VendorPayment = () => {
   };
 
   // Excel Export Function
-const exportToExcel = () => {
-  if (!filteredPayments.length) {
-    toast.error("No data available to export!");
-    return;
-  }
+  const exportToExcel = () => {
+    if (!filteredPayments.length) {
+      toast.error("No data available to export!");
+      return;
+    }
 
-  // Prepare export data
-  const exportData = filteredPayments.map((dt, index) => ({
-    SL: index + 1,
-    Date: dt.date ? tableFormatDate(dt.date) : "",
-    Vendor_Name: dt.vendor_name || "",
-    Bill_Ref: dt.bill_ref || "",
-    Amount: Number(dt.amount || 0),
-    Cash_Type: dt.cash_type || "",
-    Status: dt.status || "",
-  }));
+    // Prepare export data
+    const exportData = filteredPayments.map((dt, index) => ({
+      SL: index + 1,
+      Date: dt.date ? tableFormatDate(dt.date) : "",
+      Vendor_Name: dt.vendor_name || "",
+      Bill_Ref: dt.bill_ref || "",
+      Amount: Number(dt.amount || 0),
+      Cash_Type: dt.cash_type || "",
+      Status: dt.status || "",
+    }));
 
-  // Add total at the end
-  const totalAmount = filteredPayments.reduce(
-    (sum, item) => sum + Number(item.amount || 0),
-    0
-  );
-  exportData.push({
-    SL: "",
-    Date: "",
-    Vendor_Name: "",
-    Bill_Ref: "Total:",
-    Amount: totalAmount,
-    Cash_Type: "",
-    Status: "",
-  });
+    // Add total at the end
+    const totalAmount = filteredPayments.reduce(
+      (sum, item) => sum + Number(item.amount || 0),
+      0
+    );
+    exportData.push({
+      SL: "",
+      Date: "",
+      Vendor_Name: "",
+      Bill_Ref: "Total:",
+      Amount: totalAmount,
+      Cash_Type: "",
+      Status: "",
+    });
 
-  // Create worksheet & workbook
-  const worksheet = XLSX.utils.json_to_sheet(exportData);
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Vendor Payment Report");
+    // Create worksheet & workbook
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Vendor Payment Report");
 
-  // Set column widths for readability
-  const colWidths = [
-    { wch: 5 },  // SL
-    { wch: 12 }, // Date
-    { wch: 20 }, // Vendor Name
-    { wch: 15 }, // BillRef
-    { wch: 12 }, // Amount
-    { wch: 12 }, // Cash Type
-    { wch: 10 }, // Status
-  ];
-  worksheet["!cols"] = colWidths;
+    // Set column widths for readability
+    const colWidths = [
+      { wch: 5 },  // SL
+      { wch: 12 }, // Date
+      { wch: 20 }, // Vendor Name
+      { wch: 15 }, // BillRef
+      { wch: 12 }, // Amount
+      { wch: 12 }, // Cash Type
+      { wch: 10 }, // Status
+    ];
+    worksheet["!cols"] = colWidths;
 
-  // Export file
-  const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
-  const data = new Blob([excelBuffer], { type: "application/octet-stream" });
-  saveAs(data, `Vendor_Payment_Report_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    // Export file
+    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+    const data = new Blob([excelBuffer], { type: "application/octet-stream" });
+    saveAs(data, `Vendor_Payment_Report_${new Date().toISOString().slice(0, 10)}.xlsx`);
 
-  toast.success("Excel file exported successfully!");
-};
+    toast.success("Excel file exported successfully!");
+  };
 
   // handle print
   const handlePrint = () => {
@@ -283,6 +330,7 @@ const exportToExcel = () => {
               <tr>
                 <th className="px-2 py-3">{t("SL.")}</th>
                 <th className="px-2 py-3">{t("Date")}</th>
+                <th className="px-2 py-3">{t("Image")}</th>
                 <th className="px-2 py-3">{t("Vendor")} {t("Name")}</th>
                 <th className="px-2 py-3">{t("Bill Ref")}</th>
                 <th className="px-2 py-3">{t("Amount")}</th>
@@ -320,6 +368,25 @@ const exportToExcel = () => {
                     <tr className="hover:bg-gray-50 transition-all border border-gray-200">
                       <td className="p-2 font-bold">{index + 1}.</td>
                       <td className="p-2">{tableFormatDate(dt.date)}</td>
+                      <td className="px-2 py-1">
+                        <div className="relative group w-16 h-16">
+                          <img
+                            src={`${import.meta.env.VITE_IMAGE_URL}/payment/${dt.image}`}
+                            alt="Bill"
+                            className="w-16 h-16 rounded object-cover"
+                          />
+
+                          {/* Hover View Button */}
+                          <button
+                            onClick={() => openImageModal(dt.image)}
+                            className="absolute inset-0 bg-black/60 text-white text-xs
+                 flex items-center justify-center opacity-0
+                 group-hover:opacity-100 transition-all cursor-pointer"
+                          >
+                           <GrView/>
+                          </button>
+                        </div>
+                      </td>
                       <td className="p-2">{dt.vendor_name}</td>
                       <td className="p-2">{dt.bill_ref}</td>
                       <td className="p-2">{toNumber(dt.amount)}</td>
@@ -405,6 +472,39 @@ const exportToExcel = () => {
           </div>
         )}
       </div>
+      {/* image modal */}
+      {showImageModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+          <div className="bg-white rounded-lg shadow-xl w-[90%] max-w-md p-4 relative">
+
+            {/* Close */}
+            <button
+              onClick={closeImageModal}
+              className="absolute top-2 right-2 text-gray-500 hover:text-red-500"
+            >
+              ✕
+            </button>
+
+            {/* Image */}
+            <img
+              src={`${import.meta.env.VITE_IMAGE_URL}/payment/${selectedImage}`}
+              alt="Bill"
+              className="w-full max-h-[400px] object-contain rounded"
+            />
+
+            {/* Actions */}
+            {/* <div className="mt-4 flex justify-end gap-2">
+             <button
+  onClick={() => handleDownload(selectedImage)}
+  className="bg-primary text-white px-4 py-1 rounded hover:bg-primary/90"
+>
+  Download
+</button>
+            </div> */}
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
