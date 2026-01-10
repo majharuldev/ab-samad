@@ -417,10 +417,10 @@ const exportToExcel = () => {
         <body>
         <div class="bill-info" style="margin-top:3in;">
             <div class="to-section">
-              <div>${("To")}</div>
+              <div>${t("To")}</div>
               <div><strong>${customerName}</strong></div>
               <div>${customerAddress}</div>
-              <div><strong>${("Sub")}: ${billNumber}</strong></div>
+              <div><strong>${t("Sub")}: ${billNumber}</strong></div>
             </div>
             <div>
               <div><strong>${("Date")}: ${new Date().toLocaleDateString("bn-BD")}</strong></div>
@@ -430,12 +430,12 @@ const exportToExcel = () => {
           <table>
             <thead>
               <tr>
-                <th>${("TripNo")}</th>
-                <th>${("Date")}</th>
-                <th>${("Description")}</th>
-                <th>${("Rent")}</th>
-                <th>${("Total")}</th>
-                <th>${("Remarks")}</th>
+                <th>${t("TripNo")}</th>
+                <th>${t("Date")}</th>
+                <th>${t("Description")}</th>
+                <th>${t("Rent")}</th>
+                <th>${t("Total")}</th>
+                <th>${t("Remarks")}</th>
               </tr>
             </thead>
             <tbody>
@@ -455,7 +455,7 @@ const exportToExcel = () => {
             </tbody>
             <tfoot>
               <tr>
-                <td colspan="4" class="text-right"><strong>${("Total")}</strong></td>
+                <td colspan="4" class="text-right"><strong>${t("Total")}</strong></td>
                 <td class="text-right"><strong>${printGrandTotal}</strong></td>
                 <td class="text-right"><strong>${printGrandTotal}</strong></td>
               </tr>
