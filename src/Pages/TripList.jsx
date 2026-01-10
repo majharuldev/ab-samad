@@ -1364,6 +1364,8 @@ const TripList = () => {
                   <div><strong>{t("Chada Cost")}:</strong> {selectedTrip.chada || 0}</div>
                   <div><strong>{t("Food Cost")}:</strong> {selectedTrip.food_cost || 0}</div>
                   <div><strong>{t("Additional Load Cost")}:</strong> {selectedTrip.additional_cost || 0}</div>
+                  <div><strong>{t("Customer")} {t("Advance")}:</strong> {selectedTrip.c_adv || 0}</div>
+                  <div><strong>{t("Customer")} {t("Due")}:</strong> {selectedTrip.c_due || 0}</div>
                   <div><strong>{t("Total Expense")}:</strong> {selectedTrip.total_exp || 0}</div>
                   <div><strong>{t("Driver Advance")}:</strong> {selectedTrip.driver_adv || 0}</div>
                   <div><strong>{t("Vendor")} {t("Advance")}:</strong> {selectedTrip.advance || 0}</div>

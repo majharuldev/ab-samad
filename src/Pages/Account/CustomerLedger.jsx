@@ -34,9 +34,9 @@ const CustomerLedger = () => {
     : customers;
 
   return (
-    <main className="overflow-hidden mt-3">
+    <main className="overflow-x-hidden mt-3">
       <Toaster />
-      <div className=" overflow-x-auto mx-auto border border-gray-200 p-2 py-10 md:p-4 rounded-md">
+      <div className=" w-sm md:w-full overflow-x-auto mx-auto border border-gray-200 p-2 py-10 md:p-4 rounded-md">
         <div className="md:flex items-center justify-between mb-6">
           <h1 className="text-xl font-bold text-[#11375B] capitalize flex items-center gap-3">
             {t("Customer")} {t("Ledger")} {selectedCustomer && `: ${selectedCustomer}`}

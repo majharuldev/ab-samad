@@ -251,6 +251,22 @@ export default function AddTripForm() {
     setValue("due_amount", due, { shouldValidate: true })
   }, [vendorRent, vendorAdvance, setValue])
 
+  // customer due
+  //  Customer Due Auto Calculation
+const [tripRent, customerAdvance] = watch(["total_rent", "c_adv"])
+
+useEffect(() => {
+  const total = Number(tripRent) || 0
+  const advance = Number(customerAdvance) || 0
+
+  const due = total - advance
+
+  setValue("c_due", due >= 0 ? due : 0, {
+    shouldValidate: true,
+    shouldDirty: false,
+  })
+}, [tripRent, customerAdvance, setValue])
+
   // Fetch all necessary data
   useEffect(() => {
     const fetchAllData = async () => {
@@ -808,13 +824,30 @@ export default function AddTripForm() {
 
                   <div className={`w-full`}>
                     <InputField
-                      hidden={isAdmin ? false : true}
+                      // hidden={isAdmin ? false : true}
                       name="total_rent"
                       label={t("Total Rent/Bill Amount")}
                       type="number"
                       required={false}
                     // readOnly={isRateFound}
                     // className={`${isRateFound ? "bg-gray-100" : ""}`}
+                    />
+                  </div>
+                  <div className={`w-full`}>
+                    <InputField
+                      name="c_adv"
+                      label={`${t("Customer")} ${t("Advance")}`}
+                      type="number"
+                      required={false}
+                    />
+                  </div>
+                  <div className={`w-full`}>
+                    <InputField
+                      name="c_due"
+                      label={`${t("Customer")} ${t("Due")}`}
+                      type="number"
+                      required={false}
+                      readOnly
                     />
                   </div>
                   <div className="">

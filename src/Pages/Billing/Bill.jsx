@@ -13,6 +13,7 @@ import api from "../../../utils/axiosConfig"
 import { tableFormatDate } from "../../hooks/formatDate"
 import DatePicker from "react-datepicker"
 import { useTranslation } from "react-i18next"
+import toNumber from "../../hooks/toNumber"
 
 pdfMake.vfs = pdfFonts.vfs
 
@@ -71,38 +72,6 @@ const Bill = () => {
       document.removeEventListener("mousedown", handleClickOutside)
     }
   }, [])
-
-  // excel
-const exportToExcel = () => {
-  const selectedData = filteredTrips.filter((trip) => selectedRows[trip.id])
-
-  if (!selectedData.length) {
-    return toast.error(t("Please select at least one row."))
-  }
-
-  const excelData = selectedData.map((dt, index) => {
-    const billAmount =
-      (Number(dt.total_rent) || 0) + (Number(dt.d_total) || 0)
-
-    return {
-      SL: index + 1,
-      Date: tableFormatDate(dt.start_date),
-      Description: dt.vehicle_category || "",
-      "Total Rent": billAmount || 0,
-      "Bill Amount": billAmount,
-      Remarks: dt.remarks || "",
-      Status: dt.status,
-    }
-  })
-
-  const worksheet = XLSX.utils.json_to_sheet(excelData)
-  const workbook = XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Bill")
-
-  const wbout = XLSX.write(workbook, { bookType: "xlsx", type: "array" })
-  saveAs(new Blob([wbout]), "Bill.xlsx")
-}
-
 
   // pdf
   const exportToPDF = () => {
@@ -181,14 +150,14 @@ const numberToWords = (num) => {
     }
   }
 
-  const ones = ["", ("One"), ("Two"), ("Three"), ("Four"), ("Five"), 
-                ("Six"), ("Seven"), ("Eight"), ("Nine")]
+  const ones = ["", t("One"), t("Two"), t("Three"), t("Four"), t("Five"), 
+                t("Six"), t("Seven"), t("Eight"), t("Nine")]
   
-  const teens = [("Ten"), ("Eleven"), ("Twelve"), ("Thirteen"), ("Fourteen"), 
-                 ("Fifteen"), ("Sixteen"), ("Seventeen"), ("Eighteen"), ("Nineteen")]
+  const teens = [t("Ten"), t("Eleven"), t("Twelve"), t("Thirteen"), t("Fourteen"), 
+                 t("Fifteen"), t("Sixteen"), t("Seventeen"), t("Eighteen"), t("Nineteen")]
   
-  const tens = ["", "", ("Twenty"), ("Thirty"), ("Forty"), ("Fifty"), 
-                ("Sixty"), ("Seventy"), ("Eighty"), ("Ninety")]
+  const tens = ["", "", t("Twenty"), t("Thirty"), t("Forty"), t("Fifty"), 
+                t("Sixty"), t("Seventy"), t("Eighty"), t("Ninety")]
 
   const convertTwoDigit = (n) => {
     if (n === 0) return ""
@@ -233,7 +202,7 @@ const numberToWords = (num) => {
       const hundredWord = ones[hundredDigit] === `(${hundredDigit})` ? 
                          ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"][hundredDigit] : 
                          ones[hundredDigit]
-      result += hundredWord + " " + ("Hundred")
+      result += hundredWord + " " + t("Hundred")
       n %= 100
       if (n > 0) {
         result += " "
@@ -248,7 +217,7 @@ const numberToWords = (num) => {
     return result
   }
 
-  if (numInt === 0) return ("Zero") + " " + ("Taka only")
+  if (numInt === 0) return t("Zero") + " " + t("Taka only")
   
   let result = ""
   let remaining = numInt
@@ -256,21 +225,21 @@ const numberToWords = (num) => {
   // Crore (কোটি) - 10000000
   if (remaining >= 10000000) {
     const crorePart = Math.floor(remaining / 10000000)
-    result += convertThreeDigit(crorePart) + " " + ("Crore") + " "
+    result += convertThreeDigit(crorePart) + " " + t("Crore") + " "
     remaining %= 10000000
   }
   
   // Lakh (লাখ) - 100000
   if (remaining >= 100000) {
     const lakhPart = Math.floor(remaining / 100000)
-    result += convertTwoDigit(lakhPart) + " " + ("Lakh") + " "
+    result += convertTwoDigit(lakhPart) + " " + t("Lakh") + " "
     remaining %= 100000
   }
   
   // Thousand (হাজার) - 1000
   if (remaining >= 1000) {
     const thousandPart = Math.floor(remaining / 1000)
-    result += convertTwoDigit(thousandPart) + " " + ("Thousand") + " "
+    result += convertTwoDigit(thousandPart) + " " + t("Thousand") + " "
     remaining %= 1000
   }
   
@@ -279,7 +248,7 @@ const numberToWords = (num) => {
     result += convertThreeDigit(remaining) + " "
   }
 
-  return result.trim() + " " + ("Taka only")
+  return result.trim() + " " + t("Taka only")
 }
 
 // check trip box
@@ -292,9 +261,10 @@ const numberToWords = (num) => {
 
   // Fixed calculation functions
   const calculateTotals = (trips) => {
-    const totalRent = trips.reduce((sum, dt) => sum + (Number.parseFloat(dt.total_rent) || 0), 0)
-    const totalDemurrage = trips.reduce((sum, dt) => sum + (Number.parseFloat(dt.d_total) || 0), 0)
-    const grandTotal = totalRent + totalDemurrage
+    const totalRent = trips.reduce((sum, dt) => sum + (toNumber(dt.total_rent) || 0), 0)
+    const totalDemurrage = trips.reduce((sum, dt) => sum + (toNumber(dt.d_total) || 0), 0)
+    const totalAdv = trips.reduce((sum, dt) => sum + (toNumber(dt.c_adv) || 0), 0)
+    const grandTotal = (totalRent + totalDemurrage)- totalAdv
     return { totalRent, totalDemurrage, grandTotal }
   }
 
@@ -315,7 +285,38 @@ const numberToWords = (num) => {
   // Get selected data based on selectedRows for total calculation
   const selectedTripsForCalculation = filteredTrips.filter((trip) => selectedRows[trip.id])
   const tripsToCalculate = selectedTripsForCalculation.length > 0 ? selectedTripsForCalculation : filteredTrips
-  const { totalRent, totalDemurrage, grandTotal } = calculateTotals(tripsToCalculate)
+  const { totalRent, totalDemurrage, grandTotal, totalAdv } = calculateTotals(tripsToCalculate)
+
+    // excel
+const exportToExcel = () => {
+  const selectedData = filteredTrips.filter((trip) => selectedRows[trip.id])
+
+  if (!selectedData.length) {
+    return toast.error(t("Please select at least one row."))
+  }
+
+  const excelData = selectedData.map((dt, index) => {
+    const billAmount =
+      ((toNumber(dt.total_rent) || 0) + (toNumber(dt.d_total) || 0)) - (toNumber(dt.c_adv))
+
+    return {
+      SL: index + 1,
+      Date: tableFormatDate(dt.start_date),
+      Description: dt.vehicle_category || "",
+      "Total Rent": billAmount || 0,
+      "Bill Amount": billAmount,
+      Remarks: dt.remarks || "",
+      Status: dt.status,
+    }
+  })
+
+  const worksheet = XLSX.utils.json_to_sheet(excelData)
+  const workbook = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Bill")
+
+  const wbout = XLSX.write(workbook, { bookType: "xlsx", type: "array" })
+  saveAs(new Blob([wbout]), "Bill.xlsx")
+}
 
   // print
   const handlePrint = () => {
@@ -697,10 +698,10 @@ const numberToWords = (num) => {
                   {/* <td className="border border-gray-700 p-1">{dt.vehicle_no}</td> */}
                   {/* <td className="border border-gray-700 p-1">{dt.load_point}</td> */}
                   {/* <td className="border border-gray-700 p-1">{dt.unload_point}</td> */}
-                  <td className="border border-gray-700 p-1">{(Number.parseFloat(dt.total_rent) || 0) + (Number.parseFloat(dt.d_total) || 0)}</td>
+                  <td className="border border-gray-700 p-1">{((toNumber(dt.total_rent) || 0) + (toNumber(dt.d_total) || 0)- toNumber(dt.c_adv))}</td>
                   {/* <td className="border border-gray-700 p-1">{dt.d_total || 0}</td> */}
                   <td className="border border-gray-700 p-1">
-                    {(Number.parseFloat(dt.total_rent) || 0) + (Number.parseFloat(dt.d_total) || 0)}
+                    {((toNumber(dt.total_rent) || 0) + (toNumber(dt.d_total) || 0)- toNumber(dt.c_adv))}
                   </td>
                   <td className="border border-gray-700 p-1">{dt.remarks}</td>
                   <td className="border border-gray-700 p-1 text-center ">

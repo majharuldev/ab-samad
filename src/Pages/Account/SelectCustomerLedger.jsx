@@ -73,16 +73,18 @@ const SelectCustomerLadger = ({ customer, selectedCustomerName }) => {
     (acc, item) => {
       const rent = toNumber(item.bill_amount || 0);
       const dem = toNumber(item.d_total || 0);
+      const advance = toNumber(item.c_adv || 0);
       const received = toNumber(item.rec_amount || 0);
 
       acc.tripRent += rent;
       acc.demurrage += dem;
+      acc.advance += advance;
       acc.billAmount += rent + dem;
       acc.received += received;
 
       return acc;
     },
-    { tripRent: 0, demurrage: 0, billAmount: 0, received: 0 }
+    { tripRent: 0, demurrage: 0, billAmount: 0, received: 0, advance: 0 }
   );
 
   totals.due = totals.billAmount - totals.received;
@@ -103,8 +105,9 @@ const SelectCustomerLadger = ({ customer, selectedCustomerName }) => {
     const rows = filteredLedger.map((dt, index) => {
       const tripRent = toNumber(dt.bill_amount || 0);
       const dem = toNumber(dt.d_total || 0);
+      const advance = toNumber(dt.c_adv || 0);
       const received = toNumber(dt.rec_amount || 0);
-      const billAmount = tripRent + dem;
+      const billAmount = (tripRent + dem)- advance;
 
       cumulativeDue += billAmount;
       cumulativeDue -= received;
@@ -121,6 +124,7 @@ const SelectCustomerLadger = ({ customer, selectedCustomerName }) => {
         "Challan Receive Status": dt.challan_rec,
         "Trip Rent": tripRent,
         Demurrage: dem,
+        Advance: advance,
         "Bill Amount": billAmount,
         "Received Amount": received,
         Due:
@@ -143,6 +147,7 @@ const SelectCustomerLadger = ({ customer, selectedCustomerName }) => {
       "Challan Receive Status": "",
       "Trip Rent": totals.tripRent,
       Demurrage: totals.demurrage,
+      Advance: totals.advance,
       "Bill Amount": totals.billAmount,
       "Received Amount": totals.received,
       Due: grandDue < 0 ? `(${Math.abs(grandDue)})` : grandDue,
@@ -182,14 +187,14 @@ const SelectCustomerLadger = ({ customer, selectedCustomerName }) => {
   };
 
   return (
-    <div className="md:p-4">
-      <div className="overflow-x-auto">
+    <div className="">
+      <div className=" ">
         <div className="md:flex items-center justify-between mb-6">
-          <h1 className="text-xl font-extrabold text-[#11375B]">
+          {/* <h1 className="text-xl font-extrabold text-[#11375B]">
             {filteredLedger.length > 0
               ? filteredLedger[0].customer_name
               : `${t("All")} ${t("Customer")}`} {t("Ledger")}
-          </h1>
+          </h1> */}
         </div>
 
         <div className="flex justify-between mb-4">
@@ -317,7 +322,7 @@ const SelectCustomerLadger = ({ customer, selectedCustomerName }) => {
               </div>
 
             </div>
-            <div ref={tableRef}>
+            <div ref={tableRef} className="!overflow-x-auto ">
               <table className="min-w-full text-sm text-left text-gray-900">
                 <thead className="bg-gray-100 text-gray-800 font-bold">
                   <tr>
@@ -333,6 +338,7 @@ const SelectCustomerLadger = ({ customer, selectedCustomerName }) => {
                     <th className="border px-2 py-1">{t("Challan")} {t("Receive")} {t("Status")}</th>
                     <th className="border px-2 py-1">{t("Trip Rent")}</th>
                     <th className="border px-2 py-1">{t("Demurrage")}</th>
+                    <th className="border px-2 py-1">{t("Advance")}</th>
                     <th className="border px-2 py-1">{t("Bill Amount")}</th>
                     <th className="border px-2 py-1">{t("Received Amount")}</th>
                     <th className="border border-gray-700 px-2 py-1">
@@ -352,7 +358,8 @@ const SelectCustomerLadger = ({ customer, selectedCustomerName }) => {
                       const tripRent = toNumber(item.bill_amount || 0);
                       const receivedAmount = toNumber(item.rec_amount || 0);
                       const demurageTotal = toNumber(item.d_total)
-                      const billAmount = tripRent + demurageTotal;
+                      const customerAdv = toNumber(item.c_adv || 0);
+                      const billAmount = (tripRent + demurageTotal)- customerAdv;
                       // মোট due হিসাব
                       cumulativeDue += billAmount;
                       cumulativeDue -= receivedAmount;
@@ -390,6 +397,9 @@ const SelectCustomerLadger = ({ customer, selectedCustomerName }) => {
                             {demurageTotal ? demurageTotal : "--"}
                           </td>
                           <td className="border px-2 py-1">
+                            {item.c_adv || "--"}
+                          </td> 
+                          <td className="border px-2 py-1">
                             {billAmount ? billAmount : "--"}
                           </td>
                           <td className="border px-2 py-1">
@@ -417,7 +427,9 @@ const SelectCustomerLadger = ({ customer, selectedCustomerName }) => {
                     <td className="border px-2 py-1 text-right">
                       ৳{totals.demurrage}
                     </td>
-
+                    <td className="border px-2 py-1 text-right">
+                      ৳{totals.advance}
+                    </td>
                     <td className="border px-2 py-1 text-right">
                       ৳{totals.billAmount}
                     </td>
