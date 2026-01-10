@@ -133,7 +133,7 @@ const PurchaseList = () => {
     }
   };
 
-  if (loading) return <p className="text-center mt-16">Loading data...</p>;
+  if (loading) return <p className="text-center mt-16">{t("Loading")}...</p>;
   // pagination
   const itemsPerPage = 10;
   const indexOfLastItem = currentPage * itemsPerPage;

@@ -53,7 +53,7 @@ const Sidebar = () => {
         {/* Logo */}
         <div className="py-[10px] flex justify-center border-b border-gray-300">
           <Link to="/tramessy">
-            <img src={logo} alt="Logo" className="w-24" />
+            <img src={logo} alt="Logo" className="w-22" />
             <div className="text-xs text-primary">
               {/* <div className="font-semibold text-lg py-2">সৈনিক ট্রান্সপোর্ট এজেন্সি</div> */}
             </div>
@@ -494,7 +494,7 @@ const Sidebar = () => {
                   </div>
                 </li> */}
               {/* Fuel */}
-              <li className="text-gray-700 font-medium rounded-sm">
+              {/* <li className="text-gray-700 font-medium rounded-sm">
                 <div
                   role="button"
                   tabIndex={0}
@@ -517,7 +517,7 @@ const Sidebar = () => {
                   </span>
                 </div>
 
-                {/* Dropdown container with smooth expand/collapse */}
+                
                 <div
                   className={`transition-all duration-700 ease-in-out overflow-hidden ${openMenu.fuel ? "max-h-[500px]" : "max-h-0"
                     }`}
@@ -561,7 +561,7 @@ const Sidebar = () => {
                     </li>
                   </ul>
                 </div>
-              </li>
+              </li> */}
               {/* Purchase */}
               <li className="text-gray-700 font-medium rounded-sm">
                 <div

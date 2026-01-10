@@ -51,19 +51,44 @@ const PurchaseForm = () => {
 
   // সব items এবং service charge এর হিসাব করার জন্য
   const items = useWatch({ control, name: "items" });
-  const serviceCharge = useWatch({ control, name: "service_charge" });
-
+  const serviceCharge = useWatch({ control, name: "service_charge" });  
+  
+  // auto total set
   useEffect(() => {
-    const totalItemsAmount = (items || []).reduce((sum, item) => {
-      const quantity = parseFloat(item.quantity) || 0;
-      const unitPrice = parseFloat(item.unit_price) || 0;
-      return sum + quantity * unitPrice;
-    }, 0);
+  if (!items || items.length === 0) return;
 
-    const grandTotal = totalItemsAmount + (parseFloat(serviceCharge) || 0);
-    setValue("purchase_amount", grandTotal);
-  }, [items, serviceCharge, setValue]);
-  // set category
+  let itemsTotal = 0;
+  let shouldUpdate = false;
+
+  items.forEach((item, index) => {
+    const quantity = Number(item.quantity) || 0;
+    const unitPrice = Number(item.unit_price) || 0;
+    const calculatedTotal = quantity * unitPrice;
+
+    itemsTotal += calculatedTotal;
+
+    // 🔐 same value হলে setValue করবে না
+    if (Number(item.total) !== calculatedTotal) {
+      shouldUpdate = true;
+      setValue(`items.${index}.total`, calculatedTotal, {
+        shouldValidate: false,
+        shouldDirty: false,
+      });
+    }
+  });
+
+  const grandTotal = itemsTotal + (Number(serviceCharge) || 0);
+
+  // 🔐 purchase_amount change না হলে update করবে না
+  if (Number(watch("purchase_amount")) !== grandTotal) {
+    setValue("purchase_amount", grandTotal, {
+      shouldValidate: false,
+      shouldDirty: false,
+    });
+  }
+}, [items, serviceCharge, setValue]);
+
+// set category
   useEffect(() => {
     if (watch("vehicle_no")) {
       const selectedVehicleData = vehicle.find(
@@ -450,10 +475,7 @@ const PurchaseForm = () => {
                   const quantity = watch(`items.${index}.quantity`) || 0;
                   const unitPrice = parseFloat(watch(`items.${index}.unit_price`)) || 0;
                   const total = quantity * unitPrice;
-                  useEffect(() => {
-                    const total = Number(quantity) * Number(unitPrice);
-                    setValue(`items.${index}.total`, total, { shouldValidate: false });
-                  }, [quantity, unitPrice, index, setValue]);
+                  
                   return (
                     <div key={field.id} className="flex flex-col md:flex-row gap-3 border border-gray-300 p-3 rounded-md relative">
                       <InputField name={`items.${index}.item_name`} label={`${t("Item")} ${t("Name")}`} required={!isEditMode} className="!w-full" />

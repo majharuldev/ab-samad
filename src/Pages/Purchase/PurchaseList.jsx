@@ -751,7 +751,7 @@ const PurchaseList = () => {
               </a>
               {/* Optional: Embed PDF preview */}
               {/* <iframe
-                src={`https://ajenterprise.tramessy.com/backend/uploads/purchase/${selectedPurchase.image}`}
+                src={`${import.meta.env.VITE_IMAGE_URL}/purchase/${selectedPurchase.image}`}
                 className="w-full h-48 mt-2 border rounded"
                 title="PDF Preview"
               /> */}
@@ -759,7 +759,7 @@ const PurchaseList = () => {
           ) : (
             // Image Preview
             <img
-              src={`https://ajenterprise.tramessy.com/backend/uploads/purchase/${selectedPurchase.image}`}
+              src={`${import.meta.env.VITE_IMAGE_URL}/purchase/${selectedPurchase.image}`}
               alt="Bill"
               className="w-32 h-32 object-cover rounded-lg border"
               onError={(e) => {
@@ -772,7 +772,7 @@ const PurchaseList = () => {
           )}
           {/* Download link for both */}
           <a
-            href={`https://ajenterprise.tramessy.com/backend/uploads/purchase/${selectedPurchase.image}`}
+            href={`${import.meta.env.VITE_IMAGE_URL}/purchase/${selectedPurchase.image}`}
             download
             className="block mt-2 text-blue-600 hover:text-blue-800 text-sm"
           >
