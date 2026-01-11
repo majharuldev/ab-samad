@@ -131,7 +131,7 @@ export default function AddTripForm() {
     fuelCost,
     tollCost,
     policeCost,
-    // driverCommision,
+    driverCommision,
     labourCost,
     othersCost,
     parkingCost,
@@ -167,6 +167,7 @@ export default function AddTripForm() {
       const totalExp =
         (Number(labourCost) || 0) +
         (Number(parkingCost) || 0) +
+        (Number(driverCommision) || 0) +
         (Number(nightGuardCost) || 0) +
         (Number(tollCost) || 0) +
         (Number(feriCost) || 0) +
@@ -188,6 +189,7 @@ export default function AddTripForm() {
   }, [
     labourCost,
     parkingCost,
+    driverCommision,
     nightGuardCost,
     tollCost,
     feriCost,

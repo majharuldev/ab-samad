@@ -160,7 +160,7 @@ const AddDriverForm = () => {
             <div className="md:flex justify-between gap-3">
               <div className="w-full relative">
                 <SelectField
-                name="salary"
+                name="vehicle_category"
                 label={`${t("Vehicle")} ${t("Category")}`}
                 required={id? false:true}
                 options={[
